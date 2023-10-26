@@ -1,5 +1,5 @@
 ﻿
-string url = "http://httpbin.org/ge";
+string url = "http://httpbin.org/get";
 string methodName = "get";
 Dictionary<string, string> parameters = new()
 {
