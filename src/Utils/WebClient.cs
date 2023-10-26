@@ -61,11 +61,8 @@ namespace Utils {
                 url += stringBuilder.ToString();
             }
 
-            // GET Method => use GetAsync
-            // POST Method => use PostAsync
             try {
-                HttpRequestMessage requestMessage = new()
-                {
+                HttpRequestMessage requestMessage = new() {
                     RequestUri = new(url),
                 };
                 if (methodName.ToLower() == "get") {
@@ -130,19 +127,19 @@ namespace Utils {
                     }
                     return new Tuple<bool, string>(true, jsonResult);
                 } else {
-                    return new Tuple<bool, string>(false, string.Empty);
+                    return new Tuple<bool, string>(false, "An error occurred in the transmission response.");
                 }
             } catch (WebException e) {
                 Console.WriteLine("RequestWeb()发生Web异常: {0}", e);
-                // Logging.LogManager.Error(e); // * 日志记录
+                // Logging.LogManager.Error(e);  // * 日志记录
                 return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             } catch (IOException e) {
                 Console.WriteLine("RequestWeb()发生IO异常: {0}", e);
-                // Logging.LogManager.Error(e);
+                // Logging.LogManager.Error(e);  // * 日志记录
                 return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             } catch (Exception e) {
                 Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
-                // Logging.LogManager.Error(e);
+                // Logging.LogManager.Error(e);  // * 日志记录
                 return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             }
         }
