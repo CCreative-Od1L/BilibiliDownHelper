@@ -41,17 +41,15 @@ namespace Utils {
                 requestMessage.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue(encoding));
             }
         }
-        public static bool Request(
+        public static async Task<Tuple<bool, string>> Request(
             string url,
             string methodName,
-            out string jsonResult,
             Dictionary<string, string>? parameters = null,
             string? referrer = null,
             int retryTime = 3
         ) {
             if (retryTime <= 0) {
-                jsonResult = string.Empty;
-                return false;
+                return new Tuple<bool, string>(true, string.Empty);
             }
 
             if (parameters != null && parameters.Count != 0) {
@@ -95,8 +93,8 @@ namespace Utils {
 
                 }
 
-                jsonResult = string.Empty;
-                using HttpResponseMessage response = HttpClientFactory.GetHttpClient().Send(requestMessage);
+                string jsonResult = string.Empty;
+                using HttpResponseMessage response = await HttpClientFactory.GetHttpClient().SendAsync(requestMessage);
                 response.EnsureSuccessStatusCode();
                 string? contentEncoding = response.Content.Headers.ContentEncoding.ToString();
                 if (contentEncoding != null) {
@@ -130,24 +128,22 @@ namespace Utils {
                             }
                             break;
                     }
-                    return true;
+                    return new Tuple<bool, string>(true, jsonResult);
                 } else {
-                    jsonResult = string.Empty;
-                    return false;
+                    return new Tuple<bool, string>(false, string.Empty);
                 }
             } catch (WebException e) {
                 Console.WriteLine("RequestWeb()发生Web异常: {0}", e);
                 // Logging.LogManager.Error(e); // * 日志记录
-                return Request(url, methodName, out jsonResult, parameters, referrer, retryTime - 1);
-
+                return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             } catch (IOException e) {
                 Console.WriteLine("RequestWeb()发生IO异常: {0}", e);
                 // Logging.LogManager.Error(e);
-                return Request(url, methodName, out jsonResult, parameters, referrer, retryTime - 1);
+                return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             } catch (Exception e) {
                 Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
                 // Logging.LogManager.Error(e);
-                return Request(url, methodName, out jsonResult, parameters, referrer, retryTime - 1);
+                return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             }
         }
     }

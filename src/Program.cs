@@ -1,7 +1,6 @@
 ﻿
 string url = "http://httpbin.org/get";
-string methodName = "Get";
-string Result;
+string methodName = "get";
 Dictionary<string, string> parameters = new()
 {
     { "c_id", "114514" },
@@ -10,5 +9,9 @@ Dictionary<string, string> parameters = new()
 };
 
 Console.WriteLine("Web Request Start");
-Utils.WebClient.Request(url, methodName, out Result, parameters);
-Console.WriteLine(Result);
+var result = await Utils.WebClient.Request(url, methodName, parameters);
+if (result.Item1 == false) {
+    Console.WriteLine("Error");
+} else {
+    Console.WriteLine(result.Item2);
+}
