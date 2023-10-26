@@ -10,7 +10,6 @@ namespace Utils {
             };
             httpClient = new HttpClient(socketsHandler);
         }
-
         public static HttpClient GetHttpClient() {
             return httpClient;
         }

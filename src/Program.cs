@@ -1,5 +1,5 @@
 ﻿
-string url = "http://httpbin.org/get";
+string url = "http://httpbin.org/ge";
 string methodName = "get";
 Dictionary<string, string> parameters = new()
 {
@@ -11,7 +11,7 @@ Dictionary<string, string> parameters = new()
 Console.WriteLine("Web Request Start");
 var result = await Utils.WebClient.Request(url, methodName, parameters);
 if (result.Item1 == false) {
-    Console.WriteLine("Error");
+    Console.WriteLine(result.Item2);
 } else {
     Console.WriteLine(result.Item2);
 }

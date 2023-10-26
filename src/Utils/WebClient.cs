@@ -49,7 +49,7 @@ namespace Utils {
             int retryTime = 3
         ) {
             if (retryTime <= 0) {
-                return new Tuple<bool, string>(true, string.Empty);
+                return new Tuple<bool, string>(false, "The request exceeded the retry limit.");
             }
 
             if (parameters != null && parameters.Count != 0) {
