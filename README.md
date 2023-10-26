@@ -3,7 +3,7 @@ Build: .Net 7.0.402
 
 ### 施工日志
 - [x] 2023-10-26 添加 Utils.HttpClientFactory 生成 HttpClient.
-- [ ] 2023-10-26 预计修改WebClient为异步方式请求
+- [x] 2023-10-26 预计修改WebClient为异步方式请求
 - [ ] ...
 
 ### 参考: 
