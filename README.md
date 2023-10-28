@@ -12,5 +12,5 @@ Build: .Net 7.0.402
 - [ ] ...
 
 ### 参考: 
-https://github.com/leiurayer/downkyi
-https://github.com/SocialSisterYi/bilibili-API-collect
+- https://github.com/leiurayer/downkyi
+- https://github.com/SocialSisterYi/bilibili-API-collect
