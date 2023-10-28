@@ -4,14 +4,7 @@ using System.Text;
 using System.Net.Http.Headers;
 using System.IO.Compression;
 
-namespace Utils {
-    enum ENCODE_TYPE{
-        DEFAULT,
-        GZIP,
-        DEFLATE,
-        BR,
-    };
-
+namespace Core.Web {
     internal static class WebClient {
         public static ENCODE_TYPE CheckEncodingType(string contentEncoding) {
             string lowerContent = contentEncoding.ToLower();
@@ -52,6 +45,7 @@ namespace Utils {
                 return new Tuple<bool, string>(false, "The request exceeded the retry limit.");
             }
 
+            // * Append the parameters to the url.
             if (parameters != null && parameters.Count != 0) {
                 StringBuilder stringBuilder = new("?");
                 foreach (var param in parameters) {
@@ -65,12 +59,13 @@ namespace Utils {
                 HttpRequestMessage requestMessage = new() {
                     RequestUri = new(url),
                 };
+                // * Select the Http Method.
                 if (methodName.ToLower() == "get") {
                     requestMessage.Method = HttpMethod.Get;
                 } else if (methodName.ToLower() == "post") {
                     requestMessage.Method = HttpMethod.Post;
                 }
-
+                // * Init the Header.
                 BatchAddHeaderAcceptLanguage(requestMessage, new Tuple<string, double>[]{
                     new("zh-CN", 1.0),
                     new("zh", 0.9),

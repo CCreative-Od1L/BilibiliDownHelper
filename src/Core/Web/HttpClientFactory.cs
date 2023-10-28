@@ -1,4 +1,4 @@
-namespace Utils {
+namespace Core.Web {
     public class HttpClientFactory {
         private static readonly HttpClient httpClient;
 

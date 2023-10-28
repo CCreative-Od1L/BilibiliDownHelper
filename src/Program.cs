@@ -9,7 +9,7 @@ Dictionary<string, string> parameters = new()
 };
 
 Console.WriteLine("Web Request Start");
-var result = await Utils.WebClient.Request(url, methodName, parameters);
+var result = await Core.Web.WebClient.Request(url, methodName, parameters);
 if (result.Item1 == false) {
     Console.WriteLine(result.Item2);
 } else {
