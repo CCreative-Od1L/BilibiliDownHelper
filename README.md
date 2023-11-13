@@ -19,6 +19,8 @@ Build: .Net 7.0.402
     - 完成Logger.LogManager.LogManager() -> 持续运行日志记录线程
     - 完成Logger.LogManager.WriteDown() -> 文件写入
     - ...
+- 2023-11-13
+  - ... 
 
 ### 参考: 
 - https://github.com/leiurayer/downkyi
