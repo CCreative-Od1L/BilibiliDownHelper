@@ -5,6 +5,11 @@ using System.Text.RegularExpressions;
 
 namespace Core.Logger {
     static public partial class LogManager {
+        /// <summary>
+        /// * 存放日志任务。
+        /// item1: 日志文件名称
+        /// item2: 
+        /// </summary> <summary>
         static readonly ConcurrentQueue<Tuple<string, string>> logMessageQueue = new();
         static AutoResetEvent Pause => new(false);
         public static event Action<LogInfo>? OnLogAction;  // * 可自定义Log事件，会在日志记录发生时触发。
@@ -71,52 +76,83 @@ namespace Core.Logger {
             }
         }
 
+        
         [GeneratedRegex("(?<=\\()(\\d+)(?=\\))")]
         private static partial Regex LogNoRegex();
+        /// <summary>
+        /// 返回构造出来的日志文件名称，格式:yyyyMMdd([pattern]).log
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <returns></returns> <summary>
+        static string ConstructLogFileName(string pattern) {
+            StringBuilder stringBuilder = new();
+            stringBuilder.AppendFormat("{0}({1}).log", DateTime.Now.ToString("yyyyMMdd"), pattern);
+            return stringBuilder.ToString();
+        }
         static string GetLogFilePath() {
             string newFilePath = string.Empty;
-            // * 施工中...
             string? logFolderPath = LogDirectory;
-            StringBuilder stringBuilder = new();
-
-            string currentDate = DateTime.Now.ToString("yyyyMMdd");
-            string fileExtension  = ".log";
-            // TODO （整合）构造文件名
-            stringBuilder.Append(currentDate);
-            stringBuilder.Append("(*)");
-            stringBuilder.Append(fileExtension);
-            string fileNamePattern = stringBuilder.ToString();
-            stringBuilder.Clear();
-            List<string> filePaths = Directory.GetFiles(logFolderPath, fileNamePattern, SearchOption.TopDirectoryOnly).ToList();
-
+            string fileNamePattern = ConstructLogFileName("*");
+            List<string> filePaths = Directory.GetFiles(
+                logFolderPath, 
+                fileNamePattern, 
+                SearchOption.TopDirectoryOnly)
+                .ToList();
             if (filePaths.Count > 0) {
                 int fileNameMaxLen = filePaths.Max(path => path.Length);
                 var latestLogFilePath = filePaths.Where(path => path.Length == fileNameMaxLen).OrderDescending().First();
                 if (new FileInfo(latestLogFilePath).Length > 1 * 1024 * 1024) {
                     var strLogNo = LogNoRegex().Match(Path.GetFileName(latestLogFilePath)).Value;
                     var parse = int.TryParse(strLogNo, out int intLogNo);
-                    var logFileNo = $"({(parse ? intLogNo + 1 : intLogNo)})";
-                    
-                    // TODO （整合）构造文件名
-                    stringBuilder.Append(currentDate);
-                    stringBuilder.Append(logFileNo);
-                    stringBuilder.Append(fileExtension);
-                    newFilePath = Path.Combine(logFolderPath, stringBuilder.ToString());
+                    var logFileNo = $"{(parse ? intLogNo + 1 : intLogNo)}";
+                    newFilePath = Path.Combine(logFolderPath, ConstructLogFileName(logFileNo));
                 } else {
                     newFilePath = latestLogFilePath;
                 }
             } else {
-                // TODO （整合）构造文件名
-                stringBuilder.Append(currentDate);
-                stringBuilder.Append("(0)");
-                stringBuilder.Append(fileExtension);
-                newFilePath = Path.Combine(logFolderPath, stringBuilder.ToString());
+                newFilePath = Path.Combine(logFolderPath, ConstructLogFileName("0"));
             }
-            // * 最后的清理工作
-            stringBuilder.Clear();
             return newFilePath;
         }
-
-
+        static void pushBackLogMessageQueue(string message) {
+            logMessageQueue.Enqueue(new Tuple<string, string>(
+                GetLogFilePath(),
+                message
+            ));
+        }
+        #region Level: Info
+        public static void Info(string info) {
+            var logInfo = new LogInfo() {
+                LogLevel = LOG_LEVEL.INFO,
+                Message = info,
+                Time = DateTime.Now,
+                ThreadID = Environment.CurrentManagedThreadId
+            };
+            pushBackLogMessageQueue(logInfo.ToString());
+            OnLogAction?.Invoke(logInfo);
+        }
+        public static void Info(string source, string info) {
+            var logInfo = new LogInfo(){
+                LogLevel = LOG_LEVEL.INFO,
+                Message = info,
+                Time = DateTime.Now,
+                ThreadID = Environment.CurrentManagedThreadId,
+                Source = source                
+            };
+            pushBackLogMessageQueue(logInfo.ToString());
+            OnLogAction?.Invoke(logInfo);
+        }
+        public static void Info(Type source, string info) {
+            var logInfo = new LogInfo() {
+                LogLevel = LOG_LEVEL.INFO,
+                Message = info,
+                Time = DateTime.Now,
+                ThreadID = Environment.CurrentManagedThreadId,
+                Source = source.FullName
+            };
+            pushBackLogMessageQueue(logInfo.ToString());
+            OnLogAction?.Invoke(logInfo);
+        }
+        #endregion
     }
 }
