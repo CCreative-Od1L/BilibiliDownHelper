@@ -126,15 +126,15 @@ namespace Core.Web {
                 }
             } catch (WebException e) {
                 Console.WriteLine("RequestWeb()发生Web异常: {0}", e);
-                // Logging.LogManager.Error(e);  // * 日志记录
+                Logger.LogManager.Error(e);
                 return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             } catch (IOException e) {
                 Console.WriteLine("RequestWeb()发生IO异常: {0}", e);
-                // Logging.LogManager.Error(e);  // * 日志记录
+                Logger.LogManager.Error(e);
                 return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             } catch (Exception e) {
                 Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
-                // Logging.LogManager.Error(e);  // * 日志记录
+                Logger.LogManager.Error(e);
                 return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             }
         }

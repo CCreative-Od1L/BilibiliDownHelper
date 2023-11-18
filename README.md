@@ -4,8 +4,8 @@ Build: .Net 7.0.402
 ### 施工进度
 - [x] 2023-10-26 添加 Utils.HttpClientFactory 生成 HttpClient.
 - [x] 2023-10-26 修改WebClient为异步方式请求
-- [ ] 2023-10-28 添加工具类：Logger等...(施工中)  
-- [ ] ...
+- [x] 2023-10-28 -> 11-18 添加工具类：Logger
+- [ ] 2023-11-19 BiliApi 开工
 
 ### 施工日志
 - 2023-10-28
@@ -18,9 +18,9 @@ Build: .Net 7.0.402
   - Logger 施工中...
     - 完成Logger.LogManager.LogManager() -> 持续运行日志记录线程
     - 完成Logger.LogManager.WriteDown() -> 文件写入
-    - ...
-- 2023-11-13
-  - ... 
+- 2023-11-18
+  - Logger 已完成
+  - 开始BilibiliApi的开工
 
 ### 参考: 
 - https://github.com/leiurayer/downkyi

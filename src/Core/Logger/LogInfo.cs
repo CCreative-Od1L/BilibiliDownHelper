@@ -30,15 +30,15 @@ namespace Core.Logger {
         public string? RequestUrl {get; set;}
         public string? UserAgent {get; set;}
 
-        readonly private string format = "{0} ";
+        readonly private static string format = "{0} ";
 
-        private static void AppendUseFormat(string value, ref StringBuilder stringBuilder, string format = "{0} ") {
+        private static void AppendUseFormat(string value, ref StringBuilder stringBuilder, string format) {
             stringBuilder.AppendFormat(format, value);
         }
         private static void MultiAppendUseFormat(List<Tuple<string, string>> valueList, ref StringBuilder stringBuilder) {
             foreach(var value in valueList) {
                 if (string.IsNullOrEmpty(value.Item1)) {
-                    AppendUseFormat(value.Item2, ref stringBuilder);
+                    AppendUseFormat(value.Item2, ref stringBuilder, format);
                 } else {
                     AppendUseFormat(value.Item2, ref stringBuilder, value.Item1);
                 }
@@ -47,21 +47,21 @@ namespace Core.Logger {
         public override string ToString() {
             StringBuilder stringBuilder = new();
             var list = new List<Tuple<string, string>>(){
-                new("T: {0}",Time.ToString()),
-                new("[{0}]", ThreadID.ToString()),
-                new(string.Empty, nameof(LogLevel).ToUpper()),
+                new("Time:{0} ",Time.ToString()),
+                new("[{0}] ", ThreadID.ToString()),
+                new(string.Empty, LogLevel.ToString()),
             };
             
             if (!string.IsNullOrEmpty(Source)) {
-                list.Add(new("Src: {0}", Source));
+                list.Add(new("Src:{0} ", Source));
             }
 
             if (!string.IsNullOrEmpty(Message)) {
-                list.Add(new("Mes: {0}", Message));
+                list.Add(new("Mes:{0} ", Message));
             }
             
             if (!string.IsNullOrEmpty(ExceptionType)) {
-                list.Add(new("ErrT: {0}", ExceptionType));
+                list.Add(new("ErrT:{0} ", ExceptionType));
             }
 
             // * 最后一个添加

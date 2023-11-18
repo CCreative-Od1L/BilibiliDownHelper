@@ -1,4 +1,7 @@
-﻿
+﻿using Core.Logger;
+LogManager.Info("Main", "Logger start");
+Console.WriteLine("System start");
+
 string url = "http://httpbin.org/get";
 string methodName = "get";
 Dictionary<string, string> parameters = new()
@@ -15,3 +18,5 @@ if (result.Item1 == false) {
 } else {
     Console.WriteLine(result.Item2);
 }
+
+Thread.Sleep(1000);
