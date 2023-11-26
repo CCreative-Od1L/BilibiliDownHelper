@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.RegularExpressions;
+using Core.Storage;
+using Core.Utils;
 
 namespace Core.Logger {
     static public partial class LogManager {
@@ -35,34 +37,21 @@ namespace Core.Logger {
                     }
 
                     foreach (var logMessage in logMessageBuf) {
-                        WriteDown(logMessage.Key, logMessage.Value);
+                        FileUtils.AppendText(logMessage.Key, logMessage.Value, (e) => {
+                            Console.WriteLine("Logger Error Happen./日志输出到文件出现错误");
+                        });
                     }
                 }
             }, null, TaskCreationOptions.LongRunning);
-            
-            _logDirectory = AppDomain.CurrentDomain.BaseDirectory + @"AppData\Logs\";
             
             // ! Must latest call
             CheckAndCreateLogDirectory();
             logTask.Start();
         }
 
-        static void WriteDown(string logPath, string content) {
-            try {
-                if (!File.Exists(logPath)) {
-                    File.CreateText(logPath).Close();
-                }
-                using var systemWrite = File.AppendText(logPath);
-                systemWrite.Write(content);
-            } catch (Exception) {
-                // * 忽略此错误
-                Console.WriteLine("Logger Error Happen./日志输出到文件出现错误");
-            }
-        }
-
         // * 日志文件存放目录
-        static string _logDirectory;
-        public static string LogDirectory {
+        static string? _logDirectory;
+        public static string? LogDirectory {
             get => _logDirectory;
             set {
                 if (value == null) {
@@ -74,7 +63,10 @@ namespace Core.Logger {
         }
         public static bool CheckAndCreateLogDirectory() {
             if (string.IsNullOrEmpty(_logDirectory)) {
-                _logDirectory = AppDomain.CurrentDomain.BaseDirectory + @"AppData\Logs\";
+                if (string.IsNullOrEmpty(StorageManager.fileDirectory.Log)) {
+                    StorageManager.fileDirectory.TryToResetDefault("log");
+                }
+                _logDirectory = StorageManager.fileDirectory.Log!;
             }
             if (!Directory.Exists(_logDirectory)) {
                 Directory.CreateDirectory(_logDirectory);
@@ -96,7 +88,7 @@ namespace Core.Logger {
         }
         static string GetLogFilePath() {
             string newFilePath = string.Empty;
-            string? logFolderPath = LogDirectory;
+            string logFolderPath = LogDirectory!;
             string fileNamePattern = ConstructLogFileName("*");
             List<string> filePaths = Directory.GetFiles(
                 logFolderPath, 

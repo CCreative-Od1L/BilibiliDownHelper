@@ -3,9 +3,14 @@ using System.Net;
 using System.Text;
 using System.Net.Http.Headers;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
+using Core.Utils;
+using Core.Storage;
 
 namespace Core.Web {
-    internal static class WebClient {
+
+    // * internal
+    public static class WebClient {
         public static ENCODE_TYPE CheckEncodingType(string contentEncoding) {
             string lowerContent = contentEncoding.ToLower();
             if (lowerContent.Contains("gzip")) {
@@ -86,9 +91,25 @@ namespace Core.Web {
                 }
 
                 string jsonResult = string.Empty;
-                using HttpResponseMessage response = await HttpClientFactory.GetHttpClient().SendAsync(requestMessage);
+                HttpClient httpClient = HttpClientFactory.GetHttpClient();
+                using HttpResponseMessage response = await httpClient.SendAsync(requestMessage);
                 response.EnsureSuccessStatusCode();
                 string? contentEncoding = response.Content.Headers.ContentEncoding.ToString();
+                
+                // * Test
+                try {
+                    StringBuilder stringBuilder = new();
+                    var cookies = response.Headers.GetValues("set-cookie");
+                    foreach(var cookie in cookies) {
+                        stringBuilder.AppendLine(cookie);
+                    }
+                    FileUtils.WriteText(
+                        Path.Combine(StorageManager.fileDirectory.Root, "cookies.txt"),
+                        stringBuilder.ToString(),
+                        (e) => {}
+                    );
+                } catch (Exception) {}
+                
                 if (contentEncoding != null) {
                     switch(CheckEncodingType(contentEncoding)) {
                         case ENCODE_TYPE.GZIP:

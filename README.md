@@ -1,4 +1,4 @@
-Build: .Net 7.0.402
+Build: .Net 8.0.100
 施工中...(摸)
 
 ### 施工进度
@@ -6,6 +6,7 @@ Build: .Net 7.0.402
 - [x] 2023-10-26 修改WebClient为异步方式请求
 - [x] 2023-10-28 -> 11-18 添加工具类：Logger
 - [ ] 2023-11-19 BiliApi 开工
+  - [x] 2023-11-26 BiliBili 二维码登录基本完成
 
 ### 施工日志
 - 2023-10-28
@@ -21,6 +22,8 @@ Build: .Net 7.0.402
 - 2023-11-18
   - Logger 已完成
   - 开始BilibiliApi的开工
+- 2023-11-26
+  - 扫码登录基本完成
 
 ### 参考: 
 - https://github.com/leiurayer/downkyi

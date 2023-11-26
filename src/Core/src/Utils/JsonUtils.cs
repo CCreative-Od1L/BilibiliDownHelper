@@ -5,5 +5,11 @@ namespace Core.Utils {
         static public T? ParseJsonString<T>(string jsonString) {
             return JsonSerializer.Deserialize<T>(jsonString);
         }
+        static public void WriteJsonInto<T>(T jsonObj, string path) {
+            string jsonString = JsonSerializer.Serialize(jsonObj);
+            FileUtils.WriteText(path, jsonString, (e) => {
+                Console.WriteLine(e);
+            });
+        }
     }
 }
