@@ -1,10 +1,10 @@
 using Core.Utils;
 
-namespace Core.Storage {
-    internal static class StorageManager {
+namespace Core.Directory {
+    internal static class DirectoryManager {
         static public FileDirectory fileDirectory;
         static readonly string relativeFileDirectoryJsonPath = @"dir.json";
-        static StorageManager() {
+        static DirectoryManager() {
             fileDirectory = new();
             string dirJsonString = FileUtils.ReadFile(Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath));
             if (string.IsNullOrEmpty(dirJsonString)) {
@@ -24,6 +24,17 @@ namespace Core.Storage {
                 return; 
             }
             fileDirectory.UpdateData(newFileDirectory);
+        }
+        static public void ResetToDefault(string name) {
+            fileDirectory.ResetDefault(name);
+        }
+        static public string GetLogDirectory() {
+            TryToInit();
+            return fileDirectory.Log!;
+        }
+        static public string GetCookieDirectory() {
+            TryToInit();
+            return fileDirectory.Cookie!;
         }
     }
 }

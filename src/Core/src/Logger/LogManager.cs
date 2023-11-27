@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.RegularExpressions;
-using Core.Storage;
+using Core.Directory;
 using Core.Utils;
 
 namespace Core.Logger {
@@ -49,27 +49,13 @@ namespace Core.Logger {
             logTask.Start();
         }
 
-        // * 日志文件存放目录
-        static string? _logDirectory;
-        public static string? LogDirectory {
-            get => _logDirectory;
-            set {
-                if (value == null) {
-                    Console.WriteLine("应该输入正确的文件夹路径。");
-                    return; 
-                }
-                _logDirectory = value;
-            }
-        }
         public static bool CheckAndCreateLogDirectory() {
-            if (string.IsNullOrEmpty(_logDirectory)) {
-                if (string.IsNullOrEmpty(StorageManager.fileDirectory.Log)) {
-                    StorageManager.fileDirectory.TryToResetDefault("log");
-                }
-                _logDirectory = StorageManager.fileDirectory.Log!;
-            }
-            if (!Directory.Exists(_logDirectory)) {
-                Directory.CreateDirectory(_logDirectory);
+            if (string.IsNullOrEmpty(DirectoryManager.GetLogDirectory())) {
+                DirectoryManager.ResetToDefault("log");
+
+                if (!System.IO.Directory.Exists(DirectoryManager.GetLogDirectory())) {
+                    System.IO.Directory.CreateDirectory(DirectoryManager.GetLogDirectory());
+                } 
             }
             return true;
         }
@@ -88,9 +74,10 @@ namespace Core.Logger {
         }
         static string GetLogFilePath() {
             string newFilePath = string.Empty;
-            string logFolderPath = LogDirectory!;
+            CheckAndCreateLogDirectory();
+            string logFolderPath = DirectoryManager.GetLogDirectory();
             string fileNamePattern = ConstructLogFileName("*");
-            List<string> filePaths = Directory.GetFiles(
+            List<string> filePaths = System.IO.Directory.GetFiles(
                 logFolderPath, 
                 fileNamePattern, 
                 SearchOption.TopDirectoryOnly)

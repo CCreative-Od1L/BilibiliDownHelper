@@ -5,7 +5,8 @@ using System.Net.Http.Headers;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using Core.Utils;
-using Core.Storage;
+using Core.Directory;
+using Core.Cookie;
 
 namespace Core.Web {
 
@@ -85,11 +86,6 @@ namespace Core.Web {
                     requestMessage.Headers.Referrer = new Uri(referrer);
                 }
 
-                // cookie添加
-                if(!url.Contains("getLogin")) {
-
-                }
-
                 string jsonResult = string.Empty;
                 HttpClient httpClient = HttpClientFactory.GetHttpClient();
                 using HttpResponseMessage response = await httpClient.SendAsync(requestMessage);
@@ -104,7 +100,7 @@ namespace Core.Web {
                         stringBuilder.AppendLine(cookie);
                     }
                     FileUtils.WriteText(
-                        Path.Combine(StorageManager.fileDirectory.Root, "cookies.txt"),
+                        CookieManager.CookieFilePath,
                         stringBuilder.ToString(),
                         (e) => {}
                     );

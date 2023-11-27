@@ -50,8 +50,8 @@ namespace Core.BilibiliApi.Login {
             // * 暂时用的，后续会用窗体展示二维码
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"AppData\QRCode\";
             string fileName = "img.png";
-            if (!Directory.Exists(filePath)) {
-                Directory.CreateDirectory(filePath);
+            if (!System.IO.Directory.Exists(filePath)) {
+                System.IO.Directory.CreateDirectory(filePath);
             }
             File.WriteAllBytes(
                 filePath + fileName, 

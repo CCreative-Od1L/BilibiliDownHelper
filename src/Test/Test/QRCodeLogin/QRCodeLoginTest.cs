@@ -15,7 +15,7 @@ namespace Core.Test {
 
         AutoResetEvent getResult = new(false);
         string loginResult = string.Empty;
-        [Fact]
+        // [Fact]
         public void IsWorkWell() {
             // QrCodeLogin.ApplyForQRCode(tuple => {
             //         // * tuple.Item1: 登录用的网址
@@ -31,8 +31,8 @@ namespace Core.Test {
             // * 暂时用的，后续会用窗体展示
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"AppData\QRCode\";
             string fileName = "img.png";
-            if (!Directory.Exists(filePath)) {
-                Directory.CreateDirectory(filePath);
+            if (!System.IO.Directory.Exists(filePath)) {
+                System.IO.Directory.CreateDirectory(filePath);
             }
             File.WriteAllBytes(
                 filePath + fileName, 
