@@ -1,46 +1,83 @@
+using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Windows.Markup;
+using Core.Logger;
 
 namespace Core.Cookie {
     public class CookieData {
-        public string CookieName;
-        public Dictionary<string, string> KeyValuePairs;
-        public List<string> Attribute;
-
+        readonly System.Net.Cookie? _cookie;
+        public string? CookieName {get => _cookie?.Name;}
         public CookieData(string cookieText) {
-            CookieName = string.Empty;
-            KeyValuePairs = [];
-            Attribute = [];
-
+            _cookie = null;
             foreach(var part in cookieText.Split(';')) {
                 if (part.Contains('=')) {
                     var parts = part.Split('=', 2);
-                    if (string.IsNullOrEmpty(CookieName)) {
-                        CookieName = parts[0].Trim();
+                    if (_cookie == null) {
+                        _cookie = new(parts[0].Trim(), parts[1].Trim());
+                    } else {
+                        SetCookieAttribute(parts[0].Trim(), parts[1].Trim());
                     }
-                    KeyValuePairs.Add(parts[0].Trim(), parts[1].Trim());
                 } else {
-                    Attribute.Add(part.Trim());
+                    SetCookieAttribute(part.Trim());
                 }
             }
         }
-        public override string ToString()
-        {
-            StringBuilder stringBuilder = new();
-            stringBuilder.AppendLine("Cookie Name: " + CookieName);
-            foreach(var pair in KeyValuePairs) {
-                stringBuilder.AppendLine(string.Format("{0} := {1}", pair.Key, pair.Value));
-            }
-            foreach(var attr in Attribute) {
-                stringBuilder.AppendLine("Attribute: " + attr);
-            }
-            return stringBuilder.ToString();
-        }
-        public string TryToGetValue(string key) {
-            return KeyValuePairs.GetValueOrDefault(key, string.Empty);
-        }
 
-        public List<string> GetAttribute() {
-            return Attribute;
+        void SetCookieAttribute(string attrName, string attrValue = "") {
+            if (_cookie == null) { 
+                LogManager.Error(nameof(SetCookieAttribute), "未初始化 _cookie 就修改属性。");
+                return; 
+            }
+            switch(attrName) {
+                case "Comment":
+                    _cookie.Comment = attrValue;
+                    break;
+                case "CommentUri":
+                    _cookie.CommentUri = new Uri(attrValue);
+                    break;
+                case "Discard":
+                    _cookie.Discard = true;
+                    break;
+                case "Domain":
+                    _cookie.Domain = attrValue;
+                    break;
+                case "Expired":
+                    _cookie.Expired = true;
+                    break;
+                case "Expires":
+                    if (attrValue.Contains("GMT")) {
+                        attrValue = attrValue.Replace("GMT", "+0");
+                    } else if (attrValue.Contains("UTC")) {
+                        attrValue = attrValue.Replace("UTC", "");
+                    }
+                    _cookie.Expires = DateTime.ParseExact(
+                        attrValue,
+                        "ddd, dd MMM yyyy hh:mm:ss z",
+                        CultureInfo.GetCultureInfo("en-us"));
+                    break;
+                case "HttpOnly":
+                    _cookie.HttpOnly = true;
+                    break;
+                case "Path":
+                    _cookie.Path = attrValue;
+                    break;
+                case "Port":
+                    _cookie.Port = attrValue;
+                    break;
+                case "Secure":
+                    _cookie.Secure = true;
+                    break;
+                case "Version":
+                    _cookie.Version = Convert.ToInt32(attrValue);
+                    break;
+                default:
+                    break;
+            }
+        }
+        public override string? ToString()
+        {
+            return _cookie?.ToString();
         }
     }
 }
