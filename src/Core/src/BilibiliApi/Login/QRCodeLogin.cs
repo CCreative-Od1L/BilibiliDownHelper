@@ -8,9 +8,8 @@ using QRCoder;
 using System.Drawing;
 
 namespace Core.BilibiliApi.Login {
-    public class QrCodeLogin {
-
-        public void LoginByQrCode(Action<QRCodeLoginResponse> callback) {
+    static public class QrCodeLogin {
+        static public void LoginByQrCode(Action<QRCodeLoginResponse> callback) {
             AutoResetEvent getResult = new(false);
             QRCodeLoginResponse loginResult = new();
 
@@ -30,7 +29,7 @@ namespace Core.BilibiliApi.Login {
                 LogManager.Info(nameof(LoginByQrCode), "Login by QR Code Success.");
             }
         }
-        async public void ApplyForQRCode(Action<Tuple<string,string>> callback) {
+        static async public void ApplyForQRCode(Action<Tuple<string,string>> callback) {
             string url = @"https://passport.bilibili.com/x/passport-login/web/qrcode/generate";
             var result = await WebClient.Request(url, "get");
             if (result.Item1) {
@@ -46,7 +45,7 @@ namespace Core.BilibiliApi.Login {
             }
             return;
         }
-        void ShowQrCode(string url) {
+        static void ShowQrCode(string url) {
             // * 暂时用的，后续会用窗体展示二维码
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"AppData\QRCode\";
             string fileName = "img.png";
@@ -58,7 +57,7 @@ namespace Core.BilibiliApi.Login {
                 PngByteQRCodeHelper.GetQRCode(url, QRCodeGenerator.ECCLevel.Q, 5));
         }
 
-        void TryToLogin(
+        static void TryToLogin(
             string secreteKey,
             AutoResetEvent getResult,
             QRCodeLoginResponse loginResult

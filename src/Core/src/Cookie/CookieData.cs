@@ -75,8 +75,7 @@ namespace Core.Cookie {
                     break;
             }
         }
-        public override string? ToString()
-        {
+        public override string? ToString() {
             return _cookie?.ToString();
         }
     }

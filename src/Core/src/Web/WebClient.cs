@@ -100,7 +100,7 @@ namespace Core.Web {
                         stringBuilder.AppendLine(cookie);
                     }
                     FileUtils.WriteText(
-                        CookieManager.CookieFilePath,
+                        PleManager.cookieManager.CookieFilePath,
                         stringBuilder.ToString(),
                         (e) => {}
                     );
