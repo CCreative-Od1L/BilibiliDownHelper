@@ -1,13 +1,8 @@
-using System.IO;
 using System.Net;
 using System.Text;
 using System.Net.Http.Headers;
 using System.IO.Compression;
-using System.Runtime.InteropServices;
 using Core.Utils;
-using Core.Directory;
-using Core.Cookie;
-
 namespace Core.Web {
 
     // * internal
@@ -100,7 +95,7 @@ namespace Core.Web {
                         stringBuilder.AppendLine(cookie);
                     }
                     FileUtils.WriteText(
-                        PleManager.cookieManager.CookieFilePath,
+                        CoreManager.cookieMgr.CookieFilePath,
                         stringBuilder.ToString(),
                         (e) => {}
                     );
@@ -143,15 +138,15 @@ namespace Core.Web {
                 }
             } catch (WebException e) {
                 Console.WriteLine("RequestWeb()发生Web异常: {0}", e);
-                Logger.LogManager.Error(e);
+                CoreManager.logger.Error(e);
                 return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             } catch (IOException e) {
                 Console.WriteLine("RequestWeb()发生IO异常: {0}", e);
-                Logger.LogManager.Error(e);
+                CoreManager.logger.Error(e);
                 return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             } catch (Exception e) {
                 Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
-                Logger.LogManager.Error(e);
+                CoreManager.logger.Error(e);
                 return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
             }
         }

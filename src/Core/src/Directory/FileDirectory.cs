@@ -1,5 +1,3 @@
-using System.IO.Compression;
-
 namespace Core.Directory {
     public class FileDirectory {
         public string Root {get; private set;}

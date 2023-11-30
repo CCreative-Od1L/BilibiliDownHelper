@@ -1,10 +1,10 @@
 using Core.Utils;
 
 namespace Core.Directory {
-    internal static class DirectoryManager {
-        static public FileDirectory fileDirectory;
-        static readonly string relativeFileDirectoryJsonPath = @"dir.json";
-        static DirectoryManager() {
+    internal class DirectoryManager {
+        public FileDirectory fileDirectory;
+        readonly string relativeFileDirectoryJsonPath = @"dir.json";
+        public DirectoryManager() {
             fileDirectory = new();
             string dirJsonString = FileUtils.ReadFile(Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath));
             if (string.IsNullOrEmpty(dirJsonString)) {
@@ -14,25 +14,25 @@ namespace Core.Directory {
             }
             JsonUtils.WriteJsonInto(fileDirectory, Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath));
         }
-        static void TryToInit() {
+        void TryToInit() {
             fileDirectory.TryToResetDefault();
         }
 
-        static void UpdateFileDirectory(FileDirectory? newFileDirectory) {
+        void UpdateFileDirectory(FileDirectory? newFileDirectory) {
             if (newFileDirectory == null) { 
                 fileDirectory.TryToResetDefault();
                 return; 
             }
             fileDirectory.UpdateData(newFileDirectory);
         }
-        static public void ResetToDefault(string name) {
+        public void ResetToDefault(string name) {
             fileDirectory.ResetDefault(name);
         }
-        static public string GetLogDirectory() {
+        public string GetLogDirectory() {
             TryToInit();
             return fileDirectory.Log!;
         }
-        static public string GetCookieDirectory() {
+        public string GetCookieDirectory() {
             TryToInit();
             return fileDirectory.Cookie!;
         }

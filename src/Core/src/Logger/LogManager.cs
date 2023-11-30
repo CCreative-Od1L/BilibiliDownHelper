@@ -1,81 +1,103 @@
 using System.Collections.Concurrent;
 using System.Text;
 using System.Text.RegularExpressions;
-using Core.Directory;
 using Core.Utils;
 
 namespace Core.Logger {
-    static public partial class LogManager {
+    sealed public partial class LogManager {
         /// <summary>
         /// * 存放日志任务。
         /// item1: 日志文件名称
         /// item2: 
         /// </summary> <summary>
-        static readonly ConcurrentQueue<Tuple<string, string>> logMessageQueue = new();
-        static AutoResetEvent Pause => new(false);
-        public static event Action<LogInfo>? OnLogAction;  // * 可自定义Log事件，会在日志记录发生时触发。
+        readonly ConcurrentQueue<Tuple<string, string>> logMessageQueue = new();
+        AutoResetEvent Pause => new(false);
 
-        static LogManager() {
+        CancellationTokenSource loggerCTS;
+        AutoResetEvent? loggerStopLock;
+
+        public event Action<LogInfo>? OnLogAction;  // * 可自定义Log事件，会在日志记录发生时触发。
+        public LogManager() {
+            loggerCTS = new();
+            CheckAndCreateLogDirectory();
+            StartTask();
+        }        
+        void LoggerMainTask() {
+            Dictionary<string, string> logMessageBuf = [];
+            foreach (var logItem in logMessageQueue) {
+                string logPath = logItem.Item1;
+                string mergeMessage = string.Concat(
+                    logItem.Item2,
+                    Environment.NewLine,
+                    "=================================================================================",
+                    Environment.NewLine);
+                bool addResult = logMessageBuf.TryAdd(logPath, mergeMessage);
+                if (!addResult){
+                    logMessageBuf[logPath] = string.Concat(
+                        logMessageBuf[logPath],
+                        mergeMessage);  // * 合并同一文件路径下的Log信息
+                }
+                _ = logMessageQueue.TryDequeue(out _);  // * 处理完成后的消息出队列。
+            }
+            foreach (var logMessage in logMessageBuf) {
+                FileUtils.AppendText(logMessage.Key, logMessage.Value, (e) => {
+                    Console.WriteLine("Logger Error Happen./日志输出到文件出现错误");
+                });
+            }
+        }
+        public void StartTask() {
+            loggerStopLock = new(false);
+            var loggerCancellationToken = loggerCTS.Token;
             Task logTask = new(obj => {
                 while(true) {
+                    if (loggerCancellationToken.IsCancellationRequested) {
+                        LoggerMainTask();
+                        loggerStopLock.Set();
+                        break;
+                    }
                     Pause.WaitOne(2000, true);
-                    Dictionary<string, string> logMessageBuf = new();
-                    foreach (var logItem in logMessageQueue) {
-                        string logPath = logItem.Item1;
-                        string mergeMessage = string.Concat(
-                            logItem.Item2,
-                            Environment.NewLine,
-                            "=================================================================================",
-                            Environment.NewLine);
-                        bool addResult = logMessageBuf.TryAdd(logPath, mergeMessage);
-                        if (!addResult){
-                            logMessageBuf[logPath] = string.Concat(
-                                logMessageBuf[logPath],
-                                mergeMessage);  // * 合并同一文件路径下的Log信息
-                        }
-                        _ = logMessageQueue.TryDequeue(out _);  // * 处理完成后的消息出队列。
-                    }
-
-                    foreach (var logMessage in logMessageBuf) {
-                        FileUtils.AppendText(logMessage.Key, logMessage.Value, (e) => {
-                            Console.WriteLine("Logger Error Happen./日志输出到文件出现错误");
-                        });
-                    }
+                    LoggerMainTask();
+                    
                 }
             }, null, TaskCreationOptions.LongRunning);
-            
-            // ! Must latest call
-            CheckAndCreateLogDirectory();
             logTask.Start();
         }
-
+        public void StopTask() {
+            if (loggerStopLock == null) { return; }
+            Task stopTask = new (() => {
+                loggerCTS.Cancel();
+                loggerStopLock.WaitOne();
+                loggerCTS.Dispose();
+            });
+            stopTask.Start();
+        }
         public static bool CheckAndCreateLogDirectory() {
-            if (string.IsNullOrEmpty(DirectoryManager.GetLogDirectory())) {
-                DirectoryManager.ResetToDefault("log");
+            if (string.IsNullOrEmpty(CoreManager.directoryMgr.GetLogDirectory())) {
+                CoreManager.directoryMgr.ResetToDefault("log");
 
-                if (!System.IO.Directory.Exists(DirectoryManager.GetLogDirectory())) {
-                    System.IO.Directory.CreateDirectory(DirectoryManager.GetLogDirectory());
+                if (!System.IO.Directory.Exists(CoreManager.directoryMgr.GetLogDirectory())) {
+                    System.IO.Directory.CreateDirectory(CoreManager.directoryMgr.GetLogDirectory());
                 } 
             }
             return true;
         }
         
         [GeneratedRegex("(?<=\\()(\\d+)(?=\\))")]
-        private static partial Regex LogNoRegex();
+        private partial Regex LogNoRegex();
         /// <summary>
         /// 返回构造出来的日志文件名称，格式:yyyyMMdd([pattern]).log
         /// </summary>
         /// <param name="pattern"></param>
         /// <returns></returns> <summary>
-        static string ConstructLogFileName(string pattern) {
+        string ConstructLogFileName(string pattern) {
             StringBuilder stringBuilder = new();
             stringBuilder.AppendFormat("{0}({1}).log", DateTime.Now.ToString("yyyyMMdd"), pattern);
             return stringBuilder.ToString();
         }
-        static string GetLogFilePath() {
+        string GetLogFilePath() {
             string newFilePath = string.Empty;
             CheckAndCreateLogDirectory();
-            string logFolderPath = DirectoryManager.GetLogDirectory();
+            string logFolderPath = CoreManager.directoryMgr.GetLogDirectory();
             string fileNamePattern = ConstructLogFileName("*");
             List<string> filePaths = System.IO.Directory.GetFiles(
                 logFolderPath, 
@@ -98,24 +120,25 @@ namespace Core.Logger {
             }
             return newFilePath;
         }
-        static void pushBackLogMessageQueue(string message) {
+        
+        void PushBackLogMessageQueue(string message) {
             logMessageQueue.Enqueue(new Tuple<string, string>(
                 GetLogFilePath(),
                 message
             ));
         }
         #region Level: Info
-        public static void Info(string info) {
+        public void Info(string info) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.INFO,
                 Message = info,
                 Time = DateTime.Now,
                 ThreadID = Environment.CurrentManagedThreadId
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Info(string source, string info) {
+        public void Info(string source, string info) {
             var logInfo = new LogInfo(){
                 LogLevel = LOG_LEVEL.INFO,
                 Message = info,
@@ -123,10 +146,10 @@ namespace Core.Logger {
                 ThreadID = Environment.CurrentManagedThreadId,
                 Source = source                
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Info(Type source, string info) {
+        public void Info(Type source, string info) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.INFO,
                 Message = info,
@@ -134,23 +157,23 @@ namespace Core.Logger {
                 ThreadID = Environment.CurrentManagedThreadId,
                 Source = source.FullName
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
         #endregion
 
         #region Level: Debug
-        public static void Debug(string info) {
+        public void Debug(string info) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.DEBUG,
                 Message = info,
                 Time = DateTime.Now,
                 ThreadID = Environment.CurrentManagedThreadId,
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Debug(string source, string info) {
+        public void Debug(string source, string info) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.DEBUG,
                 Message = info,
@@ -158,10 +181,10 @@ namespace Core.Logger {
                 ThreadID = Environment.CurrentManagedThreadId,
                 Source = source
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Debug(Type source, string info) {
+        public void Debug(Type source, string info) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.DEBUG,
                 Message = info,
@@ -169,13 +192,13 @@ namespace Core.Logger {
                 ThreadID = Environment.CurrentManagedThreadId,
                 Source = source.FullName,
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
         #endregion
         
         #region Level: Error
-        public static void Error(Exception error) {
+        public void Error(Exception error) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.ERROR,
                 Message = error.Message,
@@ -185,10 +208,10 @@ namespace Core.Logger {
                 ExceptionObj = error,
                 ExceptionType = error.GetType().Name
             };
-            pushBackLogMessageQueue(logInfo.ToString()) ;
+            PushBackLogMessageQueue(logInfo.ToString()) ;
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Error(string source, Exception error) {
+        public void Error(string source, Exception error) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.ERROR,
                 Message = error.Message,
@@ -198,10 +221,10 @@ namespace Core.Logger {
                 ExceptionObj = error,
                 ExceptionType = error.GetType().Name
             };
-            pushBackLogMessageQueue(logInfo.ToString()) ;
+            PushBackLogMessageQueue(logInfo.ToString()) ;
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Error(Type source, Exception error) {
+        public void Error(Type source, Exception error) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.ERROR,
                 Message = error.Message,
@@ -211,10 +234,10 @@ namespace Core.Logger {
                 ExceptionObj = error,
                 ExceptionType = error.GetType().FullName
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Error(string source, string error) {
+        public void Error(string source, string error) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.ERROR,
                 Message = error,
@@ -223,10 +246,10 @@ namespace Core.Logger {
                 Source = source,
                 ExceptionType = error.GetType().FullName
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Error(Type source, string error) {
+        public void Error(Type source, string error) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.ERROR,
                 Message = error,
@@ -235,13 +258,13 @@ namespace Core.Logger {
                 ExceptionObj = null,
                 ExceptionType = error.GetType().Name
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
         #endregion
 
         #region Level: Fatal
-        public static void Fatal(Exception fatal) {
+        public void Fatal(Exception fatal) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.ERROR,
                 Message = fatal.Message,
@@ -250,10 +273,10 @@ namespace Core.Logger {
                 ExceptionObj = fatal,
                 ExceptionType = fatal.GetType().Name
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Fatal(string source, Exception fatal) {
+        public void Fatal(string source, Exception fatal) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.ERROR,
                 Message = fatal.Message,
@@ -263,10 +286,10 @@ namespace Core.Logger {
                 ExceptionObj = fatal,
                 ExceptionType = fatal.GetType().Name
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Fatal(Type source, Exception fatal) {
+        public void Fatal(Type source, Exception fatal) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.ERROR,
                 Message = fatal.Message,
@@ -276,10 +299,10 @@ namespace Core.Logger {
                 ExceptionObj = fatal,
                 ExceptionType = fatal.GetType().Name
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Fatal(string source, string fatal) {
+        public void Fatal(string source, string fatal) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.ERROR,
                 Message = fatal,
@@ -288,10 +311,10 @@ namespace Core.Logger {
                 Source = source,
                 ExceptionType = fatal.GetType().Name
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
-        public static void Fatal(Type source, string fatal) {
+        public void Fatal(Type source, string fatal) {
             var logInfo = new LogInfo() {
                 LogLevel = LOG_LEVEL.ERROR,
                 Message = fatal,
@@ -300,7 +323,7 @@ namespace Core.Logger {
                 Source = source.FullName,
                 ExceptionType = fatal.GetType().Name
             };
-            pushBackLogMessageQueue(logInfo.ToString());
+            PushBackLogMessageQueue(logInfo.ToString());
             OnLogAction?.Invoke(logInfo);
         }
         #endregion

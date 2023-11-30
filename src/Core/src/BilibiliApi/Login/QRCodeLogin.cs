@@ -1,11 +1,7 @@
-using QRCoder.Extensions;
-
 using Core.Utils;
-using Core.Logger;
 using Core.Web;
 using Core.BilibiliApi.Login.Model;
 using QRCoder;
-using System.Drawing;
 
 namespace Core.BilibiliApi.Login {
     static public class QrCodeLogin {
@@ -21,12 +17,12 @@ namespace Core.BilibiliApi.Login {
             });
             getResult.WaitOne();
             if (loginResult == null || loginResult.GetQRCodeStatus() != QRCODE_SCAN_STATUS.SUCCESS) {
-                LogManager.Info(nameof(LoginByQrCode), "Login by QR Code Failure.");
+                CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Failure.");
             } else {
                 callback?.Invoke(loginResult!);
                 // TODO 更新当前的状态
                 
-                LogManager.Info(nameof(LoginByQrCode), "Login by QR Code Success.");
+                CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Success.");
             }
         }
         static async public void ApplyForQRCode(Action<Tuple<string,string>> callback) {
@@ -38,10 +34,10 @@ namespace Core.BilibiliApi.Login {
                     callback?.Invoke(new Tuple<string, string>(parseRes.data.url, parseRes.data.qrcode_key));
                     return;
                 } else {
-                    LogManager.Error(nameof(JsonUtils.ParseJsonString), "Json Parse Failure");
+                    CoreManager.logger.Error(nameof(JsonUtils.ParseJsonString), "Json Parse Failure");
                 }
             } else {
-                LogManager.Error(nameof(ApplyForQRCode), "Apply for QRCode Error");
+                CoreManager.logger.Error(nameof(ApplyForQRCode), "Apply for QRCode Error");
             }
             return;
         }
@@ -74,7 +70,7 @@ namespace Core.BilibiliApi.Login {
                     if (result.Item1) {
                         var response = JsonUtils.ParseJsonString<QRCodeLoginResponse>(result.Item2);
                         if (response == null) {
-                            LogManager.Error(nameof(JsonUtils.ParseJsonString), "Json Parse Failure");
+                            CoreManager.logger.Error(nameof(JsonUtils.ParseJsonString), "Json Parse Failure");
                             continue;
                         }
                         if (response.GetShouldWait()) {

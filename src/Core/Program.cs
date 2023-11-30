@@ -1,8 +1,9 @@
-﻿using Core.Logger;
-LogManager.Info("Main", "Logger start");
+﻿using Core;
+using Core.Logger;
+CoreManager.logger.Info("Main", "Logger start");
 Console.WriteLine("System start");
 
-string url = "https://passport.bilibili.com/x/passport-login/web/qrcode/generate";
+string url = "https://api.bilibili.com/x/web-interface/popular/precious";
 string methodName = "get";
 
 Console.WriteLine("Web Request Start");
@@ -13,6 +14,6 @@ if (result.Item1 == false) {
     Console.WriteLine(result.Item2);
 }
 
-Thread.Sleep(1000);
+Thread.Sleep(5000);
 
 Console.WriteLine("System End");

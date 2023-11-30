@@ -1,51 +1,50 @@
-using Core.Directory;
-using Core.Logger;
-using Core.PleInterface;
-
 namespace Core.Cookie {
-    sealed class CookieManager : ManagerBase {
+    internal sealed class CookieManager {
         readonly string CookieDirectory;
         string _cookieFilePath;
-        AutoResetEvent Pause => new(true);
+        readonly AutoResetEvent Pause = new(true);
+        AutoResetEvent? CookieMgrStopLock;
         FileSystemWatcher? cookieWatcher;
-        CancellationTokenSource? cookieWatcherCTS;
+        readonly CancellationTokenSource cookieWatcherCTS;
         public string CookieFilePath {
             get => _cookieFilePath; 
             private set {
                 _cookieFilePath = value;
             }
         }
-        static Dictionary<string, CookieData>? cookies;
+        Dictionary<string, CookieData>? cookies;
         public CookieManager() {
             cookies = [];
-            CookieDirectory = DirectoryManager.GetCookieDirectory();
+            cookieWatcherCTS = new();
+
+            CookieDirectory = CoreManager.directoryMgr.GetCookieDirectory();
             if (!System.IO.Directory.Exists(CookieDirectory)) {
                 System.IO.Directory.CreateDirectory(CookieDirectory);
             } 
-            _cookieFilePath = Path.Combine(DirectoryManager.GetCookieDirectory(), "cookies");
+            _cookieFilePath = Path.Combine(CoreManager.directoryMgr.GetCookieDirectory(), "cookies");
             CreateEmptyCookieFile();
             
             // ! the latest call.
             StartTask();
         }
+
         void OnCookieFileDeleted(object sender, FileSystemEventArgs e) {
-            LogManager.Info(nameof(OnCookieFileDeleted), "Cookies文件被删除，尝试重新生成空文件");
+            CoreManager.logger.Info(nameof(OnCookieFileDeleted), "Cookies文件被删除，尝试重新生成空文件");
             CreateEmptyCookieFile();
             if (CheckCookieFileExist()) {
                 UpdateCookiesData();
             }
         }
         void OnCookieFileChanged(object sender, FileSystemEventArgs e) {
-            LogManager.Info(nameof(OnCookieFileChanged), "Cookies文件有更新，更新Cookie数据");
+            CoreManager.logger.Info(nameof(OnCookieFileChanged), "Cookies文件有更新，更新Cookie数据");
             if(CheckCookieFileExist()) {
                 UpdateCookiesData();
             }
         }
-        // TODO 考虑接口
         void StartTask() {
-            cookieWatcherCTS = new();
             var cookieWatcherCancelToken = cookieWatcherCTS.Token;
-            
+            CookieMgrStopLock = new(false);
+
             Task watchCookieFileChange = new(obj => {
                 cookieWatcher = new FileSystemWatcher(_cookieFilePath);
                 cookieWatcher.Deleted += OnCookieFileDeleted;
@@ -56,16 +55,21 @@ namespace Core.Cookie {
                     if(cookieWatcherCancelToken.IsCancellationRequested) {
                         cookieWatcher.Deleted -= OnCookieFileDeleted;
                         cookieWatcher.Changed -= OnCookieFileDeleted;
+                        CookieMgrStopLock.Set();
                         break;
                     }
                 }
             }, null, TaskCreationOptions.LongRunning);
             watchCookieFileChange.Start();
         }
-        // TODO 考虑接口
         void StopTask() {
-            cookieWatcherCTS?.Cancel();
-            cookieWatcherCTS?.Dispose();
+            if (CookieMgrStopLock == null) { return; }
+            Task cookieMgrStopTask = new(() => {
+                cookieWatcherCTS.Cancel();
+                CookieMgrStopLock.WaitOne();
+                cookieWatcherCTS.Dispose();
+            });
+            cookieMgrStopTask.Start();
         }
 
         public void CreateEmptyCookieFile() {
@@ -83,7 +87,7 @@ namespace Core.Cookie {
                 while((line = sr.ReadLine()) != null) {
                     CookieData cookieData = new(line);
                     if (string.IsNullOrEmpty(cookieData.CookieName)) {
-                        LogManager.Info(nameof(CookieData), "初始化cookie失败, cookieData.CookieName为空。");
+                        CoreManager.logger.Info(nameof(CookieData), "初始化cookie失败, cookieData.CookieName为空。");
                         return;
                     }
                     if (!cookies!.TryAdd(cookieData.CookieName, cookieData)) {
@@ -97,7 +101,7 @@ namespace Core.Cookie {
                 UpdateCookiesData();
             } else {
                 cookies = null;
-                LogManager.Info(nameof(TryToGetCookiesData), "cookieFilePath下不存在cookies文件");
+                CoreManager.logger.Info(nameof(TryToGetCookiesData), "cookieFilePath下不存在cookies文件");
             }
             return cookies;
         }

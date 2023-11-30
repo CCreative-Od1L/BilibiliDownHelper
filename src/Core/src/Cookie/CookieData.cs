@@ -1,8 +1,4 @@
 using System.Globalization;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Windows.Markup;
-using Core.Logger;
 
 namespace Core.Cookie {
     public class CookieData {
@@ -26,7 +22,7 @@ namespace Core.Cookie {
 
         void SetCookieAttribute(string attrName, string attrValue = "") {
             if (_cookie == null) { 
-                LogManager.Error(nameof(SetCookieAttribute), "未初始化 _cookie 就修改属性。");
+                CoreManager.logger.Error(nameof(SetCookieAttribute), "未初始化 _cookie 就修改属性。");
                 return; 
             }
             switch(attrName) {
