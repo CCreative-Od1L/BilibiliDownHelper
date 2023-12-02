@@ -49,7 +49,7 @@ namespace Core.Cookie {
                     }
                     _cookie.Expires = DateTime.ParseExact(
                         attrValue,
-                        "ddd, dd MMM yyyy hh:mm:ss z",
+                        "ddd, dd MMM yyyy HH:mm:ss z",
                         CultureInfo.GetCultureInfo("en-us"));
                     break;
                 case "HttpOnly":

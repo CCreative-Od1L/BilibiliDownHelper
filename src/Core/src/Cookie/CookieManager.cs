@@ -1,4 +1,5 @@
 using System.Net;
+using Core.Utils;
 
 namespace Core.Cookie {
     public sealed class CookieManager {
@@ -23,15 +24,13 @@ namespace Core.Cookie {
             if (!System.IO.Directory.Exists(CookieDirectory)) {
                 System.IO.Directory.CreateDirectory(CookieDirectory);
             } 
-            _cookieFilePath = Path.Combine(CoreManager.directoryMgr.GetCookieDirectory(), "cookies.plef");
-            CreateEmptyCookieFile();
-            
+            _cookieFilePath = Path.Combine(CoreManager.directoryMgr.GetCookieDirectory(), "cookies.bin");
+
             // ! the latest call.
             StartTask();
         }
         void OnCookieFileDeleted(object sender, FileSystemEventArgs e) {
             CoreManager.logger.Info(nameof(OnCookieFileDeleted), "Cookies文件被删除，尝试重新生成空文件");
-            CreateEmptyCookieFile();
             if (CheckCookieFileExist()) {
                 UpdateCookiesData();
             }
@@ -72,17 +71,15 @@ namespace Core.Cookie {
             });
             cookieMgrStopTask.Start();
         }
-        public void CreateEmptyCookieFile() {
-            if (!File.Exists(_cookieFilePath)) {
-                File.Create(_cookieFilePath);
-            }
-        }
         public bool CheckCookieFileExist() {
             return File.Exists(_cookieFilePath);
         }
         void UpdateCookiesData() {
             {
-                using var sr = new StreamReader(_cookieFilePath);
+                string cookieFileString = FileUtils.ReadBytesThenDecryptToText(_cookieFilePath);
+                if (string.IsNullOrEmpty(cookieFileString)) { return; }
+
+                using var sr = new StringReader(cookieFileString);
                 string? line = string.Empty;
                 while((line = sr.ReadLine()) != null) {
                     CookieData cookieData = new(line);
@@ -103,7 +100,6 @@ namespace Core.Cookie {
             } else {
                 cookies = [];
                 CoreManager.logger.Info(nameof(TryToGetCookies), "cookieFilePath下不存在有效的cookies文件");
-                CreateEmptyCookieFile();
             }
             return cookies;
         }
@@ -111,8 +107,6 @@ namespace Core.Cookie {
             if (CheckCookieFileExist()) {
                 UpdateCookiesData();
                 callback?.Invoke();
-            } else {
-                CreateEmptyCookieFile();
             }
         }
     }

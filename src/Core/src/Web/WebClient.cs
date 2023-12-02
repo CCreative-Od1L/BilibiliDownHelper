@@ -99,7 +99,7 @@ namespace Core.Web {
                     foreach(var cookie in cookies) {
                         stringBuilder.AppendLine(cookie);
                     }
-                    FileUtils.WriteText(
+                    FileUtils.WriteTextThenEncryptToBytes(
                         CoreManager.cookieMgr.CookieFilePath,
                         stringBuilder.ToString(),
                         (e) => {

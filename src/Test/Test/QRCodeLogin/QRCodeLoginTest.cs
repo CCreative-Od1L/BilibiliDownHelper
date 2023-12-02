@@ -15,19 +15,20 @@ namespace Core.Test {
 
         AutoResetEvent getResult = new(false);
         string loginResult = string.Empty;
-        // [Fact]
+        
+        [Fact]
         public void IsWorkWell() {
-            // QrCodeLogin.ApplyForQRCode(tuple => {
-            //         // * tuple.Item1: 登录用的网址
-            //         ShowQrCode(tuple.Item1);
-            //         // * tuple.Item2: 登录的密钥
-            //         TryToLogin(tuple.Item2);
-            // });
-            // getResult.WaitOne();
-            // output.WriteLine(loginResult);
+            QrCodeLogin.ApplyForQRCode(tuple => {
+                // * tuple.Item1: 登录用的网址
+                ShowQrCode(tuple.Item1);
+                // * tuple.Item2: 登录的密钥
+                TryToLogin(tuple.Item2);
+            });
+            getResult.WaitOne();
+            output.WriteLine(loginResult);
         }
 
-        void ShowQrCode(string url) {
+        static void ShowQrCode(string url) {
             // * 暂时用的，后续会用窗体展示
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"AppData\QRCode\";
             string fileName = "img.png";

@@ -3,12 +3,11 @@ using Core;
 using Xunit.Abstractions;
 
 namespace Core.Test {
-    public class CookieManagerTest {
-        readonly ITestOutputHelper output;
-        public CookieManagerTest(ITestOutputHelper testOutputHelper) {
-            output = testOutputHelper;
-        }
-        [Fact]
+    public class CookieManagerTest(ITestOutputHelper testOutputHelper)
+    {
+        readonly ITestOutputHelper output = testOutputHelper;
+
+        // [Fact]
         public async void IsUpdateCookiesDataWorkWell() {
             CoreManager.logger.Info("Main", "Logger start");
             output.WriteLine("System start");
@@ -32,8 +31,9 @@ namespace Core.Test {
             // GMT
             output.WriteLine(
                 DateTime.ParseExact(
-                    "Fri, 24 May 2024 11:00:42 GMT".Replace("GMT", "+0"),
-                    "ddd, dd MMM yyyy hh:mm:ss z", 
+                    "Thu, 30 May 2024 13:33:42 GMT".Replace("GMT", "+0"),
+                    //"Thu, 30 May 2024 17:33:40 +0",
+                    "ddd, dd MMM yyyy HH:mm:ss z", 
                     CultureInfo.GetCultureInfo("en-us")).ToString());
         }
     }

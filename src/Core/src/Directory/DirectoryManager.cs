@@ -6,7 +6,7 @@ namespace Core.Directory {
         readonly string relativeFileDirectoryJsonPath = @"dir.json";
         public DirectoryManager() {
             fileDirectory = new();
-            string dirJsonString = FileUtils.ReadFile(Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath));
+            string dirJsonString = FileUtils.ReadTextFile(Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath));
             if (string.IsNullOrEmpty(dirJsonString)) {
                 TryToInit();
             } else {
