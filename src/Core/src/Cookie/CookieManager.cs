@@ -1,5 +1,7 @@
+using System.Net;
+
 namespace Core.Cookie {
-    internal sealed class CookieManager {
+    public sealed class CookieManager {
         readonly string CookieDirectory;
         string _cookieFilePath;
         readonly AutoResetEvent Pause = new(true);
@@ -12,7 +14,7 @@ namespace Core.Cookie {
                 _cookieFilePath = value;
             }
         }
-        Dictionary<string, CookieData>? cookies;
+        CookieCollection cookies;
         public CookieManager() {
             cookies = [];
             cookieWatcherCTS = new();
@@ -21,13 +23,12 @@ namespace Core.Cookie {
             if (!System.IO.Directory.Exists(CookieDirectory)) {
                 System.IO.Directory.CreateDirectory(CookieDirectory);
             } 
-            _cookieFilePath = Path.Combine(CoreManager.directoryMgr.GetCookieDirectory(), "cookies");
+            _cookieFilePath = Path.Combine(CoreManager.directoryMgr.GetCookieDirectory(), "cookies.plef");
             CreateEmptyCookieFile();
             
             // ! the latest call.
             StartTask();
         }
-
         void OnCookieFileDeleted(object sender, FileSystemEventArgs e) {
             CoreManager.logger.Info(nameof(OnCookieFileDeleted), "Cookies文件被删除，尝试重新生成空文件");
             CreateEmptyCookieFile();
@@ -46,15 +47,15 @@ namespace Core.Cookie {
             CookieMgrStopLock = new(false);
 
             Task watchCookieFileChange = new(obj => {
-                cookieWatcher = new FileSystemWatcher(_cookieFilePath);
+                cookieWatcher = new FileSystemWatcher(CookieDirectory);
                 cookieWatcher.Deleted += OnCookieFileDeleted;
-                cookieWatcher.Changed += OnCookieFileDeleted;
+                cookieWatcher.Changed += OnCookieFileChanged;
 
                 while(true) {
                     Pause.WaitOne(10000, true);
                     if(cookieWatcherCancelToken.IsCancellationRequested) {
                         cookieWatcher.Deleted -= OnCookieFileDeleted;
-                        cookieWatcher.Changed -= OnCookieFileDeleted;
+                        cookieWatcher.Changed -= OnCookieFileChanged;
                         CookieMgrStopLock.Set();
                         break;
                     }
@@ -71,7 +72,6 @@ namespace Core.Cookie {
             });
             cookieMgrStopTask.Start();
         }
-
         public void CreateEmptyCookieFile() {
             if (!File.Exists(_cookieFilePath)) {
                 File.Create(_cookieFilePath);
@@ -86,24 +86,34 @@ namespace Core.Cookie {
                 string? line = string.Empty;
                 while((line = sr.ReadLine()) != null) {
                     CookieData cookieData = new(line);
-                    if (string.IsNullOrEmpty(cookieData.CookieName)) {
+                    if (cookieData.Cookie == null) {
                         CoreManager.logger.Info(nameof(CookieData), "初始化cookie失败, cookieData.CookieName为空。");
                         return;
                     }
-                    if (!cookies!.TryAdd(cookieData.CookieName, cookieData)) {
-                        cookies[cookieData.CookieName] = cookieData;
+                    if (cookies.Contains(cookieData.Cookie)) {
+                        cookies.Remove(cookieData.Cookie);
                     }
+                    cookies.Add(cookieData.Cookie);
                 }
             }
         }
-        public Dictionary<string, CookieData>? TryToGetCookiesData() {
+        public CookieCollection TryToGetCookies() {
             if (CheckCookieFileExist()) {
                 UpdateCookiesData();
             } else {
-                cookies = null;
-                CoreManager.logger.Info(nameof(TryToGetCookiesData), "cookieFilePath下不存在cookies文件");
+                cookies = [];
+                CoreManager.logger.Info(nameof(TryToGetCookies), "cookieFilePath下不存在有效的cookies文件");
+                CreateEmptyCookieFile();
             }
             return cookies;
+        }
+        public void TryToUpdateCookies(Action? callback = null) {
+            if (CheckCookieFileExist()) {
+                UpdateCookiesData();
+                callback?.Invoke();
+            } else {
+                CreateEmptyCookieFile();
+            }
         }
     }
 }

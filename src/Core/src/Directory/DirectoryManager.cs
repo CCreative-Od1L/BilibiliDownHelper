@@ -1,7 +1,7 @@
 using Core.Utils;
 
 namespace Core.Directory {
-    internal class DirectoryManager {
+    public sealed class DirectoryManager {
         public FileDirectory fileDirectory;
         readonly string relativeFileDirectoryJsonPath = @"dir.json";
         public DirectoryManager() {

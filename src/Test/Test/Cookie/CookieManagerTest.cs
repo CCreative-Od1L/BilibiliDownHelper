@@ -1,5 +1,5 @@
 using System.Globalization;
-using Core.Cookie;
+using Core;
 using Xunit.Abstractions;
 
 namespace Core.Test {
@@ -8,19 +8,26 @@ namespace Core.Test {
         public CookieManagerTest(ITestOutputHelper testOutputHelper) {
             output = testOutputHelper;
         }
-        // [Fact]
-        public void IsUpdateCookiesDataWorkWell() {
-            string filePath = CookieManager.CookieFilePath;
-            {
-                using var sr = new StreamReader(filePath);
-                string? line = string.Empty;
-                while((line = sr.ReadLine()) != null) {
-                    CookieData cookieData = new(line); 
-                    output.WriteLine(cookieData.ToString());
-                }
-            }
-        }
         [Fact]
+        public async void IsUpdateCookiesDataWorkWell() {
+            CoreManager.logger.Info("Main", "Logger start");
+            output.WriteLine("System start");
+
+            string url = "https://api.bilibili.com/x/web-interface/nav";
+            string methodName = "get";
+
+            output.WriteLine("Web Request Start");
+            var result = await Web.WebClient.Request(url, methodName);
+            if (result.Item1 == false) {
+                output.WriteLine(result.Item2);
+            } else {
+                output.WriteLine(result.Item2);
+            }
+
+            Thread.Sleep(5000);
+            output.WriteLine("System End");
+        }
+        // [Fact]
         public void DateTimeParse() {
             // GMT
             output.WriteLine(

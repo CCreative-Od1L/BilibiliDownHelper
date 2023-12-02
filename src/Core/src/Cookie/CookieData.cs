@@ -3,7 +3,7 @@ using System.Globalization;
 namespace Core.Cookie {
     public class CookieData {
         readonly System.Net.Cookie? _cookie;
-        public string? CookieName {get => _cookie?.Name;}
+        public System.Net.Cookie? Cookie {get => _cookie; }
         public CookieData(string cookieText) {
             _cookie = null;
             foreach(var part in cookieText.Split(';')) {

@@ -52,7 +52,7 @@ namespace Core.Test {
                     if (result.Item1) {
                         var response = JsonUtils.ParseJsonString<QRCodeLoginResponse>(result.Item2);
                         if (response == null) {
-                            LogManager.Error(nameof(JsonUtils.ParseJsonString), "Json Parse Failure");
+                            CoreManager.logger.Error(nameof(JsonUtils.ParseJsonString), "Json Parse Failure");
                             continue;
                         }
                         if (response.GetShouldWait()) {

@@ -3,6 +3,8 @@ using System.Text;
 using System.Net.Http.Headers;
 using System.IO.Compression;
 using Core.Utils;
+using Microsoft.VisualBasic;
+using Core.Cookie;
 namespace Core.Web {
 
     // * internal
@@ -67,15 +69,15 @@ namespace Core.Web {
                     requestMessage.Method = HttpMethod.Post;
                 }
                 // * Init the Header.
-                BatchAddHeaderAcceptLanguage(requestMessage, new Tuple<string, double>[]{
+                BatchAddHeaderAcceptLanguage(requestMessage, [
                     new("zh-CN", 1.0),
                     new("zh", 0.9),
                     new("en-US", 0.8),
                     new("en",0.7),
-                });
-                BatchAddHeaderAcceptEncoding(requestMessage, new string[]{
+                ]);
+                BatchAddHeaderAcceptEncoding(requestMessage, [
                     "gzip","deflate","br"
-                });
+                ]);
 
                 if (referrer != null) {
                     requestMessage.Headers.Referrer = new Uri(referrer);
@@ -83,6 +85,9 @@ namespace Core.Web {
 
                 string jsonResult = string.Empty;
                 HttpClient httpClient = HttpClientFactory.GetHttpClient();
+                // TODO 尝试载入Cookie
+                TryToAddCookie(requestMessage);
+
                 using HttpResponseMessage response = await httpClient.SendAsync(requestMessage);
                 response.EnsureSuccessStatusCode();
                 string? contentEncoding = response.Content.Headers.ContentEncoding.ToString();
@@ -97,8 +102,11 @@ namespace Core.Web {
                     FileUtils.WriteText(
                         CoreManager.cookieMgr.CookieFilePath,
                         stringBuilder.ToString(),
-                        (e) => {}
+                        (e) => {
+                            CoreManager.logger.Error("Cookie文件写入失败。", e);
+                        }    
                     );
+                    CoreManager.cookieMgr.TryToUpdateCookies();
                 } catch (Exception) {}
                 
                 if (contentEncoding != null) {
@@ -148,6 +156,21 @@ namespace Core.Web {
                 Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
                 CoreManager.logger.Error(e);
                 return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
+            }
+        }
+
+        static void TryToAddCookie(HttpRequestMessage message) {
+            if(!CoreManager.cookieMgr.CheckCookieFileExist()) { return; }
+            if(message.RequestUri == null) { return; }
+            var messageUri = message.RequestUri;
+            foreach(System.Net.Cookie cookie in CoreManager.cookieMgr.TryToGetCookies().Cast<System.Net.Cookie>()) {
+                if(!messageUri.Host.Contains(cookie.Domain)) { continue; }
+                if(cookie.Path == @"/" || messageUri.AbsolutePath.Contains(cookie.Path)) {
+                    if(cookie.Expires < DateTime.UtcNow) { continue; }
+                    if(cookie.Secure && messageUri.Scheme != "https") { continue; }
+                    if(cookie.HttpOnly && messageUri.Scheme != "https" && messageUri.Scheme != "http") { continue; }
+                    message.Headers.Add("Cookie",string.Format("{0}={1}", cookie.Name, cookie.Value));
+                }
             }
         }
     }
