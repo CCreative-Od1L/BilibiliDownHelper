@@ -1,5 +1,5 @@
-using Core.Cookie;
-using Core.Directory;
+using Core.CookieFunc;
+using Core.DirectoryFunc;
 using Core.Logger;
 
 namespace Core {

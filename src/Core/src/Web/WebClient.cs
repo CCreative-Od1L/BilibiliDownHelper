@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 using System.IO.Compression;
 using Core.Utils;
 using Microsoft.VisualBasic;
-using Core.Cookie;
+using Core.CookieFunc;
 namespace Core.Web {
 
     // * internal
@@ -163,7 +163,7 @@ namespace Core.Web {
             if(!CoreManager.cookieMgr.CheckCookieFileExist()) { return; }
             if(message.RequestUri == null) { return; }
             var messageUri = message.RequestUri;
-            foreach(System.Net.Cookie cookie in CoreManager.cookieMgr.TryToGetCookies().Cast<System.Net.Cookie>()) {
+            foreach(Cookie cookie in CoreManager.cookieMgr.TryToGetCookies().Cast<Cookie>()) {
                 if(!messageUri.Host.Contains(cookie.Domain)) { continue; }
                 if(cookie.Path == @"/" || messageUri.AbsolutePath.Contains(cookie.Path)) {
                     if(cookie.Expires < DateTime.UtcNow) { continue; }

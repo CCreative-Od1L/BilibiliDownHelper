@@ -1,4 +1,4 @@
-namespace Core.Directory {
+namespace Core.DirectoryFunc {
     public class FileDirectory {
         public string Root {get; private set;}
         public string? Log {get; set;}

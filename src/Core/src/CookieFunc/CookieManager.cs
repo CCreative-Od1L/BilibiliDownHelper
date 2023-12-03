@@ -1,7 +1,7 @@
 using System.Net;
 using Core.Utils;
 
-namespace Core.Cookie {
+namespace Core.CookieFunc {
     public sealed class CookieManager {
         readonly string CookieDirectory;
         string _cookieFilePath;

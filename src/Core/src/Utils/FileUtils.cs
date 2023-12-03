@@ -1,8 +1,11 @@
 namespace Core.Utils {
     public class FileUtils {
-        static void CheckFile(string path) {
-            if (!File.Exists(path)) {
-                File.CreateText(path).Close();
+        static void CheckAndCreateDirectory(string filePath) {
+            if (!Directory.Exists(Path.GetDirectoryName(filePath))) {
+                var directoryPath = Path.GetDirectoryName(filePath);
+                if (directoryPath != null) {
+                    Directory.CreateDirectory(directoryPath);
+                }
             }
         }
         static public string ReadTextFile(string filePath) {
@@ -13,7 +16,7 @@ namespace Core.Utils {
         }
         static public void AppendText(string filePath, string content, Action<Exception> exceptionCallback) {
             try {
-                CheckFile(filePath);
+                CheckAndCreateDirectory(filePath);
                 using var systemWrite = File.AppendText(filePath);
                 systemWrite.Write(content);
             } catch (Exception e) {
@@ -22,7 +25,7 @@ namespace Core.Utils {
         }
         static public void WriteText(string filePath, string content, Action<Exception>? exceptionCallback = null) {
             try {
-                CheckFile(filePath);
+                CheckAndCreateDirectory(filePath);
                 File.WriteAllText(filePath, content);
             } catch (Exception e) {
                 exceptionCallback?.Invoke(e);
@@ -30,7 +33,7 @@ namespace Core.Utils {
         }
         static public void WriteTextThenEncryptToBytes(string filePath, string content, Action<Exception>? exceptionCallback = null) {
             try {
-                // CheckFile(filePath);
+                CheckAndCreateDirectory(filePath);
                 WriteBytes(filePath, CryptoUtils.AesEncryptStringToBytes(content));
             } catch (Exception e) {
                 exceptionCallback?.Invoke(e);
@@ -44,7 +47,7 @@ namespace Core.Utils {
         }
         static public void WriteBytes(string filePath, byte[] content, Action<Exception>? exceptionCallback = null) {
             try {
-                CheckFile(filePath);
+                CheckAndCreateDirectory(filePath);
                 File.WriteAllBytes(filePath, content);
             } catch (Exception e) {
                 exceptionCallback?.Invoke(e);

@@ -1,6 +1,6 @@
 using Core.Utils;
 
-namespace Core.Directory {
+namespace Core.DirectoryFunc {
     public sealed class DirectoryManager {
         public FileDirectory fileDirectory;
         readonly string relativeFileDirectoryJsonPath = @"dir.json";

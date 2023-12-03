@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Core.Cookie {
+namespace Core.CookieFunc {
     public class CookieData {
         readonly System.Net.Cookie? _cookie;
         public System.Net.Cookie? Cookie {get => _cookie; }
