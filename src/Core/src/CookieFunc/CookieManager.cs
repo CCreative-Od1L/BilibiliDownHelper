@@ -21,11 +21,14 @@ namespace Core.CookieFunc {
             cookieWatcherCTS = new();
 
             CookieDirectory = CoreManager.directoryMgr.GetCookieDirectory();
-            if (!System.IO.Directory.Exists(CookieDirectory)) {
-                System.IO.Directory.CreateDirectory(CookieDirectory);
+            if (!Directory.Exists(CookieDirectory)) {
+                Directory.CreateDirectory(CookieDirectory);
             } 
             _cookieFilePath = Path.Combine(CoreManager.directoryMgr.GetCookieDirectory(), "cookies.bin");
 
+            if (File.Exists(_cookieFilePath) && File.ReadAllBytes(_cookieFilePath).Length == 0) {
+                File.Delete(_cookieFilePath);
+            }
             // ! the latest call.
             StartTask();
         }
@@ -72,7 +75,7 @@ namespace Core.CookieFunc {
             cookieMgrStopTask.Start();
         }
         public bool CheckCookieFileExist() {
-            return File.Exists(_cookieFilePath);
+            return File.Exists(_cookieFilePath) || File.ReadAllBytes(_cookieFilePath).Length <= 0;
         }
         void UpdateCookiesData() {
             {

@@ -7,9 +7,11 @@ namespace Core.Utils {
                     Directory.CreateDirectory(directoryPath);
                 }
             }
+            CoreManager.logger.Info(string.Format("创建文件 {0} 的文件夹 {1}", Path.GetFileName(filePath), Path.GetDirectoryName(filePath)));
         }
         static public string ReadTextFile(string filePath) {
             if (!File.Exists(filePath)) {
+                CoreManager.logger.Info(string.Format("文件 {0} 不存在", Path.GetFileName(filePath)));
                 return string.Empty;
             }
             return File.ReadAllText(filePath);
@@ -20,7 +22,8 @@ namespace Core.Utils {
                 using var systemWrite = File.AppendText(filePath);
                 systemWrite.Write(content);
             } catch (Exception e) {
-                exceptionCallback(e);
+                CoreManager.logger.Error(nameof(AppendText), e);
+                exceptionCallback?.Invoke(e);
             }
         }
         static public void WriteText(string filePath, string content, Action<Exception>? exceptionCallback = null) {
@@ -28,6 +31,7 @@ namespace Core.Utils {
                 CheckAndCreateDirectory(filePath);
                 File.WriteAllText(filePath, content);
             } catch (Exception e) {
+                CoreManager.logger.Error(nameof(WriteText), e);
                 exceptionCallback?.Invoke(e);
             }
         }
@@ -41,6 +45,7 @@ namespace Core.Utils {
         }
         static public byte[] ReadBytesFile(string filePath) {
             if (!File.Exists(filePath)) {
+                CoreManager.logger.Info(string.Format("文件 {0} 不存在", Path.GetFileName(filePath)));
                 return [];
             }
             return File.ReadAllBytes(filePath);
@@ -50,6 +55,7 @@ namespace Core.Utils {
                 CheckAndCreateDirectory(filePath);
                 File.WriteAllBytes(filePath, content);
             } catch (Exception e) {
+                CoreManager.logger.Error(nameof(WriteBytes), e);
                 exceptionCallback?.Invoke(e);
             }
         }

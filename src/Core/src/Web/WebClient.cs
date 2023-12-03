@@ -85,14 +85,15 @@ namespace Core.Web {
 
                 string jsonResult = string.Empty;
                 HttpClient httpClient = HttpClientFactory.GetHttpClient();
-                // TODO 尝试载入Cookie
-                TryToAddCookie(requestMessage);
-
+                try {
+                    TryToAddCookie(requestMessage);
+                } catch (Exception e) {
+                    CoreManager.logger.Error(e);
+                }
                 using HttpResponseMessage response = await httpClient.SendAsync(requestMessage);
                 response.EnsureSuccessStatusCode();
                 string? contentEncoding = response.Content.Headers.ContentEncoding.ToString();
                 
-                // * Test
                 try {
                     StringBuilder stringBuilder = new();
                     var cookies = response.Headers.GetValues("set-cookie");
