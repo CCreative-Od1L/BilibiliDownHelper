@@ -1,4 +1,5 @@
 using System.Globalization;
+using Core.Utils;
 
 namespace Core.CookieFunc {
     public class CookieData {
@@ -47,10 +48,10 @@ namespace Core.CookieFunc {
                     } else if (attrValue.Contains("UTC")) {
                         attrValue = attrValue.Replace("UTC", "");
                     }
-                    _cookie.Expires = DateTime.ParseExact(
+                    _cookie.Expires = DateTimeUtils.TimeStringToDateTime(
                         attrValue,
-                        "ddd, dd MMM yyyy HH:mm:ss z",
-                        CultureInfo.GetCultureInfo("en-us"));
+                        "ddd, dd MMM yyyy HH:mm:ss z"
+                    );
                     break;
                 case "HttpOnly":
                     _cookie.HttpOnly = true;

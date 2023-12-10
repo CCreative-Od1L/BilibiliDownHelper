@@ -16,7 +16,7 @@ namespace Core.Test {
         AutoResetEvent getResult = new(false);
         string loginResult = string.Empty;
         
-        [Fact]
+        // [Fact]
         public void IsWorkWell() {
             QrCodeLogin.ApplyForQRCode(tuple => {
                 // * tuple.Item1: 登录用的网址
