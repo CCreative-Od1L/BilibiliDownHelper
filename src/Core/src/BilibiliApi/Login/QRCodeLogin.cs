@@ -31,7 +31,7 @@ namespace Core.BilibiliApi.Login {
             if (result.Item1) {
                 var parseRes = JsonUtils.ParseJsonString<ApplyQRCodeData>(result.Item2);
                 if (parseRes != null) {
-                    callback?.Invoke(new Tuple<string, string>(parseRes.data.url, parseRes.data.qrcode_key));
+                    callback?.Invoke(new Tuple<string, string>(parseRes.Data.Url, parseRes.Data.QRCodeKey));
                     return;
                 } else {
                     CoreManager.logger.Error(nameof(JsonUtils.ParseJsonString), "Json Parse Failure");
@@ -45,8 +45,8 @@ namespace Core.BilibiliApi.Login {
             // * 暂时用的，后续会用窗体展示二维码
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"AppData\QRCode\";
             string fileName = "img.png";
-            if (!System.IO.Directory.Exists(filePath)) {
-                System.IO.Directory.CreateDirectory(filePath);
+            if (!Directory.Exists(filePath)) {
+                Directory.CreateDirectory(filePath);
             }
             File.WriteAllBytes(
                 filePath + fileName, 

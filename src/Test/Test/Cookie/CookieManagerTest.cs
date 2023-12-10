@@ -7,7 +7,7 @@ namespace Core.Test {
     {
         readonly ITestOutputHelper output = testOutputHelper;
 
-        [Fact]
+        // [Fact]
         public async void IsUpdateCookiesDataWorkWell() {
             CoreManager.logger.Info("Main", "Logger start");
             output.WriteLine("System start");

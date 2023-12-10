@@ -1,15 +1,22 @@
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 
 namespace Core.BilibiliApi.Login.Model {
     public class ApplyQRCodeData {
-        public int code {get; set;}
-        public string message {get; set;}
-        public int ttl {get; set;}
-        public QRCodeData data {get; set;}
+        [JsonPropertyName("code")]
+        public int Code {get; set;}
+        [JsonPropertyName("message")]
+        public string Message {get; set;}
+        [JsonPropertyName("ttl")]
+        public int TTL {get; set;}
+        [JsonPropertyName("data")]
+        public QRCodeData Data {get; set;}
     }
 
     public class QRCodeData {
-        public string url {get; set;}
-        public string qrcode_key {get; set;}
+        [JsonPropertyName("url")]
+        public string Url {get; set;}
+        [JsonPropertyName("qrcode_key")]
+        public string QRCodeKey {get; set;}
     }
 }
