@@ -26,7 +26,7 @@ namespace Core.Test {
             Thread.Sleep(5000);
             output.WriteLine("System End");
         }
-        [Fact]
+        // [Fact]
         public void DateTimeParse() {
             // GMT
             output.WriteLine(

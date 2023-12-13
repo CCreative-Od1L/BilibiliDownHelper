@@ -1,5 +1,6 @@
 using System.Globalization;
 using Core;
+using Core.Utils;
 using Xunit.Abstractions;
 
 namespace Core.Test {
@@ -7,7 +8,7 @@ namespace Core.Test {
     {
         readonly ITestOutputHelper output = testOutputHelper;
 
-        // [Fact]
+        [Fact]
         public async void IsUpdateCookiesDataWorkWell() {
             CoreManager.logger.Info("Main", "Logger start");
             output.WriteLine("System start");
@@ -20,6 +21,9 @@ namespace Core.Test {
             if (result.Item1 == false) {
                 output.WriteLine(result.Item2);
             } else {
+                FileUtils.WriteText(
+                    Path.Combine(CoreManager.directoryMgr.fileDirectory.UserInfo!, "userinfo.json"),
+                    result.Item2);
                 output.WriteLine(result.Item2);
             }
 
