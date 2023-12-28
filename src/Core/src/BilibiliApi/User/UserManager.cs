@@ -3,19 +3,20 @@ using Core.BilibiliApi.Login.Model;
 using Core.Utils;
 
 namespace Core.BilibiliApi.User {
-    static public class UserManager {
-        static public bool IsLogin { get; private set; }
-        static public string RefreshToken { get; private set; }
-        static DateTime RefreshTokenUpdateTime { get; set; }
-        static public UserInfo? NowUserInfo { get; private set; }
-        static event Action? OnUserInfoUpdate;
-        static UserManager() {
+    public class UserManager {
+        public static UserManager Instance { get; } = new();
+        public bool IsLogin { get; private set; }
+        public string RefreshToken { get; private set; }
+        DateTime RefreshTokenUpdateTime { get; set; }
+        public UserInfo? NowUserInfo { get; private set; }
+        private event Action? OnUserInfoUpdate;
+        private UserManager() {
             IsLogin = false;
             OnUserInfoUpdate = null;
             RefreshToken = string.Empty;
             NowUserInfo = null;
         }
-        static public bool AddUserInfoUpdateListener(Action action) {
+        public bool AddUserInfoUpdateListener(Action action) {
             try {
                 OnUserInfoUpdate += action;
                 CoreManager.logger.Info(string.Format("增加用户信息更新订阅，函数：{0}", nameof(action)));
@@ -25,7 +26,7 @@ namespace Core.BilibiliApi.User {
                 return false;
             }
         }
-        static public bool RemoveUserInfoUpdateListener(Action action) {
+        public bool RemoveUserInfoUpdateListener(Action action) {
             try {
                 OnUserInfoUpdate -= action;
                 CoreManager.logger.Info(string.Format("取消用户信息更新订阅，函数{0}", nameof(action)));
@@ -35,7 +36,7 @@ namespace Core.BilibiliApi.User {
                 return false;
             }
         }
-        static public void UpdateUserLoginInfo(QRCodeLoginResponse response) {
+        public void UpdateUserLoginInfo(QRCodeLoginResponse response) {
             IsLogin = true;
             RefreshToken = response.Data.RefreshToken;
             RefreshTokenUpdateTime = DateTimeUtils.TimestampToDateTime(Convert.ToString(response.Data.Timestamp));
@@ -51,7 +52,7 @@ namespace Core.BilibiliApi.User {
         /// <summary>
         /// 由外部调用，用于在尝试使用已有的Cookie文件进行用户信息的获取。
         /// </summary>
-        static public void TryToUpdateUserLoginInfo(Action? onSuccessCallback, Action? onFailureCallback) {
+        public void TryToUpdateUserLoginInfo(Action? onSuccessCallback, Action? onFailureCallback) {
             new Task (async () => {
                 var webResponse = await GetBilibiliUserInfoAsync();
                 if (!string.IsNullOrEmpty(webResponse)) {
@@ -64,7 +65,7 @@ namespace Core.BilibiliApi.User {
                 onFailureCallback?.Invoke();
             }).Start();
         }
-        static async Task<string> GetBilibiliUserInfoAsync() {
+        private async Task<string> GetBilibiliUserInfoAsync() {
             string url = @"https://api.bilibili.com/x/web-interface/nav";
             string methodName = "get";
 
@@ -76,7 +77,7 @@ namespace Core.BilibiliApi.User {
             }
             return string.Empty;
         }
-        static bool LoadUserInfo(string? response) {
+        private bool LoadUserInfo(string? response) {
             if (string.IsNullOrEmpty(response)) { return false; }
             var userInfoResponse = JsonUtils.ParseJsonString<UserInfoResponse>(response);
             if(userInfoResponse != null) {

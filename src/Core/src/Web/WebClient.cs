@@ -63,9 +63,9 @@ namespace Core.Web {
                     RequestUri = new(url),
                 };
                 // * Select the Http Method.
-                if (methodName.ToLower() == "get") {
+                if (methodName.Equals("get", StringComparison.CurrentCultureIgnoreCase)) {
                     requestMessage.Method = HttpMethod.Get;
-                } else if (methodName.ToLower() == "post") {
+                } else if (methodName.Equals("post", StringComparison.CurrentCultureIgnoreCase)) {
                     requestMessage.Method = HttpMethod.Post;
                 }
                 // * Init the Header.
