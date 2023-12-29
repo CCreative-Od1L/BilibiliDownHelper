@@ -2,6 +2,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Core.Aria2cNet.Server;
+/// <summary>
+/// * 日志等级
+/// </summary>
 public enum Aria2ConfigLogLevel {
     NOT_SET = 0,
     DEBUG = 1,
@@ -10,6 +13,9 @@ public enum Aria2ConfigLogLevel {
     WARN,
     ERROR,
 }
+/// <summary>
+/// * 文件分配方式
+/// </summary>
 public enum Aria2ConfigFileAllocation {
     NOT_SET = 0,
     NONE = 1,
@@ -43,7 +49,7 @@ public class Aria2Config {
         }
     }
     private int _minSplitSize;
-    public int MinSplitSize { 
+    public int MinSplitSize {                           // * 最小分割大小
         get => _minSplitSize;
         set {
             _minSplitSize = Math.Clamp(value, 1, 1024 * 1024);
@@ -81,6 +87,7 @@ public class Aria2Config {
     public List<string>? Headers { get; set; }
     public Aria2ConfigFileAllocation FileAllocation 
                                  { get; set; }          // * 文件预分配
+    private readonly StringBuilder configBuilder;
     public Aria2Config() {
         ListenPort = 6800;
         Token = "bvdownkr";
@@ -96,50 +103,63 @@ public class Aria2Config {
 
         LogLevel = Aria2ConfigLogLevel.NOT_SET;
         FileAllocation = Aria2ConfigFileAllocation.PREALLOC;
+
+        configBuilder = new();
     }
     public void SetLogConfig(string filePath, Aria2ConfigLogLevel level = Aria2ConfigLogLevel.INFO) {
         if (string.IsNullOrEmpty(filePath)) { return; }
         LogFilePath = filePath;
         LogLevel = level;
     }
+    private void AppendConfig(string configName, string? configValue = null) {
+        if (string.IsNullOrEmpty(configValue)) {
+            configBuilder.AppendFormat("--{0} ", configName);
+        } else {
+            configBuilder.AppendFormat("--{0}={1} ", configName, configValue);
+        }
+    }
     public override string ToString()
     {
-        StringBuilder configBuilder = new();
-        // header
+        configBuilder.Clear();
+        // * header
         if (Headers != null) {
             for(int i = 0; i < Headers.Count; ++i) {
-                configBuilder.Append($"--header=\"{Headers[i]}\"");
+                AppendConfig("header", $"\"{Headers[i]}\"");
             }
         }
-        // default config
-        configBuilder.Append("--enable-rpc --rpc-listen-all=true --rpc-allow-origin-all=true --check-certificate=false ");
-        // port
-        configBuilder.Append($"--rpc-listen-port={ListenPort} ");
-        // token
-        configBuilder.Append($"--rpc-secret={Token} ");
-        // max-concurrent-downloads
-        configBuilder.Append($"--max-concurrent-downloads={this.MaxConcurrentDownloads} ");
-        // max-connection-per-server
-        configBuilder.Append($"--max-connection-per-server={this.MaxConnectionPerServer} ");
-        // split
-        configBuilder.Append($"--split={this.Split} ");
-        // min-split-size
-        configBuilder.Append($"--min-split-size={this.MinSplitSize}M ");
-        // max-overall-download-limit
-        configBuilder.Append($"--max-overall-download-limit={this.MaxOverallDownloadLimit} ");
-        // max-download-limit
-        configBuilder.Append($"--max-download-limit={this.MaxDownloadLimit} ");
-        // max-overall-upload-limit
-        configBuilder.Append($"max-overall-upload-limit={this.MaxOverallUploadLimit} ");
-        // max-upload-limit
-        configBuilder.Append($"--max-upload-limit={this.MaxUploadLimit} ");
-        // continue
-        configBuilder.Append($"--continue={this.ContinueDownload.ToString().ToLower()} ");
-        // file allocate way
-        configBuilder.Append($"--file-allocation={this.FileAllocation.ToString("G").ToLower()} ");
-        // log 
+        // * default config
+        AppendConfig("enable-rpc");
+        AppendConfig("rpc-listen-all", "true");
+        AppendConfig("rpc-allow-origin-all","true");
+        AppendConfig("check-certificate", "false");
+        // * port
+        AppendConfig("rpc-listen-port", ListenPort.ToString());
+        // * token
+        AppendConfig("rpc-secret", Token);
+        // * max-concurrent-downloads
+        AppendConfig("max-concurrent-downloads", MaxConcurrentDownloads.ToString());
+        // * max-connection-per-server
+        AppendConfig("max-connection-per-server", MaxConnectionPerServer.ToString());
+        // * split
+        AppendConfig("split", Split.ToString());
+        // * min-split-size
+        AppendConfig("min-split-size", MinSplitSize.ToString() + "M");
+        // * max-overall-download-limit
+        AppendConfig("max-overall-download-limit", MaxOverallDownloadLimit.ToString());
+        // * max-download-limit
+        AppendConfig("max-download-limit", MaxDownloadLimit.ToString());
+        // * max-overall-upload-limit
+        AppendConfig("max-overall-upload-limit", MaxOverallUploadLimit.ToString());
+        // * max-upload-limit
+        AppendConfig("max-upload-limit", MaxUploadLimit.ToString());
+        // * continue
+        AppendConfig("continue", ContinueDownload.ToString().ToLower());
+        // * file allocate way
+        AppendConfig("file-allocation", FileAllocation.ToString("G").ToLower());
+        // * log 
         if (!string.IsNullOrEmpty(LogFilePath)) {
-            configBuilder.Append($"--log=\"{this.LogFilePath}\" --log-level={this.LogLevel.ToString("G").ToLower()} ");
+            AppendConfig("log", $"\"{this.LogFilePath}\"");
+            AppendConfig("log-level", LogLevel.ToString("G").ToLower());
         }
         return configBuilder.ToString();
     }
