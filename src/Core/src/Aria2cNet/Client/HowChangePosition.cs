@@ -1,7 +1,7 @@
 ﻿namespace Core.Aria2cNet.Client;
 
 /// <summary>
-/// changePosition函数的how参数
+/// * changePosition函数的how参数
 /// </summary>
 public enum HowChangePosition {
     POS_SET = 1,

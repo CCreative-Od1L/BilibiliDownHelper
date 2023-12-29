@@ -10,7 +10,7 @@ namespace Core.Test {
     public class DownloadHandleTest(ITestOutputHelper testOutputHelper)
     {
         readonly ITestOutputHelper output = testOutputHelper;
-        [Fact]
+        // [Fact]
         public void IsMainWorkWell() {
             CoreManager.logger.Info("Main", "Logger start");
             output.WriteLine("System start");

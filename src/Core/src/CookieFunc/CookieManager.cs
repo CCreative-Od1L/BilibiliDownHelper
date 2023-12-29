@@ -9,6 +9,8 @@ namespace Core.CookieFunc {
         AutoResetEvent? CookieMgrStopLock;
         FileSystemWatcher? cookieWatcher;
         readonly CancellationTokenSource cookieWatcherCTS;
+        public string? RefreshToken { get; private set; }
+        DateTime RefreshTokenUpdateTime { get; set; }
         public string CookieFilePath {
             get => _cookieFilePath; 
             private set {
@@ -29,6 +31,8 @@ namespace Core.CookieFunc {
             if (File.Exists(_cookieFilePath) && File.ReadAllBytes(_cookieFilePath).Length == 0) {
                 File.Delete(_cookieFilePath);
             }
+            // RefreshToken 读取 / 更新
+
             // ! the latest call.
             StartTask();
         }
@@ -78,23 +82,21 @@ namespace Core.CookieFunc {
             return File.Exists(_cookieFilePath) || File.ReadAllBytes(_cookieFilePath).Length <= 0;
         }
         void UpdateCookiesData() {
-            {
-                string cookieFileString = FileUtils.ReadBytesThenDecryptToText(_cookieFilePath);
-                if (string.IsNullOrEmpty(cookieFileString)) { return; }
+            string cookieFileString = FileUtils.ReadBytesThenDecryptToText(_cookieFilePath);
+            if (string.IsNullOrEmpty(cookieFileString)) { return; }
 
-                using var sr = new StringReader(cookieFileString);
-                string? line = string.Empty;
-                while((line = sr.ReadLine()) != null) {
-                    CookieData cookieData = new(line);
-                    if (cookieData.Cookie == null) {
-                        CoreManager.logger.Info(nameof(CookieData), "初始化cookie失败, cookieData.CookieName为空。");
-                        return;
-                    }
-                    if (cookies.Contains(cookieData.Cookie)) {
-                        cookies.Remove(cookieData.Cookie);
-                    }
-                    cookies.Add(cookieData.Cookie);
+            using var sr = new StringReader(cookieFileString);
+            string? line = string.Empty;
+            while((line = sr.ReadLine()) != null) {
+                CookieData cookieData = new(line);
+                if (cookieData.Cookie == null) {
+                    CoreManager.logger.Info(nameof(CookieData), "初始化cookie失败, cookieData.CookieName为空。");
+                    return;
                 }
+                if (cookies.Contains(cookieData.Cookie)) {
+                    cookies.Remove(cookieData.Cookie);
+                }
+                cookies.Add(cookieData.Cookie);
             }
         }
         public CookieCollection TryToGetCookies() {
@@ -111,6 +113,20 @@ namespace Core.CookieFunc {
                 UpdateCookiesData();
                 callback?.Invoke();
             }
+        }
+        public void UpdateRefreshToken(string value) {
+            RefreshToken = value;
+        }
+        public void UpdateRefreshTokenTime(DateTime value) {
+            RefreshTokenUpdateTime = value;
+        }
+        // TODO
+        void GetRefreshTokenAndUpdateTime() {
+
+        }
+        // TODO
+        void CheckCookieRefresh() {
+
         }
     }
 }

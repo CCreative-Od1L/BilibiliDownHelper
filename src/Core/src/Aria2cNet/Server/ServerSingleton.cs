@@ -8,7 +8,12 @@ public class ServerSingleton {
     public static ServerSingleton Instance { get; } = new();
     private int ListenPort;             // * 服务器端口
     private Process? ServerProcess;     // * 服务器线程
-
+    /// <summary>
+    /// * 异步开启 Aria2c服务器
+    /// </summary>
+    /// <param name="config"></param>
+    /// <param name="action"></param>
+    /// <returns></returns>
     public async Task<bool> AsyncStartServer(Aria2Config config, Action<string> action) {
         ListenPort = config.ListenPort;
         string AriaDirectory = Path.Combine(CoreManager.directoryMgr.fileDirectory.ThirdParty, @"aria\");
@@ -48,21 +53,36 @@ public class ServerSingleton {
         });
         return true;
     }
+    /// <summary>
+    /// * 服务器端口返回
+    /// </summary>
+    /// <returns></returns>
     public string ShowServerPort() {
         return ListenPort.ToString();
     }
+    /// <summary>
+    /// * 异步关闭服务器
+    /// </summary>
+    /// <returns></returns>
     public async Task<bool> CloseServerAsync() {
         if (ServerProcess == null) { return true; }
 
         await ClientSingleton.Instance.ShutdownAsync();
         return await ProcessUtils.AsyncKillProcess(process: ServerProcess);
     }
+    /// <summary>
+    /// * 生成进程配置
+    /// </summary>
+    /// <param name="exeName"></param>
+    /// <param name="arg"></param>
+    /// <param name="workDirectory"></param>
+    /// <returns></returns>
     private static ProcessStartInfo BuildProcessStartInfo(
         string exeName,
         string arg,
         string? workDirectory
     ) {
-        return new ProcessStartInfo(){
+        return new ProcessStartInfo() {
             FileName = exeName,
             Arguments = arg,
             WorkingDirectory = workDirectory??"",
@@ -74,14 +94,20 @@ public class ServerSingleton {
             StandardErrorEncoding = Encoding.UTF8,
         };
     }
+    /// <summary>
+    /// * 开启进程
+    /// </summary>
+    /// <param name="exeName"></param>
+    /// <param name="arg"></param>
+    /// <param name="workDirectory"></param>
+    /// <param name="output"></param>
     private void ExecuteProcess(
         string exeName,
         string arg,
         string? workDirectory,
         DataReceivedEventHandler output
     ) {
-        ServerProcess = new()
-        {
+        ServerProcess = new() {
             StartInfo = BuildProcessStartInfo(exeName, arg, workDirectory),
         };
         ServerProcess.OutputDataReceived += output;

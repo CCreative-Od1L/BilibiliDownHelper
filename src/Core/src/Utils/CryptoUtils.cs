@@ -34,7 +34,7 @@ namespace Core.Utils {
             string AesCryptFilePath = Path.Combine(cryptoDirectory, AesCryptFileName);
             byte[] bytesBuf = [];
             if (File.Exists(AesCryptFilePath)) {
-                bytesBuf = InnerAesDecryptBytesToBytes(FileUtils.ReadBytesFile(AesCryptFilePath));
+                bytesBuf = InnerAesDecryptBytesToBytes(FileUtils.ReadBytesFileDirectly(AesCryptFilePath));
                 CoreManager.logger.Info(nameof(AesInit), "Aes外层解密完成。");
 
                 aesAlg.Key = bytesBuf.Take(aesAlg.KeySize / 8).ToArray();

@@ -2,9 +2,14 @@ using Core.Utils;
 using Core.Web;
 using Core.BilibiliApi.Login.Model;
 using QRCoder;
+using Core.BilibiliApi.User;
 
 namespace Core.BilibiliApi.Login {
     static public class QrCodeLogin {
+        /// <summary>
+        /// * 使用QR码登录 API
+        /// </summary>
+        /// <param name="callback">成功获取登录信息回调</param>
         static public void LoginByQrCode(Action<QRCodeLoginResponse> callback) {
             AutoResetEvent getResult = new(false);
             QRCodeLoginResponse loginResult = new();
@@ -20,11 +25,14 @@ namespace Core.BilibiliApi.Login {
                 CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Failure.");
             } else {
                 callback?.Invoke(loginResult!);
-                // TODO 更新当前的状态
-                
+                UserManager.Instance.UpdateUserLoginInfo(loginResult);
                 CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Success.");
             }
         }
+        /// <summary>
+        /// * 申请二维码
+        /// </summary>
+        /// <param name="callback">成功获取二维码信息回调</param>
         static async public void ApplyForQRCode(Action<Tuple<string,string>> callback) {
             string url = @"https://passport.bilibili.com/x/passport-login/web/qrcode/generate";
             var result = await WebClient.Request(url, "get");
@@ -41,6 +49,10 @@ namespace Core.BilibiliApi.Login {
             }
             return;
         }
+        /// <summary>
+        /// * 展示QR码
+        /// </summary>
+        /// <param name="url"></param>
         static void ShowQrCode(string url) {
             // * 暂时用的，后续会用窗体展示二维码
             string filePath = AppDomain.CurrentDomain.BaseDirectory + @"AppData\QRCode\";
@@ -52,7 +64,12 @@ namespace Core.BilibiliApi.Login {
                 filePath + fileName, 
                 PngByteQRCodeHelper.GetQRCode(url, QRCodeGenerator.ECCLevel.Q, 5));
         }
-
+        /// <summary>
+        /// * 尝试登录
+        /// </summary>
+        /// <param name="secreteKey"></param>
+        /// <param name="getResult"></param>
+        /// <param name="loginResult"></param>
         static void TryToLogin(
             string secreteKey,
             AutoResetEvent getResult,
@@ -87,6 +104,5 @@ namespace Core.BilibiliApi.Login {
             checkQRCodeScanResult.Start();
             return;
         }
-        
     }
 }

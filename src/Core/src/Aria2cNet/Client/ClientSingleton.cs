@@ -1037,7 +1037,7 @@ public class ClientSingleton {
     }
 
     /// <summary>
-    /// http请求
+    /// * http请求
     /// </summary>
     /// <param name="url"></param>
     /// <param name="parameters"></param>
@@ -1045,7 +1045,7 @@ public class ClientSingleton {
     /// <returns></returns>
     private static string? Request(string url, string parameters, int retry = 3)
     {
-        // 重试次数
+        // * 重试次数
         if (retry <= 0) { return null; }
 
         try

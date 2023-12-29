@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Text.Json.Serialization;
-
+/// <summary>
+/// * 二维码申请API 返回 json对象
+/// </summary>
 namespace Core.BilibiliApi.Login.Model {
     public class ApplyQRCodeData {
         [JsonPropertyName("code")]

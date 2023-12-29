@@ -1,5 +1,7 @@
 using System.Text.Json.Serialization;
-
+/// <summary>
+/// * 登录结果返回 json 对象
+/// </summary>
 namespace Core.BilibiliApi.Login.Model {
     public enum QRCODE_SCAN_STATUS {
         // * 未扫码
