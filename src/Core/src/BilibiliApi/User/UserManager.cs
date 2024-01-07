@@ -7,15 +7,11 @@ namespace Core.BilibiliApi.User {
     /// * 用户信息管理-单例模式
     /// </summary>
     public class UserManager {
-        public static UserManager Instance { get; } = new();
-        public bool IsLogin { get; private set; }
-        public UserInfo? NowUserInfo { get; private set; }
-        private event Action? OnUserInfoUpdate;
+        public static UserManager INSTANCE { get; } = new();
+        public bool IsLogin { get; private set; } = false;
+        public UserInfo? NowUserInfo { get; private set; } = null;
+        private event Action? OnUserInfoUpdate = null;
         private UserManager() {
-            IsLogin = false;
-            OnUserInfoUpdate = null;
-            NowUserInfo = null;
-
             // TODO 支持登录记忆
             // * TryToUpdateUserLoginInfo();
         }
@@ -41,8 +37,9 @@ namespace Core.BilibiliApi.User {
         }
         public void UpdateUserLoginInfo(QRCodeLoginResponse response) {
             IsLogin = true;
-            CoreManager.cookieMgr.UpdateRefreshToken(response.Data.RefreshToken);
-            CoreManager.cookieMgr.UpdateRefreshTokenTime(DateTimeUtils.TimestampToDateTime(Convert.ToString(response.Data.Timestamp)));
+            CoreManager.cookieMgr.UpdateRefreshTokenData(
+                response.Data.RefreshToken,
+                Convert.ToString(response.Data.Timestamp));
             
             // * 建个线程去做网络请求，更新用户数据
             new Task(async () => {

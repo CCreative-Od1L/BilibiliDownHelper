@@ -1,4 +1,6 @@
 using System.Text;
+using Core.DirectoryFunc;
+using Core.Utils;
 using Xunit.Abstractions;
 
 namespace Core.Test {
@@ -6,8 +8,22 @@ namespace Core.Test {
     {
         readonly ITestOutputHelper output = testOutputHelper;
         [Fact]
+        public async void FileWriteFunctionTest() {
+            string filePath = Path.Combine(CoreManager.directoryMgr.fileDirectory.Cache, "test.dat");
+            List<Tuple<string, string, bool>> datas = [
+                new ("data1", "&zXK2DXX5^&bE0YzICZjE!RiUFdIyiy88hGnoT0Avf", true),
+                new ("data2", "HCyVdxfdevLx%ixa6xus1B9ip9SMbk^DNfzhOF9ktFYYnrN1If9#n6#1d2240NaalPmPLJvQUzDh81YB7OGiwZynwkK1R3jSm!2", true),
+                new ("data3", "s!UY^ahE0C*rLWEjQw1ks7fKm", false),
+            ];
+            await FileUtils.AsyncWriteFile(filePath, datas);
+
+            foreach(var pair in FileUtils.ReadFile(filePath)) {
+                output.WriteLine(pair.Key + " " + pair.Value);
+            }
+            
+        }
         public async void BinaryFileWriteIsWorkWell() {
-            string filePath = Path.Combine(CoreManager.directoryMgr.fileDirectory.Cache,"test.bin");
+            string filePath = Path.Combine(CoreManager.directoryMgr.fileDirectory.Cache,"test.dat");
             List<string> datas = [
                 "&zXK2DXX5^&bE0YzICZjE!RiUFdIyiy88hGnoT0Avf",
                 "HCyVdxfdevLx%ixa6xus1B9ip9SMbk^DNfzhOF9ktFYYnrN1If9#n6#1d2240NaalPmPLJvQUzDh81YB7OGiwZynwkK1R3jSm!2",

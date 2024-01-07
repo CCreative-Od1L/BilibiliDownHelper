@@ -2,9 +2,10 @@ using Core.Utils;
 
 namespace Core.DirectoryFunc {
     public sealed class DirectoryManager {
+        public static DirectoryManager INSTANCE { get; } = new();
         public FileDirectory fileDirectory;
         readonly string relativeFileDirectoryJsonPath = @"dir.json";
-        public DirectoryManager() {
+        private DirectoryManager() {
             fileDirectory = new();
             string dirJsonString = FileUtils.ReadTextFile(Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath));
             if (string.IsNullOrEmpty(dirJsonString)) {

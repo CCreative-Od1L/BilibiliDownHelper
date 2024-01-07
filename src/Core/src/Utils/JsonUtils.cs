@@ -10,9 +10,9 @@ namespace Core.Utils {
         }
         static public void WriteJsonInto<T>(T jsonObj, string path) {
             string jsonString = JsonSerializer.Serialize(jsonObj);
-            FileUtils.WriteText(path, jsonString, (e) => {
-               CoreManager.logger.Error(e);
-            });
+            // ? 给我看的
+            FileUtils.WriteText(path, jsonString);
+            // FileUtils.AsyncWriteFile(path, [jsonString]);
         }
     }
 }

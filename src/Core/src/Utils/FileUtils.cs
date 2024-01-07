@@ -55,6 +55,7 @@ namespace Core.Utils {
         }
         /// <summary>
         /// * 读文件
+        /// ? 给我看的，release 版本会弃用
         /// </summary>
         /// <param name="filePath"> 文件路径 </param>
         /// <returns> string 文件经过默认编码后的字符串 </returns>
@@ -67,6 +68,7 @@ namespace Core.Utils {
         }
         /// <summary>
         /// * 在文件结尾添加文本
+        /// ? 给我看的，release 版本会弃用
         /// </summary>
         /// <param name="filePath">文件路径</param>
         /// <param name="content">内容</param>
@@ -83,6 +85,7 @@ namespace Core.Utils {
         }
         /// <summary>
         /// * 文件复写
+        /// ? 给我看的，release 版本会弃用
         /// </summary>
         /// <param name="filePath">文件路径</param>
         /// <param name="content">内容</param>
@@ -186,16 +189,42 @@ namespace Core.Utils {
         /// <param name="filePath"></param>
         /// <param name="contents"></param>
         /// <returns></returns>
-        static public async void AsyncWriteFile(string filePath, List<string> contents) {
+        static public async Task AsyncWriteFile(
+            string filePath, 
+            List<Tuple<string, string, bool>> contents
+        ) {
             CheckAndCreateFileDirectory(filePath);
             using MemoryStream ms = new();
             for(int i = 0; i < contents.Count; ++i) {
-                byte[] bData = Encoding.UTF8.GetBytes(contents[i]);
+                byte[] bDataName = [];
+                byte[] bData = [];
+                byte bIsCrypto =  Convert.ToByte(contents[i].Item3);
+
+                if (!contents[i].Item3) {
+                    NormalProcess(
+                        contents[i].Item1,
+                        contents[i].Item2,
+                        out bDataName,
+                        out bData);
+                } else {
+                    EncryptProcess(
+                        contents[i].Item1,
+                        contents[i].Item2,
+                        out bDataName,
+                        out bData
+                    );
+                }
+
+                byte[] bDataNameLen = BitConverter.GetBytes(bDataName.Length);                
                 byte[] bDataLen = BitConverter.GetBytes(bData.Length);
+
                 if (!BitConverter.IsLittleEndian) {
-                    Array.Reverse(bData);
+                    Array.Reverse(bDataNameLen);
                     Array.Reverse(bDataLen);
                 }
+                ms.WriteByte(bIsCrypto);
+                ms.Write(bDataNameLen);
+                ms.Write(bDataName);
                 ms.Write(bDataLen);
                 ms.Write(bData);
             }
@@ -205,11 +234,50 @@ namespace Core.Utils {
             await ms.CopyToAsync(fs);
         }
         /// <summary>
+        /// * 普通文本数据处理
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="content"></param>
+        /// <param name="bName"></param>
+        /// <param name="bContent"></param>
+        static private void NormalProcess(
+            string name,
+            string content,
+            out byte[] bName,
+            out byte[] bContent
+        ) {
+            bName = Encoding.UTF8.GetBytes(name);
+            bContent = Encoding.UTF8.GetBytes(content);
+            if (!BitConverter.IsLittleEndian) {
+                Array.Reverse(bName);
+                Array.Reverse(bContent);
+            }
+        }
+        /// <summary>
+        /// * 加密处理
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="content"></param>
+        /// <param name="bName"></param>
+        /// <param name="bContent"></param>
+        static private void EncryptProcess(
+            string name,
+            string content,
+            out byte[] bName,
+            out byte[] bContent
+        ) {
+            bName = CryptoUtils.AesEncryptStringToBytes(name);
+            bContent = CryptoUtils.AesEncryptStringToBytes(content);
+        }
+        /// <summary>
         /// * 从结尾添加数据
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="contents"></param>
-        static public async void AsyncAppendFile(string filePath, List<string> contents) {
+        static public async void AsyncAppendFile(
+            string filePath,
+            List<Tuple<string, string, bool>> contents
+        ) {
             if (!File.Exists(filePath)) {
                 CoreManager.logger.Error(nameof(AsyncAppendFile), new Exception(string.Format("{0} 文件不存在", filePath)));
                 return;
@@ -217,12 +285,35 @@ namespace Core.Utils {
             CheckAndCreateFileDirectory(filePath);
             using MemoryStream ms = new();
             for(int i = 0; i < contents.Count; ++i) {
-                byte[] bData = Encoding.UTF8.GetBytes(contents[i]);
+                byte[] bDataName = [];
+                byte[] bData = [];
+                byte bIsCrypto =  Convert.ToByte(contents[i].Item3);
+
+                if (!contents[i].Item3) {
+                    NormalProcess(
+                        contents[i].Item1,
+                        contents[i].Item2,
+                        out bDataName,
+                        out bData);
+                } else {
+                    EncryptProcess(
+                        contents[i].Item1,
+                        contents[i].Item2,
+                        out bDataName,
+                        out bData
+                    );
+                }
+
+                byte[] bDataNameLen = BitConverter.GetBytes(bDataName.Length);                
                 byte[] bDataLen = BitConverter.GetBytes(bData.Length);
+
                 if (!BitConverter.IsLittleEndian) {
-                    Array.Reverse(bData);
+                    Array.Reverse(bDataNameLen);
                     Array.Reverse(bDataLen);
                 }
+                ms.WriteByte(bIsCrypto);
+                ms.Write(bDataNameLen);
+                ms.Write(bDataName);
                 ms.Write(bDataLen);
                 ms.Write(bData);
             }
@@ -238,23 +329,37 @@ namespace Core.Utils {
         /// <param name="filePath"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        static public List<string> ReadFile(string filePath, int count = -1) {
+        static public Dictionary<string, string> ReadFile(string filePath, int count = -1) {
             if (!File.Exists(filePath)) { return []; }
             bool isReadAll = count < 0;
-            List<string> fileData = [];
+            Dictionary<string, string> fileData = [];
             using (FileStream fs = File.OpenRead(filePath)) {
                 BinaryReader binaryReader = new(fs);
                 binaryReader.BaseStream.Seek(0, SeekOrigin.Begin);
                 long overallLen = binaryReader.BaseStream.Length;
                 
                 while(binaryReader.BaseStream.Position < overallLen) {
+                    bool isCrypto = Convert.ToBoolean(binaryReader.ReadByte());
+
+                    byte[] nameLen = binaryReader.ReadBytes(4);
+                    byte[] name = binaryReader.ReadBytes(BitConverter.ToInt32(nameLen, 0));
+                    
                     byte[] dataLen = binaryReader.ReadBytes(4);
-                    fileData.Add(
-                        Encoding.UTF8.GetString(
-                            // * 固定以小端为开始
-                            binaryReader.ReadBytes(BitConverter.ToInt32(dataLen, 0))
-                        )
-                    );
+                    byte[] data = binaryReader.ReadBytes(BitConverter.ToInt32(dataLen, 0));
+                    
+                    // * 固定以小端模式
+                    if (!isCrypto) {
+                        fileData.Add(
+                            Encoding.UTF8.GetString(name),
+                            Encoding.UTF8.GetString(data)
+                        );
+                    } else {
+                        fileData.Add(
+                            CryptoUtils.AesDecryptBytesToString(name),
+                            CryptoUtils.AesDecryptBytesToString(data)
+                        );
+                    }
+
                     if (!isReadAll) {
                         if (--count == 0) { break; }
                     }

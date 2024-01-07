@@ -25,7 +25,7 @@ namespace Core.BilibiliApi.Login {
                 CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Failure.");
             } else {
                 callback?.Invoke(loginResult!);
-                UserManager.Instance.UpdateUserLoginInfo(loginResult);
+                CoreManager.userMgr.UpdateUserLoginInfo(loginResult);
                 CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Success.");
             }
         }

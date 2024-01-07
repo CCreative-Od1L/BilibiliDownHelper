@@ -3,6 +3,7 @@ using Core.Utils;
 
 namespace Core.CookieFunc {
     public sealed class CookieManager {
+        public static CookieManager INSTANCE { get; } = new();
         readonly string CookieDirectory;
         string _cookieFilePath;
         readonly AutoResetEvent Pause = new(true);
@@ -18,16 +19,17 @@ namespace Core.CookieFunc {
             }
         }
         CookieCollection cookies;
-        public CookieManager() {
+        private CookieManager() {
             cookies = [];
             cookieWatcherCTS = new();
 
             CookieDirectory = CoreManager.directoryMgr.GetCookieDirectory();
             if (!Directory.Exists(CookieDirectory)) {
                 Directory.CreateDirectory(CookieDirectory);
-            } 
-            _cookieFilePath = Path.Combine(CoreManager.directoryMgr.GetCookieDirectory(), "cookies.bin");
+            }
 
+            _cookieFilePath = Path.Combine(CoreManager.directoryMgr.GetCookieDirectory(), "VxkUMc3Q.dat");
+            
             if (File.Exists(_cookieFilePath) && File.ReadAllBytes(_cookieFilePath).Length == 0) {
                 File.Delete(_cookieFilePath);
             }
@@ -82,6 +84,7 @@ namespace Core.CookieFunc {
             return File.Exists(_cookieFilePath) || File.ReadAllBytes(_cookieFilePath).Length <= 0;
         }
         void UpdateCookiesData() {
+            // TODO 修正
             string cookieFileString = FileUtils.ReadBytesThenDecryptToText(_cookieFilePath);
             if (string.IsNullOrEmpty(cookieFileString)) { return; }
 
@@ -114,13 +117,13 @@ namespace Core.CookieFunc {
                 callback?.Invoke();
             }
         }
-        public void UpdateRefreshToken(string value) {
-            RefreshToken = value;
+        public void UpdateRefreshTokenData(string token, string updateTimestampStr) {
+            RefreshToken = token;
+            RefreshTokenUpdateTime = DateTimeUtils.TimestampToDateTime(updateTimestampStr);
+            // TODO 文件保存
+            
         }
-        public void UpdateRefreshTokenTime(DateTime value) {
-            RefreshTokenUpdateTime = value;
-        }
-        // TODO
+        // TODO 从文件中读取到最新的 refresh_token 以及 update_time
         void GetRefreshTokenAndUpdateTime() {
 
         }

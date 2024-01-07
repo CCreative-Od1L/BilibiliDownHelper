@@ -5,6 +5,7 @@ using Core.Utils;
 
 namespace Core.Logger {
     sealed public partial class LogManager {
+        public static LogManager INSTANCE { get; } = new();
         /// <summary>
         /// * 存放日志任务。
         /// item1: 日志文件名称
@@ -17,7 +18,7 @@ namespace Core.Logger {
         AutoResetEvent? loggerStopLock;
 
         public event Action<LogInfo>? OnLogAction;  // * 可自定义Log事件，会在日志记录发生时触发。
-        public LogManager() {
+        private LogManager() {
             loggerCTS = new();
             CheckAndCreateLogDirectory();
             StartTask();
