@@ -4,16 +4,20 @@ namespace Core.DirectoryFunc {
     public sealed class DirectoryManager {
         public static DirectoryManager INSTANCE { get; } = new();
         public FileDirectory fileDirectory;
-        readonly string relativeFileDirectoryJsonPath = @"dir.json";
+        readonly string dataDefaultName = "content";
+        readonly string relativeFileDirectoryJsonPath = @"26BYhvPy.dat";
         private DirectoryManager() {
             fileDirectory = new();
-            string dirJsonString = FileUtils.ReadTextFile(Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath));
-            if (string.IsNullOrEmpty(dirJsonString)) {
-                TryToInit();
+            FileUtils.ReadFile(Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath)).TryGetValue(dataDefaultName, out var pair);
+            if (pair == null) { 
+                TryToInit(); 
             } else {
-                UpdateFileDirectory(JsonUtils.ParseJsonString<FileDirectory>(dirJsonString));
+                string dirDictionaryContent = pair.Item1;
+                UpdateFileDirectory(JsonUtils.ParseJsonString<FileDirectory>(dirDictionaryContent));
             }
-            JsonUtils.WriteJsonInto(fileDirectory, Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath));
+            _ = FileUtils.AsyncWriteFile(
+                Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath),
+                [new(dataDefaultName, JsonUtils.SerializeJsonObj(fileDirectory), true)]);
         }
         void TryToInit() {
             fileDirectory.TryToResetDefault();

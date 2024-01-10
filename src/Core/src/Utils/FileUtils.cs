@@ -182,7 +182,11 @@ namespace Core.Utils {
             }
             return CryptoUtils.AesDecryptBytesToString([.. bytes]);
         }
-
+        /// <summary>
+        /// * 将数据写入到 MemoryStream
+        /// </summary>
+        /// <param name="ms"></param>
+        /// <param name="data"></param>
         private static void WriteDataToMemoryStream(
             MemoryStream ms,
             Tuple<string, string, bool> data
@@ -213,6 +217,14 @@ namespace Core.Utils {
             ms.Write(bDataName);
             ms.Write(bDataLen);
             ms.Write(bData);
+        }        
+        /// <summary>
+        /// * 清空文件
+        /// </summary>
+        /// <param name="filePath"></param>
+        private static void CleanFile(string filePath) {
+            using FileStream fs = File.OpenWrite(filePath);
+            fs.SetLength(0);
         }
         /// <summary>
         /// * 普通文本数据处理
@@ -233,7 +245,8 @@ namespace Core.Utils {
                 Array.Reverse(bName);
                 Array.Reverse(bContent);
             }
-        }
+        }        
+
         /// <summary>
         /// * 加密处理
         /// </summary>
@@ -267,9 +280,8 @@ namespace Core.Utils {
                 WriteDataToMemoryStream(ms, contents[i]);
             }
             ms.Seek(0, SeekOrigin.Begin);
-
+            CleanFile(filePath);
             using FileStream fs = File.Create(filePath);
-            fs.SetLength(0);
             await ms.CopyToAsync(fs);
         }
         /// <summary>
@@ -284,6 +296,7 @@ namespace Core.Utils {
         ) {
             if (!File.Exists(filePath)) {
                 CoreManager.logger.Error(nameof(AsyncAppendFile), new Exception(string.Format("{0} 文件不存在", filePath)));
+                await AsyncWriteFile(filePath, contents);
                 return;
             }
             CheckAndCreateFileDirectory(filePath);
@@ -313,6 +326,7 @@ namespace Core.Utils {
         ) {
             if (!File.Exists(filePath)) {
                 CoreManager.logger.Error(nameof(AsyncAppendFile), new Exception(string.Format("{0} 文件不存在", filePath)));
+                await AsyncWriteFile(filePath, contents);
                 return;
             }
             CheckAndCreateFileDirectory(filePath);
@@ -328,8 +342,8 @@ namespace Core.Utils {
             }
             ms.Seek(0, SeekOrigin.Begin);
             
+            CleanFile(filePath);
             using FileStream fs = File.OpenWrite(filePath);
-            fs.SetLength(0);
             await ms.CopyToAsync(fs);
         }
         /// <summary>
