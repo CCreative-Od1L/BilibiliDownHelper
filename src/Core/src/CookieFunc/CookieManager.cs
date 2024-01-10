@@ -120,7 +120,7 @@ namespace Core.CookieFunc {
         /// </summary>
         void UpdateCookiesData() {
             // TODO 修正
-            string cookieFileString = FileUtils.ReadBytesThenDecryptToText(_cookieFilePath);
+            string? cookieFileString = GetCookiesStrFromFile();
             if (string.IsNullOrEmpty(cookieFileString)) { return; }
 
             using var sr = new StringReader(cookieFileString);
@@ -160,7 +160,15 @@ namespace Core.CookieFunc {
                 callback?.Invoke();
             }
         }
-        /// <summary>
+        public void UpdateCookiesToFile(string cookieStr) {
+            _ = FileUtils.AsyncUpdateFile(_cookieFilePath, [
+                new ("cookies", cookieStr, true)
+            ]);
+        }
+        public string? GetCookiesStrFromFile() {
+            return FileUtils.ReadFile(_cookieFilePath).GetValueOrDefault("cookies")?.Item1;
+        }
+        /// /// <summary>
         /// * 更新 RefreshToken数据
         /// </summary>
         /// <param name="token"></param>

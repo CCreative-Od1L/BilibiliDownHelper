@@ -7,7 +7,10 @@ namespace Core.Test {
     public class CookieManagerTest(ITestOutputHelper testOutputHelper)
     {
         readonly ITestOutputHelper output = testOutputHelper;
-
+        [Fact]
+        public void getCookies() {
+            var cookies = CoreManager.cookieMgr.TryToGetCookies();
+        }
         // [Fact]
         public async void IsUpdateCookiesDataWorkWell() {
             CoreManager.logger.Info("Main", "Logger start");
@@ -21,9 +24,9 @@ namespace Core.Test {
             if (result.Item1 == false) {
                 output.WriteLine(result.Item2);
             } else {
-                FileUtils.WriteText(
-                    Path.Combine(CoreManager.directoryMgr.fileDirectory.UserInfo!, "userinfo.json"),
-                    result.Item2);
+                // FileUtils.WriteText(
+                //     Path.Combine(CoreManager.directoryMgr.fileDirectory.UserInfo!, "userinfo.json"),
+                //     result.Item2);
                 output.WriteLine(result.Item2);
             }
 

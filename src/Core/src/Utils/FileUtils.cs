@@ -5,6 +5,7 @@ namespace Core.Utils {
     // ! 因为 FileUtils 会在CoreManager初始化完成前被调用，所以 logger 是可能为空的。
     // ! 所以要注意在 FileUtils 进行日志记录的时候，需要小心再小心。
     public class FileUtils {
+        #region 便捷文件操作
         /// <summary>
         /// * 检查文件夹是否存在
         /// </summary>
@@ -53,22 +54,10 @@ namespace Core.Utils {
             }
             CoreManager.logger?.Info(string.Format("创建文件 {0}", Path.GetFileName(filePath)));
         }
-        /// <summary>
-        /// * 读文件
-        /// ? 给我看的，release 版本会弃用
-        /// </summary>
-        /// <param name="filePath"> 文件路径 </param>
-        /// <returns> string 文件经过默认编码后的字符串 </returns>
-        static public string ReadTextFile(string filePath) {
-            if (!File.Exists(filePath)) {
-                CoreManager.logger?.Info(string.Format("文件 {0} 不存在", Path.GetFileName(filePath)));
-                return string.Empty;
-            }
-            return File.ReadAllText(filePath);
-        }
+        #endregion
+        #region 写文本文件(log之类的)
         /// <summary>
         /// * 在文件结尾添加文本
-        /// ? 给我看的，release 版本会弃用
         /// </summary>
         /// <param name="filePath">文件路径</param>
         /// <param name="content">内容</param>
@@ -83,39 +72,10 @@ namespace Core.Utils {
                 exceptionCallback?.Invoke(e);
             }
         }
+        #endregion
+        #region 无特别规定协议
         /// <summary>
-        /// * 文件复写
-        /// ? 给我看的，release 版本会弃用
-        /// </summary>
-        /// <param name="filePath">文件路径</param>
-        /// <param name="content">内容</param>
-        /// <param name="exceptionCallback">异常处理回调函数</param>
-        static public void WriteText(string filePath, string content, Action<Exception>? exceptionCallback = null) {
-            try {
-                CheckAndCreateFileDirectory(filePath);
-                File.WriteAllText(filePath, content);
-            } catch (Exception e) {
-                CoreManager.logger?.Error(nameof(WriteText), e);
-                exceptionCallback?.Invoke(e);
-            }
-        }
-        /// <summary>
-        /// * 写文件
-        /// * 文本 -> 二进制。附带加密
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="content"></param>
-        /// <param name="exceptionCallback"></param>
-        static public void WriteTextThenEncryptToBytes(string filePath, string content, Action<Exception>? exceptionCallback = null) {
-            try {
-                CheckAndCreateFileDirectory(filePath);
-                WriteBytes(filePath, CryptoUtils.AesEncryptStringToBytes(content));
-            } catch (Exception e) {
-                exceptionCallback?.Invoke(e);
-            }
-        }
-        /// <summary>
-        /// * 读文件
+        /// * 读纯二进制-无协议文件 -> 二进制数据
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>二进制数据</returns>
@@ -157,31 +117,8 @@ namespace Core.Utils {
                 exceptionCallback?.Invoke(e);
             }
         }
-        /// <summary>
-        /// * 读文件
-        /// * 读二进制数据，附带解密 
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <returns>经过默认编码后的字符串</returns>
-        static public string ReadBytesThenDecryptToText(string filePath) {
-            if (!File.Exists(filePath)) {
-                return string.Empty;
-            }
-            using var fs = File.OpenRead(filePath);
-            BinaryReader binaryReader = new(fs);
-            binaryReader.BaseStream.Position = 0;
-
-            List<byte> bytes = [];
-            long streamLen = binaryReader.BaseStream.Length;
-            if (streamLen > int.MaxValue) {
-                while(binaryReader.BaseStream.Position < streamLen) {
-                    bytes.AddRange(binaryReader.ReadBytes(int.MaxValue));
-                }
-            } else {
-                bytes.AddRange(binaryReader.ReadBytes((int)binaryReader.BaseStream.Length));
-            }
-            return CryptoUtils.AesDecryptBytesToString([.. bytes]);
-        }
+        #endregion
+        #region 自定文件协议
         /// <summary>
         /// * 将数据写入到 MemoryStream
         /// </summary>
@@ -390,5 +327,6 @@ namespace Core.Utils {
             }
             return fileData;
         }
+        #endregion
     }
 }

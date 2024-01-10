@@ -16,14 +16,15 @@ namespace Core.Test {
         // [Fact]
         public void GenKeyFunc() {
             var rsa = RSA.Create();
-            FileUtils.WriteText(PublicKeyPath, rsa.ToXmlString(false));
-            FileUtils.WriteText(PrivateKeyPath, rsa.ToXmlString(true));     
+            // FileUtils.WriteText(PublicKeyPath, rsa.ToXmlString(false));
+            // FileUtils.WriteText(PrivateKeyPath, rsa.ToXmlString(true));     
         }
         // [Fact]
         public void RSAEncrypt() {
             string content = "Hello World";
             using RSACryptoServiceProvider rsa = new();
-            rsa.FromXmlString(FileUtils.ReadTextFile(PublicKeyPath));
+            rsa.FromXmlString("");
+            // rsa.FromXmlString(FileUtils.ReadTextFile(PublicKeyPath));
             byte[] encryptedData = rsa.Encrypt(Encoding.UTF8.GetBytes(content), false);
             string encryptedContent = Convert.ToBase64String(encryptedData);
             output.WriteLine(encryptedContent);

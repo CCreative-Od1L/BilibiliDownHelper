@@ -100,13 +100,7 @@ namespace Core.Web {
                     foreach(var cookie in cookies) {
                         stringBuilder.AppendLine(cookie);
                     }
-                    FileUtils.WriteTextThenEncryptToBytes(
-                        CoreManager.cookieMgr.CookieFilePath,
-                        stringBuilder.ToString(),
-                        (e) => {
-                            CoreManager.logger.Error("Cookie文件写入失败。", e);
-                        }    
-                    );
+                    CoreManager.cookieMgr.UpdateCookiesToFile(stringBuilder.ToString());
                     CoreManager.cookieMgr.TryToUpdateCookies();
                 } catch (Exception) {}
                 
