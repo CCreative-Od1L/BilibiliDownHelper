@@ -5,6 +5,10 @@ namespace Core.CookieFunc {
     public class CookieData {
         readonly System.Net.Cookie? _cookie;
         public System.Net.Cookie? Cookie {get => _cookie; }
+        /// <summary>
+        /// * 使用cookie响应数据整合到CookieData
+        /// </summary>
+        /// <param name="cookieText"></param>
         public CookieData(string cookieText) {
             _cookie = null;
             foreach(var part in cookieText.Split(';')) {
@@ -20,7 +24,11 @@ namespace Core.CookieFunc {
                 }
             }
         }
-
+        /// <summary>
+        /// * 设置Cookie属性
+        /// </summary>
+        /// <param name="attrName"></param>
+        /// <param name="attrValue"></param>
         void SetCookieAttribute(string attrName, string attrValue = "") {
             if (_cookie == null) { 
                 CoreManager.logger.Error(nameof(SetCookieAttribute), "未初始化 _cookie 就修改属性。");
@@ -72,6 +80,10 @@ namespace Core.CookieFunc {
                     break;
             }
         }
+        /// <summary>
+        /// * System.Net.Cookie - toString
+        /// </summary>
+        /// <returns></returns>
         public override string? ToString() {
             return _cookie?.ToString();
         }

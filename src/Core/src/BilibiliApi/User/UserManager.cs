@@ -15,6 +15,11 @@ namespace Core.BilibiliApi.User {
             // TODO 支持登录记忆
             // * TryToUpdateUserLoginInfo();
         }
+        /// <summary>
+        /// * 添加用户信息更新事件
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns>布尔值，表示是否成功</returns>
         public bool AddUserInfoUpdateListener(Action action) {
             try {
                 OnUserInfoUpdate += action;
@@ -25,6 +30,11 @@ namespace Core.BilibiliApi.User {
                 return false;
             }
         }
+        /// <summary>
+        /// * 移除用户信息更新事件
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns></returns>
         public bool RemoveUserInfoUpdateListener(Action action) {
             try {
                 OnUserInfoUpdate -= action;
@@ -35,6 +45,10 @@ namespace Core.BilibiliApi.User {
                 return false;
             }
         }
+        /// <summary>
+        /// * 使用QRCode登录回应数据更新用户信息
+        /// </summary>
+        /// <param name="response"></param>
         public void UpdateUserLoginInfo(QRCodeLoginResponse response) {
             IsLogin = true;
             CoreManager.cookieMgr.UpdateRefreshTokenData(

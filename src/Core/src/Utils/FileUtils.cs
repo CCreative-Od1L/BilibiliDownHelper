@@ -182,56 +182,37 @@ namespace Core.Utils {
             }
             return CryptoUtils.AesDecryptBytesToString([.. bytes]);
         }
-        /// <summary>
-        /// * 异步重写文件
-        /// * 以二进制格式存储 
-        /// </summary>
-        /// <param name="filePath"></param>
-        /// <param name="contents"></param>
-        /// <returns></returns>
-        static public async Task AsyncWriteFile(
-            string filePath, 
-            List<Tuple<string, string, bool>> contents
+
+        private static void WriteDataToMemoryStream(
+            MemoryStream ms,
+            Tuple<string, string, bool> data
         ) {
-            CheckAndCreateFileDirectory(filePath);
-            using MemoryStream ms = new();
-            for(int i = 0; i < contents.Count; ++i) {
-                byte[] bDataName = [];
-                byte[] bData = [];
-                byte bIsCrypto =  Convert.ToByte(contents[i].Item3);
-
-                if (!contents[i].Item3) {
-                    NormalProcess(
-                        contents[i].Item1,
-                        contents[i].Item2,
-                        out bDataName,
-                        out bData);
-                } else {
-                    EncryptProcess(
-                        contents[i].Item1,
-                        contents[i].Item2,
-                        out bDataName,
-                        out bData
-                    );
-                }
-
-                byte[] bDataNameLen = BitConverter.GetBytes(bDataName.Length);                
-                byte[] bDataLen = BitConverter.GetBytes(bData.Length);
-
-                if (!BitConverter.IsLittleEndian) {
-                    Array.Reverse(bDataNameLen);
-                    Array.Reverse(bDataLen);
-                }
-                ms.WriteByte(bIsCrypto);
-                ms.Write(bDataNameLen);
-                ms.Write(bDataName);
-                ms.Write(bDataLen);
-                ms.Write(bData);
+            byte bIsCrypto =  Convert.ToByte(data.Item3);
+            byte[] bDataName;
+            byte[] bData;
+            if (!data.Item3)
+            {
+                NormalProcess(
+                    data.Item1, data.Item2,
+                    out bDataName, out bData);
+            } else {
+                EncryptProcess(
+                    data.Item1, data.Item2,
+                    out bDataName, out bData);
             }
-            ms.Seek(0, SeekOrigin.Begin);
 
-            using FileStream fs = File.Create(filePath);
-            await ms.CopyToAsync(fs);
+            byte[] bDataNameLen = BitConverter.GetBytes(bDataName.Length);                
+            byte[] bDataLen = BitConverter.GetBytes(bData.Length);
+
+            if (!BitConverter.IsLittleEndian) {
+                Array.Reverse(bDataNameLen);
+                Array.Reverse(bDataLen);
+            }
+            ms.WriteByte(bIsCrypto);
+            ms.Write(bDataNameLen);
+            ms.Write(bDataName);
+            ms.Write(bDataLen);
+            ms.Write(bData);
         }
         /// <summary>
         /// * 普通文本数据处理
@@ -270,11 +251,34 @@ namespace Core.Utils {
             bContent = CryptoUtils.AesEncryptStringToBytes(content);
         }
         /// <summary>
-        /// * 从结尾添加数据
+        /// * 异步重写文件
+        /// * 以二进制格式存储 
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="contents"></param>
-        static public async void AsyncAppendFile(
+        /// <returns></returns>
+        static public async Task AsyncWriteFile(
+            string filePath, 
+            List<Tuple<string, string, bool>> contents
+        ) {
+            CheckAndCreateFileDirectory(filePath);
+            using MemoryStream ms = new();
+            for(int i = 0; i < contents.Count; ++i) {
+                WriteDataToMemoryStream(ms, contents[i]);
+            }
+            ms.Seek(0, SeekOrigin.Begin);
+
+            using FileStream fs = File.Create(filePath);
+            fs.SetLength(0);
+            await ms.CopyToAsync(fs);
+        }
+        /// <summary>
+        /// * 异步添加文件数据
+        /// * 以二进制格式存储
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="contents">[Name-Content-IsCrypto]</param>
+        static public async Task AsyncAppendFile(
             string filePath,
             List<Tuple<string, string, bool>> contents
         ) {
@@ -283,39 +287,13 @@ namespace Core.Utils {
                 return;
             }
             CheckAndCreateFileDirectory(filePath);
+            var FileData = ReadFile(filePath);
             using MemoryStream ms = new();
             for(int i = 0; i < contents.Count; ++i) {
-                byte[] bDataName = [];
-                byte[] bData = [];
-                byte bIsCrypto =  Convert.ToByte(contents[i].Item3);
-
-                if (!contents[i].Item3) {
-                    NormalProcess(
-                        contents[i].Item1,
-                        contents[i].Item2,
-                        out bDataName,
-                        out bData);
-                } else {
-                    EncryptProcess(
-                        contents[i].Item1,
-                        contents[i].Item2,
-                        out bDataName,
-                        out bData
-                    );
+                // * 不添加文件已有内容
+                if (!FileData.ContainsKey(contents[i].Item1)) {
+                    WriteDataToMemoryStream(ms, contents[i]);
                 }
-
-                byte[] bDataNameLen = BitConverter.GetBytes(bDataName.Length);                
-                byte[] bDataLen = BitConverter.GetBytes(bData.Length);
-
-                if (!BitConverter.IsLittleEndian) {
-                    Array.Reverse(bDataNameLen);
-                    Array.Reverse(bDataLen);
-                }
-                ms.WriteByte(bIsCrypto);
-                ms.Write(bDataNameLen);
-                ms.Write(bDataName);
-                ms.Write(bDataLen);
-                ms.Write(bData);
             }
             ms.Seek(0, SeekOrigin.Begin);
             
@@ -324,15 +302,46 @@ namespace Core.Utils {
             await ms.CopyToAsync(fs);
         }
         /// <summary>
+        /// * 异步更新文件数据
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="contents"></param>
+        /// <returns></returns>
+        static public async Task AsyncUpdateFile(
+            string filePath,
+            List<Tuple<string, string, bool>> contents
+        ) {
+            if (!File.Exists(filePath)) {
+                CoreManager.logger.Error(nameof(AsyncAppendFile), new Exception(string.Format("{0} 文件不存在", filePath)));
+                return;
+            }
+            CheckAndCreateFileDirectory(filePath);
+            var FileData = ReadFile(filePath);
+            using MemoryStream ms = new();
+
+            for(int i = 0; i < contents.Count; ++i) {
+                FileData.Remove(contents[i].Item1);
+                WriteDataToMemoryStream(ms, contents[i]);
+            }
+            foreach(var pair in FileData) {
+                WriteDataToMemoryStream(ms, new(pair.Key, pair.Value.Item1, pair.Value.Item2));
+            }
+            ms.Seek(0, SeekOrigin.Begin);
+            
+            using FileStream fs = File.OpenWrite(filePath);
+            fs.SetLength(0);
+            await ms.CopyToAsync(fs);
+        }
+        /// <summary>
         /// * 读文件
         /// </summary>
         /// <param name="filePath"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        static public Dictionary<string, string> ReadFile(string filePath, int count = -1) {
+        static public Dictionary<string, Tuple<string, bool>> ReadFile(string filePath, int count = -1) {
             if (!File.Exists(filePath)) { return []; }
             bool isReadAll = count < 0;
-            Dictionary<string, string> fileData = [];
+            Dictionary<string, Tuple<string, bool>> fileData = [];
             using (FileStream fs = File.OpenRead(filePath)) {
                 BinaryReader binaryReader = new(fs);
                 binaryReader.BaseStream.Seek(0, SeekOrigin.Begin);
@@ -351,12 +360,12 @@ namespace Core.Utils {
                     if (!isCrypto) {
                         fileData.Add(
                             Encoding.UTF8.GetString(name),
-                            Encoding.UTF8.GetString(data)
+                            new (Encoding.UTF8.GetString(data), isCrypto)
                         );
                     } else {
                         fileData.Add(
                             CryptoUtils.AesDecryptBytesToString(name),
-                            CryptoUtils.AesDecryptBytesToString(data)
+                            new (CryptoUtils.AesDecryptBytesToString(data), isCrypto)
                         );
                     }
 
