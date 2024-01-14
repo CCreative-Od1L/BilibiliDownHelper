@@ -243,25 +243,23 @@ namespace Core.CookieFunc {
                 refreshDateTime = DateTimeUtils.GetDefaultDateTime(); 
             }
         }
-        public async Task<bool> CheckCookieRefresh() {
+        public async Task<Tuple<bool, long>> CheckCookieRefresh() {
             cookieFileData.TryGetValue(CookieFileDataNames.Cookie, out var cookieData);
             cookieFileData.TryGetValue(CookieFileDataNames.RefreshToken, out var oldRefreshToken);
 
             if (string.IsNullOrEmpty(cookieData!.Content) || string.IsNullOrEmpty(oldRefreshToken!.Content)) {
-                return false;
+                return new(false, 0);
             }
+            
             CheckCookieResponse? checkCookieResponse = null;
-            
-            await Task.Run(async () => {
-                string url = "https://passport.bilibili.com/x/passport-login/web/cookie/info";
-                var result = await Web.WebClient.Request(url, "get");
-                if (result.Item1 != false) {
-                    checkCookieResponse = JsonUtils.ParseJsonString<CheckCookieResponse>(result.Item2);
-                }
-            });
-            
-            if (checkCookieResponse == null) { return false; }
-            else { return checkCookieResponse.CheckIfRefresh(); }
+            string url = "https://passport.bilibili.com/x/passport-login/web/cookie/info";
+            var result = await Web.WebClient.Request(url, "get");
+            if (result.Item1 != false) {
+                checkCookieResponse = JsonUtils.ParseJsonString<CheckCookieResponse>(result.Item2);
+            }
+
+            if (checkCookieResponse == null) { return new(false, 0); }
+            else { return new(checkCookieResponse.CheckIfRefresh(), checkCookieResponse.GetTimestamp()); }
         }
     }
 }

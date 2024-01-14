@@ -8,8 +8,8 @@ namespace Core.Test {
     {
         readonly ITestOutputHelper output = testOutputHelper;
         [Fact]
-        public void getCookies() {
-            var result = CoreManager.cookieMgr.CheckCookieRefresh();
+        public async void AboutCookies() {
+            var result = await CoreManager.cookieMgr.CheckCookieRefresh();
             output.WriteLine(result.ToString());
         }
         // [Fact]
