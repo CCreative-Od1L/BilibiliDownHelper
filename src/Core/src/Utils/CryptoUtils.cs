@@ -24,7 +24,7 @@ namespace Core.Utils {
             string AesCryptFilePath = Path.Combine(cryptoDirectory, AesCryptFileName);
             byte[] bytesBuf;
             if (File.Exists(AesCryptFilePath)) {
-                bytesBuf = InnerAesDecryptBytesToBytes(FileUtils.ReadBytesFileDirectly(AesCryptFilePath));
+                bytesBuf = InnerAesDecryptBytesToBytes(FileUtils.ReadBytes(AesCryptFilePath));
                 aesAlg.Key = bytesBuf.Take(aesAlg.KeySize / 8).ToArray();
                 aesAlg.IV = bytesBuf.TakeLast(bytesBuf.Length - aesAlg.KeySize / 8).ToArray();
             } else {

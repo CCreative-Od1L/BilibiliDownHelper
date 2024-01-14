@@ -3,6 +3,9 @@ using System.Globalization;
 namespace Core.Utils;
 
 static public class DateTimeUtils {
+    static public DateTime GetDefaultDateTime() {
+        return new DateTime(1970, 1, 1, 0, 0, 0, 0);
+    }
     /// <summary>
     /// * 获取当前的时间戳（秒）- UTC 标准时
     /// </summary>

@@ -1,5 +1,6 @@
 using System.Data.SqlTypes;
 using System.Text;
+using Core.FileFunc;
 
 namespace Core.Utils {
     // ! 因为 FileUtils 会在CoreManager初始化完成前被调用，所以 logger 是可能为空的。
@@ -79,7 +80,7 @@ namespace Core.Utils {
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns>二进制数据</returns>
-        static public byte[] ReadBytesFileDirectly(string filePath) {
+        static public byte[] ReadBytes(string filePath) {
             if (!File.Exists(filePath)) {
                 CoreManager.logger?.Info(string.Format("文件 {0} 不存在", Path.GetFileName(filePath)));
                 return [];
@@ -126,19 +127,19 @@ namespace Core.Utils {
         /// <param name="data"></param>
         private static void WriteDataToMemoryStream(
             MemoryStream ms,
-            Tuple<string, string, bool> data
+            DataForm data
         ) {
-            byte bIsCrypto =  Convert.ToByte(data.Item3);
+            byte bIsCrypto =  Convert.ToByte(data.EnableCrypt);
             byte[] bDataName;
             byte[] bData;
-            if (!data.Item3)
+            if (!data.EnableCrypt)
             {
                 NormalProcess(
-                    data.Item1, data.Item2,
+                    data.Name, data.Content,
                     out bDataName, out bData);
             } else {
                 EncryptProcess(
-                    data.Item1, data.Item2,
+                    data.Name, data.Content,
                     out bDataName, out bData);
             }
 
@@ -209,7 +210,7 @@ namespace Core.Utils {
         /// <returns></returns>
         static public async Task AsyncWriteFile(
             string filePath, 
-            List<Tuple<string, string, bool>> contents
+            List<DataForm> contents
         ) {
             CheckAndCreateFileDirectory(filePath);
             using MemoryStream ms = new();
@@ -229,7 +230,7 @@ namespace Core.Utils {
         /// <param name="contents">[Name-Content-IsCrypto]</param>
         static public async Task AsyncAppendFile(
             string filePath,
-            List<Tuple<string, string, bool>> contents
+            List<DataForm> contents
         ) {
             if (!File.Exists(filePath)) {
                 CoreManager.logger.Error(nameof(AsyncAppendFile), new Exception(string.Format("{0} 文件不存在", filePath)));
@@ -241,7 +242,7 @@ namespace Core.Utils {
             using MemoryStream ms = new();
             for(int i = 0; i < contents.Count; ++i) {
                 // * 不添加文件已有内容
-                if (!FileData.ContainsKey(contents[i].Item1)) {
+                if (!FileData.ContainsKey(contents[i].Name)) {
                     WriteDataToMemoryStream(ms, contents[i]);
                 }
             }
@@ -259,7 +260,7 @@ namespace Core.Utils {
         /// <returns></returns>
         static public async Task AsyncUpdateFile(
             string filePath,
-            List<Tuple<string, string, bool>> contents
+            List<DataForm> contents
         ) {
             if (!File.Exists(filePath)) {
                 CoreManager.logger.Error(nameof(AsyncAppendFile), new Exception(string.Format("{0} 文件不存在", filePath)));
@@ -271,11 +272,11 @@ namespace Core.Utils {
             using MemoryStream ms = new();
 
             for(int i = 0; i < contents.Count; ++i) {
-                FileData.Remove(contents[i].Item1);
+                FileData.Remove(contents[i].Name);
                 WriteDataToMemoryStream(ms, contents[i]);
             }
             foreach(var pair in FileData) {
-                WriteDataToMemoryStream(ms, new(pair.Key, pair.Value.Item1, pair.Value.Item2));
+                WriteDataToMemoryStream(ms, pair.Value);
             }
             ms.Seek(0, SeekOrigin.Begin);
             
@@ -289,10 +290,10 @@ namespace Core.Utils {
         /// <param name="filePath"></param>
         /// <param name="count"></param>
         /// <returns></returns>
-        static public Dictionary<string, Tuple<string, bool>> ReadFile(string filePath, int count = -1) {
+        static public Dictionary<string, DataForm> ReadFile(string filePath, int count = -1) {
             if (!File.Exists(filePath)) { return []; }
             bool isReadAll = count < 0;
-            Dictionary<string, Tuple<string, bool>> fileData = [];
+            Dictionary<string, DataForm> fileData = [];
             using (FileStream fs = File.OpenRead(filePath)) {
                 BinaryReader binaryReader = new(fs);
                 binaryReader.BaseStream.Seek(0, SeekOrigin.Begin);
@@ -311,12 +312,12 @@ namespace Core.Utils {
                     if (!isCrypto) {
                         fileData.Add(
                             Encoding.UTF8.GetString(name),
-                            new (Encoding.UTF8.GetString(data), isCrypto)
+                            new (Encoding.UTF8.GetString(name), Encoding.UTF8.GetString(data), isCrypto)
                         );
                     } else {
                         fileData.Add(
                             CryptoUtils.AesDecryptBytesToString(name),
-                            new (CryptoUtils.AesDecryptBytesToString(data), isCrypto)
+                            new (CryptoUtils.AesDecryptBytesToString(name), CryptoUtils.AesDecryptBytesToString(data), isCrypto)
                         );
                     }
 

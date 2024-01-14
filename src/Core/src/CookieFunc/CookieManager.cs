@@ -1,4 +1,5 @@
 using System.Net;
+using Core.FileFunc;
 using Core.Utils;
 
 namespace Core.CookieFunc {
@@ -19,10 +20,12 @@ namespace Core.CookieFunc {
         /// </summary>
         FileSystemWatcher? cookieWatcher;
         readonly CancellationTokenSource cookieWatcherCTS;
+
+        public Dictionary<string, DataForm> cookieFileData;
+
         /// <summary>
         /// * Refresh Token 相关数据
         /// </summary>
-        public string? RefreshToken { get; private set; }
         DateTime RefreshTokenUpdateTime { get; set; }
         public string CookieFilePath {
             get => _cookieFilePath; 
@@ -34,6 +37,7 @@ namespace Core.CookieFunc {
         private CookieManager() {
             cookies = [];
             cookieWatcherCTS = new();
+            cookieFileData = [];
 
             CookieDirectory = CoreManager.directoryMgr.GetCookieDirectory();
             if (!Directory.Exists(CookieDirectory)) {
@@ -45,7 +49,10 @@ namespace Core.CookieFunc {
             if (File.Exists(_cookieFilePath) && File.ReadAllBytes(_cookieFilePath).Length == 0) {
                 File.Delete(_cookieFilePath);
             }
-            // * RefreshToken 读取 / 更新
+            // * CookieFile 读取 / 更新
+            // ! 由于文件可能不存在，注意调用顺序
+            GetFileDataFromFile();
+            InitFileData();
 
             // ! the latest call.
             StartTask();
@@ -92,6 +99,8 @@ namespace Core.CookieFunc {
                         CookieMgrStopLock.Set();
                         break;
                     }
+                    // * 将当前数据push到文件中
+                    PushDataToFile();
                 }
             }, null, TaskCreationOptions.LongRunning);
             watchCookieFileChange.Start();
@@ -119,8 +128,7 @@ namespace Core.CookieFunc {
         /// * 更新Cookie数据
         /// </summary>
         void UpdateCookiesData() {
-            // TODO 修正
-            string? cookieFileString = GetCookiesStrFromFile();
+            string? cookieFileString = GetCookiesStr();
             if (string.IsNullOrEmpty(cookieFileString)) { return; }
 
             using var sr = new StringReader(cookieFileString);
@@ -151,6 +159,37 @@ namespace Core.CookieFunc {
             return cookies;
         }
         /// <summary>
+        /// * IO操作-读数据
+        /// </summary>
+        public void GetFileDataFromFile() {
+            cookieFileData = FileUtils.ReadFile(_cookieFilePath);
+        }
+        /// <summary>
+        /// * IO操作-写数据
+        /// </summary>
+        public void PushDataToFile() {
+            List<DataForm> buf = [];
+            foreach(var item in cookieFileData) {
+                buf.Add(item.Value);
+            }
+            _ = FileUtils.AsyncUpdateFile(_cookieFilePath, buf);
+        }
+        /// <summary>
+        /// * 初始化数据格式（除具体内容）
+        /// </summary>
+        private void InitFileData() {
+            // * Cookie
+            InitSingleData(CookieFileDataNames.Cookie, true);
+            // * RefreshToken
+            InitSingleData(CookieFileDataNames.RefreshToken, true);
+            // * RefreshTokenUpdateTime
+            InitSingleData(CookieFileDataNames.RefreshTokenUpdateTime, false);
+        }
+        private void InitSingleData(string name, bool enableCrypt) {
+            cookieFileData[name].Name = name;
+            cookieFileData[name].EnableCrypt = enableCrypt;
+        }
+        /// <summary>
         /// * 尝试更新CookieCollection
         /// </summary>
         /// <param name="callback"></param>
@@ -161,27 +200,39 @@ namespace Core.CookieFunc {
             }
         }
         public void UpdateCookiesToFile(string cookieStr) {
-            _ = FileUtils.AsyncUpdateFile(_cookieFilePath, [
-                new ("cookies", cookieStr, true)
-            ]);
+            cookieFileData[CookieFileDataNames.Cookie].Content = cookieStr;
         }
-        public string? GetCookiesStrFromFile() {
-            return FileUtils.ReadFile(_cookieFilePath).GetValueOrDefault("cookies")?.Item1;
+        public string? GetCookiesStr() {
+            cookieFileData.TryGetValue(CookieFileDataNames.Cookie, out DataForm? res);
+            return res?.Content;
         }
-        /// /// <summary>
+        /// <summary>
         /// * 更新 RefreshToken数据
         /// </summary>
         /// <param name="token"></param>
         /// <param name="updateTimestampStr"></param>
         public void UpdateRefreshTokenData(string token, string updateTimestampStr) {
-            RefreshToken = token;
-            RefreshTokenUpdateTime = DateTimeUtils.TimestampToDateTime(updateTimestampStr);
-            // TODO 文件保存
-            
-        }
-        // TODO 从文件中读取到最新的 refresh_token 以及 update_time
-        void GetRefreshTokenAndUpdateTime() {
+            cookieFileData[CookieFileDataNames.RefreshToken].Content = token;
+            cookieFileData[CookieFileDataNames.RefreshTokenUpdateTime].Content = updateTimestampStr;
 
+            RefreshTokenUpdateTime = DateTimeUtils.TimestampToDateTime(updateTimestampStr);
+        }
+        /// <summary>
+        /// * 读取到最新的 refresh_token 以及 update_time
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <param name="refreshDateTime"></param>
+        /// <returns></returns>
+        void GetRefreshTokenAndUpdateTime(out string? refreshToken, out DateTime refreshDateTime) {
+            cookieFileData.TryGetValue(CookieFileDataNames.RefreshToken, out var refreshTokenData);
+            refreshToken = refreshTokenData?.Content;
+
+            cookieFileData.TryGetValue(CookieFileDataNames.RefreshTokenUpdateTime, out var refreshDateTimeData);
+            if ((refreshDateTimeData != null) && string.IsNullOrEmpty(refreshDateTimeData.Content)) {
+                refreshDateTime = DateTimeUtils.TimestampToDateTime(refreshDateTimeData.Content);
+            } else {
+                refreshDateTime = DateTimeUtils.GetDefaultDateTime(); 
+            }
         }
         // TODO
         void CheckCookieRefresh() {
