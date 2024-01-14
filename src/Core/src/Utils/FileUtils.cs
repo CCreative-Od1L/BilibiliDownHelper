@@ -14,8 +14,8 @@ namespace Core.Utils {
         static public void CheckAndCreateDirectory(string directoryPath) {
             if (!Directory.Exists(directoryPath)) {
                 Directory.CreateDirectory(directoryPath);
+                CoreManager.logger?.Info(string.Format("创建文件夹 {0}", directoryPath));
             }
-            CoreManager.logger?.Info(string.Format("创建文件夹 {0}", directoryPath));
         }
         /// <summary>
         /// * 检查文件的文件夹是否存在
@@ -26,9 +26,9 @@ namespace Core.Utils {
             if (!Directory.Exists(directoryPath)) {
                 if (directoryPath != null) {
                     Directory.CreateDirectory(directoryPath);
+                    CoreManager.logger?.Info(string.Format("创建文件 {0} 的文件夹 {1}", Path.GetFileName(filePath), Path.GetDirectoryName(filePath)));
                 }
             }
-            CoreManager.logger?.Info(string.Format("创建文件 {0} 的文件夹 {1}", Path.GetFileName(filePath), Path.GetDirectoryName(filePath)));
         }
         /// <summary>
         /// * 创建空文件
@@ -52,8 +52,8 @@ namespace Core.Utils {
             CheckAndCreateFileDirectory(filePath);
             if (!File.Exists(filePath)) {
                 using var fs = File.Create(filePath);
+                CoreManager.logger?.Info(string.Format("创建文件 {0}", Path.GetFileName(filePath)));
             }
-            CoreManager.logger?.Info(string.Format("创建文件 {0}", Path.GetFileName(filePath)));
         }
         #endregion
         #region 写文本文件(log之类的)
@@ -263,7 +263,7 @@ namespace Core.Utils {
             List<DataForm> contents
         ) {
             if (!File.Exists(filePath)) {
-                CoreManager.logger.Error(nameof(AsyncAppendFile), new Exception(string.Format("{0} 文件不存在", filePath)));
+                CoreManager.logger.Error(nameof(AsyncUpdateFile), new Exception(string.Format("{0} 文件不存在", filePath)));
                 await AsyncWriteFile(filePath, contents);
                 return;
             }

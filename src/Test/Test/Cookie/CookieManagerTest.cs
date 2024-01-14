@@ -9,8 +9,8 @@ namespace Core.Test {
         readonly ITestOutputHelper output = testOutputHelper;
         [Fact]
         public void getCookies() {
-            var cookies = CoreManager.cookieMgr.TryToGetCookies();
-            output.WriteLine(cookies.ToString());
+            var result = CoreManager.cookieMgr.CheckCookieRefresh();
+            output.WriteLine(result.ToString());
         }
         // [Fact]
         public async void IsUpdateCookiesDataWorkWell() {

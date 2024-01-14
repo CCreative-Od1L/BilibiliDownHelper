@@ -18,14 +18,16 @@ namespace Core.Test {
         
         [Fact]
         public void IsWorkWell() {
-            QrCodeLogin.ApplyForQRCode(tuple => {
-                // * tuple.Item1: 登录用的网址
-                ShowQrCode(tuple.Item1);
-                // * tuple.Item2: 登录的密钥
-                TryToLogin(tuple.Item2);
-            });
-            getResult.WaitOne();
-            output.WriteLine(loginResult);
+            QrCodeLogin.LoginByQrCode();
+            
+            // QrCodeLogin.ApplyForQRCode(tuple => {
+            //     // * tuple.Item1: 登录用的网址
+            //     ShowQrCode(tuple.Item1);
+            //     // * tuple.Item2: 登录的密钥
+            //     TryToLogin(tuple.Item2);
+            // });
+            // getResult.WaitOne();
+            // output.WriteLine(loginResult);
         }
 
         static void ShowQrCode(string url) {

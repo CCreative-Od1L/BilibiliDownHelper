@@ -10,7 +10,7 @@ namespace Core.BilibiliApi.Login {
         /// * 使用QR码登录 API
         /// </summary>
         /// <param name="callback">成功获取登录信息回调</param>
-        static public void LoginByQrCode(Action<QRCodeLoginResponse> callback) {
+        static public async void LoginByQrCode(Action<QRCodeLoginResponse>? callback = null) {
             AutoResetEvent getResult = new(false);
             QRCodeLoginResponse loginResult = new();
 
@@ -18,14 +18,16 @@ namespace Core.BilibiliApi.Login {
                 // * tuple.Item1: 登录用的网址
                 ShowQrCode(tuple.Item1);
                 // * tuple.Item2: 登录的密钥
-                TryToLogin(tuple.Item2, getResult, loginResult);
+                TryToLogin(tuple.Item2, getResult, (QRCodeLoginResponse response) => {
+                    loginResult = response;
+                });
             });
             getResult.WaitOne();
             if (loginResult == null || loginResult.GetQRCodeStatus() != QRCODE_SCAN_STATUS.SUCCESS) {
                 CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Failure.");
             } else {
                 callback?.Invoke(loginResult!);
-                CoreManager.userMgr.UpdateUserLoginInfo(loginResult);
+                await CoreManager.userMgr.UpdateUserLoginInfoAsync(loginResult);
                 CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Success.");
             }
         }
@@ -73,7 +75,7 @@ namespace Core.BilibiliApi.Login {
         static void TryToLogin(
             string secreteKey,
             AutoResetEvent getResult,
-            QRCodeLoginResponse loginResult
+            Action<QRCodeLoginResponse>? callback
         ) {
             string url = @"https://passport.bilibili.com/x/passport-login/web/qrcode/poll";
             Dictionary<string, string> parameters = new(){
@@ -93,7 +95,7 @@ namespace Core.BilibiliApi.Login {
                         if (response.GetShouldWait()) {
                             Pause.WaitOne(500, true);
                         } else {
-                            loginResult = response;
+                            callback?.Invoke(response);
                             break;
                         }
                     }

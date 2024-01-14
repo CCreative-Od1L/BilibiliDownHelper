@@ -1,4 +1,5 @@
 using System.Net;
+using Core.CookieFunc.Model;
 using Core.FileFunc;
 using Core.Utils;
 
@@ -40,19 +41,16 @@ namespace Core.CookieFunc {
             cookieFileData = [];
 
             CookieDirectory = CoreManager.directoryMgr.GetCookieDirectory();
-            if (!Directory.Exists(CookieDirectory)) {
-                Directory.CreateDirectory(CookieDirectory);
-            }
-
             _cookieFilePath = Path.Combine(CoreManager.directoryMgr.GetCookieDirectory(), "VxkUMc3Q.dat");
+            FileUtils.CheckAndCreateFileDirectory(_cookieFilePath);
             
-            if (File.Exists(_cookieFilePath) && File.ReadAllBytes(_cookieFilePath).Length == 0) {
-                File.Delete(_cookieFilePath);
-            }
-            // * CookieFile 读取 / 更新
-            // ! 由于文件可能不存在，注意调用顺序
-            GetFileDataFromFile();
             InitFileData();
+            // * CookieFile 读取 / 更新
+            if (!File.Exists(_cookieFilePath)) {
+                OverwriteDataToFile();
+            } else {
+                GetFileDataFromFile();
+            }
 
             // ! the latest call.
             StartTask();
@@ -100,7 +98,7 @@ namespace Core.CookieFunc {
                         break;
                     }
                     // * 将当前数据push到文件中
-                    PushDataToFile();
+                    UpdateDataToFile();
                 }
             }, null, TaskCreationOptions.LongRunning);
             watchCookieFileChange.Start();
@@ -165,9 +163,19 @@ namespace Core.CookieFunc {
             cookieFileData = FileUtils.ReadFile(_cookieFilePath);
         }
         /// <summary>
-        /// * IO操作-写数据
+        /// * IO操作-重写数据
         /// </summary>
-        public void PushDataToFile() {
+        public void OverwriteDataToFile() {
+            List<DataForm> buf = [];
+            foreach(var item in cookieFileData) {
+                buf.Add(item.Value);
+            }
+            _ = FileUtils.AsyncWriteFile(_cookieFilePath, buf);
+        }
+        /// <summary>
+        /// * IO操作-更新数据
+        /// </summary>
+        public void UpdateDataToFile() {
             List<DataForm> buf = [];
             foreach(var item in cookieFileData) {
                 buf.Add(item.Value);
@@ -187,7 +195,6 @@ namespace Core.CookieFunc {
         }
         private void InitSingleData(string name, bool enableCrypt) {
             cookieFileData.TryAdd(name ,new());
-            
             cookieFileData[name].Name = name;
             cookieFileData[name].EnableCrypt = enableCrypt;
         }
@@ -236,9 +243,25 @@ namespace Core.CookieFunc {
                 refreshDateTime = DateTimeUtils.GetDefaultDateTime(); 
             }
         }
-        // TODO
-        void CheckCookieRefresh() {
+        public async Task<bool> CheckCookieRefresh() {
+            cookieFileData.TryGetValue(CookieFileDataNames.Cookie, out var cookieData);
+            cookieFileData.TryGetValue(CookieFileDataNames.RefreshToken, out var oldRefreshToken);
 
+            if (string.IsNullOrEmpty(cookieData!.Content) || string.IsNullOrEmpty(oldRefreshToken!.Content)) {
+                return false;
+            }
+            CheckCookieResponse? checkCookieResponse = null;
+            
+            await Task.Run(async () => {
+                string url = "https://passport.bilibili.com/x/passport-login/web/cookie/info";
+                var result = await Web.WebClient.Request(url, "get");
+                if (result.Item1 != false) {
+                    checkCookieResponse = JsonUtils.ParseJsonString<CheckCookieResponse>(result.Item2);
+                }
+            });
+            
+            if (checkCookieResponse == null) { return false; }
+            else { return checkCookieResponse.CheckIfRefresh(); }
         }
     }
 }

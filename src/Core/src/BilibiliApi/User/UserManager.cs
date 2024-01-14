@@ -49,19 +49,19 @@ namespace Core.BilibiliApi.User {
         /// * 使用QRCode登录回应数据更新用户信息
         /// </summary>
         /// <param name="response"></param>
-        public void UpdateUserLoginInfo(QRCodeLoginResponse response) {
+        public async Task UpdateUserLoginInfoAsync(QRCodeLoginResponse response) {
             IsLogin = true;
             CoreManager.cookieMgr.UpdateRefreshTokenData(
                 response.Data.RefreshToken,
                 Convert.ToString(response.Data.Timestamp));
-            
+            CoreManager.cookieMgr.UpdateDataToFile();
             // * 建个线程去做网络请求，更新用户数据
-            new Task(async () => {
+            await Task.Run(async () => {
                 var webResponse = await GetBilibiliUserInfoAsync();
                 if (LoadUserInfo(webResponse)) {
                     OnUserInfoUpdate?.Invoke();
                 }
-            }).Start();
+            });
         }
         /// <summary>
         /// * 由外部调用，用于在尝试使用已有的Cookie文件进行用户信息的获取。
