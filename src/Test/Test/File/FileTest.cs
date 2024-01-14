@@ -10,15 +10,15 @@ namespace Core.Test {
         [Fact]
         public async void FileWriteFunctionTest() {
             string filePath = Path.Combine(CoreManager.directoryMgr.fileDirectory.Cache, "test.dat");
-            List<Tuple<string, string, bool>> datas = [
-                new ("data2", "&zXK2DXX5^&bE0YzICZjE!RiUFdIyiy88hGnoT0Avf", true),
-                new ("data5", "HCyVdxfdevLx%ixa6xus1B9ip9SMbk^DNfzhOF9ktFYYnrN1If9#n6#1d2240NaalPmPLJvQUzDh81YB7OGiwZynwkK1R3jSm!2", false),
-                new ("data4", "qReWu9JGS0oOCJwqTtmIVji9FfHXfk4McRYeIqZp", true),
-            ];
-            await FileUtils.AsyncUpdateFile(filePath, datas);
+            // List<Tuple<string, string, bool>> datas = [
+            //     new ("data2", "&zXK2DXX5^&bE0YzICZjE!RiUFdIyiy88hGnoT0Avf", true),
+            //     new ("data5", "HCyVdxfdevLx%ixa6xus1B9ip9SMbk^DNfzhOF9ktFYYnrN1If9#n6#1d2240NaalPmPLJvQUzDh81YB7OGiwZynwkK1R3jSm!2", false),
+            //     new ("data4", "qReWu9JGS0oOCJwqTtmIVji9FfHXfk4McRYeIqZp", true),
+            // ];
+            await FileUtils.AsyncUpdateFile(filePath, []);
 
             foreach(var pair in FileUtils.ReadFile(filePath)) {
-                output.WriteLine(pair.Key + " " + pair.Value.Item1);
+                output.WriteLine(pair.Key + " " + pair.Value.Content);
             }
             
         }

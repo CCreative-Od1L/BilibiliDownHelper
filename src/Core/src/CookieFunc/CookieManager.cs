@@ -186,6 +186,8 @@ namespace Core.CookieFunc {
             InitSingleData(CookieFileDataNames.RefreshTokenUpdateTime, false);
         }
         private void InitSingleData(string name, bool enableCrypt) {
+            cookieFileData.TryAdd(name ,new());
+            
             cookieFileData[name].Name = name;
             cookieFileData[name].EnableCrypt = enableCrypt;
         }

@@ -10,6 +10,7 @@ namespace Core.Test {
         [Fact]
         public void getCookies() {
             var cookies = CoreManager.cookieMgr.TryToGetCookies();
+            output.WriteLine(cookies.ToString());
         }
         // [Fact]
         public async void IsUpdateCookiesDataWorkWell() {

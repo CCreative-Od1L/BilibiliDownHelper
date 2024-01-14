@@ -8,11 +8,11 @@ namespace Core.DirectoryFunc {
         readonly string relativeFileDirectoryJsonPath = @"26BYhvPy.dat";
         private DirectoryManager() {
             fileDirectory = new();
-            FileUtils.ReadFile(Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath)).TryGetValue(dataDefaultName, out var pair);
-            if (pair == null) { 
+            FileUtils.ReadFile(Path.Combine(fileDirectory.Root, relativeFileDirectoryJsonPath)).TryGetValue(dataDefaultName, out var item);
+            if (item == null) { 
                 TryToInit(); 
             } else {
-                string dirDictionaryContent = pair.Item1;
+                string dirDictionaryContent = item.Content;
                 UpdateFileDirectory(JsonUtils.ParseJsonString<FileDirectory>(dirDictionaryContent));
             }
             _ = FileUtils.AsyncWriteFile(
