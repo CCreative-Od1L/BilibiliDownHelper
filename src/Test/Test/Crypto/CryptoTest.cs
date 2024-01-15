@@ -2,6 +2,7 @@ using Xunit.Abstractions;
 using System.Security.Cryptography;
 using Core.Utils;
 using System.Text;
+using Core.CookieFunc;
 
 namespace Core.Test {
     public class CryptoTest {
@@ -13,11 +14,10 @@ namespace Core.Test {
 
         readonly string PublicKeyPath = Path.Combine(CoreManager.directoryMgr.fileDirectory.Root, @"publicKey.txt");
         readonly string PrivateKeyPath = Path.Combine(CoreManager.directoryMgr.fileDirectory.Root, @"privateKey.txt");
-        // [Fact]
-        public void GenKeyFunc() {
-            var rsa = RSA.Create();
-            // FileUtils.WriteText(PublicKeyPath, rsa.ToXmlString(false));
-            // FileUtils.WriteText(PrivateKeyPath, rsa.ToXmlString(true));     
+        [Fact]
+        public void GenerateCorrespondPathTest() {
+            long timestamp = 1684468084078;
+            var res = CookieManager.GenerateCorrespondPath(timestamp);
         }
         // [Fact]
         public void RSAEncrypt() {

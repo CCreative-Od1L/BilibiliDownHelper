@@ -100,7 +100,7 @@ namespace Core.Web {
                     foreach(var cookie in cookies) {
                         stringBuilder.AppendLine(cookie);
                     }
-                    CoreManager.cookieMgr.UpdateCookiesToFile(stringBuilder.ToString());
+                    CoreManager.cookieMgr.UpdateCookies(stringBuilder.ToString());
                     CoreManager.cookieMgr.TryToUpdateCookies();
                 } catch (Exception) {}
                 

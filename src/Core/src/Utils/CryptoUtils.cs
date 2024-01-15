@@ -1,4 +1,7 @@
 using System.Security.Cryptography;
+using System.Text;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Security;
 
 namespace Core.Utils {
     public static class CryptoUtils {
@@ -79,7 +82,6 @@ namespace Core.Utils {
             cipherBytes = ms.ToArray();
             return cipherBytes;
         }
-
         static byte[] InnerAesDecryptBytesToBytes(byte[] cipherBytes) {
             byte[] plainBytes;
 
@@ -92,6 +94,18 @@ namespace Core.Utils {
             cryptoStream.FlushFinalBlock();
             plainBytes = ms.ToArray();
             return plainBytes;
+        }
+        static public byte[] AesPemPublicEncrypt(string pemPublicKey, string content) {
+            // * pem -> xml
+            RsaKeyParameters publicKeyParam = (RsaKeyParameters)PublicKeyFactory.CreateKey(Convert.FromBase64String(pemPublicKey));
+            string XMLKey = string.Format(
+                "<RSAKeyValue><Modulus>{0}</Modulus><Exponent>{1}</Exponent></RSAKeyValue>",
+                Convert.ToBase64String(publicKeyParam.Modulus.ToByteArrayUnsigned()),
+                Convert.ToBase64String(publicKeyParam.Exponent.ToByteArrayUnsigned()));
+
+            using RSACryptoServiceProvider rsa = new();
+            rsa.FromXmlString(XMLKey);
+            return rsa.Encrypt(Encoding.UTF8.GetBytes(content), true);
         }
     }
 }

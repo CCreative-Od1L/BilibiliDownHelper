@@ -17,6 +17,13 @@ static public class DateTimeUtils {
             )
         );
     }
+    static public string GetCurrentTimestampMilliSecond() {
+        return Convert.ToString(
+            Convert.ToInt64(
+                (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, 0)).TotalMilliseconds
+            )
+        );
+    }
     /// <summary>
     /// * 将 DateTime结构体转换为时间戳（秒）- UTC标准时
     /// </summary>

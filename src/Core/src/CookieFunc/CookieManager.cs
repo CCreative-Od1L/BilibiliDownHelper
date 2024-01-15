@@ -1,7 +1,12 @@
 using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
 using Core.CookieFunc.Model;
 using Core.FileFunc;
 using Core.Utils;
+using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Security;
 
 namespace Core.CookieFunc {
     public sealed class CookieManager {
@@ -208,7 +213,7 @@ namespace Core.CookieFunc {
                 callback?.Invoke();
             }
         }
-        public void UpdateCookiesToFile(string cookieStr) {
+        public void UpdateCookies(string cookieStr) {
             cookieFileData[CookieFileDataNames.Cookie].Content = cookieStr;
         }
         public string? GetCookiesStr() {
@@ -232,9 +237,14 @@ namespace Core.CookieFunc {
         /// <param name="refreshToken"></param>
         /// <param name="refreshDateTime"></param>
         /// <returns></returns>
-        void GetRefreshTokenAndUpdateTime(out string? refreshToken, out DateTime refreshDateTime) {
+        Tuple<string, DateTime> GetRefreshTokenAndUpdateTime() {
+            DateTime refreshDateTime;
+            string refreshToken = string.Empty;
+
             cookieFileData.TryGetValue(CookieFileDataNames.RefreshToken, out var refreshTokenData);
-            refreshToken = refreshTokenData?.Content;
+            if (refreshTokenData != null) {
+                refreshToken = refreshTokenData.Content;
+            }
 
             cookieFileData.TryGetValue(CookieFileDataNames.RefreshTokenUpdateTime, out var refreshDateTimeData);
             if ((refreshDateTimeData != null) && string.IsNullOrEmpty(refreshDateTimeData.Content)) {
@@ -242,7 +252,9 @@ namespace Core.CookieFunc {
             } else {
                 refreshDateTime = DateTimeUtils.GetDefaultDateTime(); 
             }
+            return new(refreshToken, refreshDateTime);
         }
+
         public async Task<Tuple<bool, long>> CheckCookieRefresh() {
             cookieFileData.TryGetValue(CookieFileDataNames.Cookie, out var cookieData);
             cookieFileData.TryGetValue(CookieFileDataNames.RefreshToken, out var oldRefreshToken);
@@ -260,6 +272,86 @@ namespace Core.CookieFunc {
 
             if (checkCookieResponse == null) { return new(false, 0); }
             else { return new(checkCookieResponse.CheckIfRefresh(), checkCookieResponse.GetTimestamp()); }
+        }
+        public static string GenerateCorrespondPath(long timestamp) {
+            string pemPublicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDLgd2OAkcGVtoE3ThUREbio0EgUc/prcajMKXvkCKFCWhJYJcLkcM2DKKcSeFpD/j6Boy538YXnR6VhcuUJOhH2x71nzPjfdTcqMz7djHum0qSZA0AyCBDABUqCrfNgCiJ00Ra7GmRj+YCK1NJEuewlb40JNrRuoEUXpabUzGB8QIDAQAB";   
+            var encrypted = CryptoUtils.AesPemPublicEncrypt(pemPublicKey, string.Format("refresh_{0}", timestamp));
+
+            // Base 16 Convert
+            var base16Code = new string[] {
+                "0", "1", "2", "3", "4", "5", "6", "7",
+                "8", "9", "a", "b", "c", "d", "e", "f"};
+            StringBuilder base16Encoder = new();
+            foreach (var b in encrypted) {
+                base16Encoder.Append(base16Code[b >> 4]);
+                base16Encoder.Append(base16Code[b & 0x0f]);
+            }
+            return base16Encoder.ToString();
+        }
+        public static async Task<string> GetRefreshCSRF(string correspondPath) {
+            string url = string.Format(@"https://www.bilibili.com/correspond/1/{0}", correspondPath);
+            var webResponse = await Web.WebClient.Request(url, "get");
+            if (webResponse.Item1 == false) {
+                return string.Empty;
+            } else {
+                var labelStart = webResponse.Item2.IndexOf("<div id=\"1-name\">");
+                var labelEnd = webResponse.Item2.IndexOf("</div>");
+                return webResponse.Item2.Substring(labelStart, labelEnd - labelStart - "</div>".Length);
+            }
+        }
+        public async Task<bool> RefreshCookie(long timestamp) {
+            var correspondPath = GenerateCorrespondPath(timestamp);
+            var refreshCSRF = await GetRefreshCSRF(correspondPath);
+
+            string csrfVal = string.Empty;
+            for(int i = 0; i < cookies.Count; ++i) {
+                if(cookies[i].Name.Equals("bili_jct")) {
+                    csrfVal = cookies[i].Value;
+                    break;
+                }
+            }
+
+            string refreshCookieUrl = @"https://passport.bilibili.com/x/passport-login/web/cookie/refresh";
+            var refreshCookieResponse = await Web.WebClient.Request(
+                refreshCookieUrl,
+                "post",
+                new () {
+                    { "csrf",  csrfVal },
+                    { "refresh_csrf", refreshCSRF},
+                    { "source", "main_web" },
+                    { "token", GetRefreshTokenAndUpdateTime().Item1 }
+                }
+            );
+
+            string? newRefreshToken = string.Empty;
+            if (refreshCookieResponse.Item1) {
+                newRefreshToken = JsonUtils.ParseJsonString<RefreshCookieResponse>(refreshCookieResponse.Item2)!.GetRefreshToken();
+                if (string.IsNullOrEmpty(newRefreshToken)) { return false; }
+            } else {
+                return false;
+            }
+
+            string confirmUpdateRefreshTokenUrl = @"https://passport.bilibili.com/x/passport-login/web/confirm/refresh";
+            var refreshTokenConfirmResponse = await Web.WebClient.Request(
+                confirmUpdateRefreshTokenUrl,
+                "post",
+                new Dictionary<string, string>() {
+                    { "csrf", newRefreshToken },
+                    { "refresh_token", GetRefreshTokenAndUpdateTime().Item1}
+                }
+            );
+            if (refreshTokenConfirmResponse.Item1) {
+                var refreshTokenConfirmRes = JsonUtils.ParseJsonString<RefreshTokenConfirmResponse>(refreshTokenConfirmResponse.Item2);
+                if (refreshTokenConfirmRes == null) { return false; }
+                
+                UpdateRefreshTokenData(
+                    newRefreshToken,
+                    DateTimeUtils.GetCurrentTimestampMilliSecond()
+                );
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 }
