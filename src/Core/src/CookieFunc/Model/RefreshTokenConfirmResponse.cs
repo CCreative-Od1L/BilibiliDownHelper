@@ -1,16 +1,10 @@
 using System.Text.Json.Serialization;
+using Core.PleInterface;
 
 namespace Core.CookieFunc.Model;
 
-public class RefreshTokenConfirmResponse {
-    [JsonPropertyName("code")]
-    public int Code { get; set; } = -1;
-    [JsonPropertyName("message")]
-    public string? Message { get; set; }
-    [JsonPropertyName("ttl")]
-    public int TTL { get; set; }
-
-    public bool CheckIsValid() {
-        return Code >= 0;
+public class RefreshTokenConfirmResponse : BaseResponse<object>{
+    public override bool IsValid() {
+        return base.IsValid();
     }
 }

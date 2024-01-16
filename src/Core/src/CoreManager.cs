@@ -10,7 +10,6 @@ namespace Core {
         static public readonly LogManager logger;
         static public readonly DirectoryManager directoryMgr;
         static public readonly AriaManager ariaMgr;
-        static public readonly UserManager userMgr;
         static CoreManager(){
             // !! 注意初始化的顺序
             directoryMgr = DirectoryManager.INSTANCE;
@@ -18,7 +17,6 @@ namespace Core {
             
             cookieMgr = CookieManager.INSTANCE;
             ariaMgr = new();
-            userMgr = UserManager.INSTANCE;
         }
     }
 }

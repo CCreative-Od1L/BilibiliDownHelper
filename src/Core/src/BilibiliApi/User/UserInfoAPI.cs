@@ -6,12 +6,12 @@ namespace Core.BilibiliApi.User {
     /// <summary>
     /// * 用户信息管理-单例模式
     /// </summary>
-    public class UserManager {
-        public static UserManager INSTANCE { get; } = new();
+    public class UserInfoAPI {
+        public static UserInfoAPI INSTANCE { get; } = new();
         public bool IsLogin { get; private set; } = false;
-        public UserInfo? NowUserInfo { get; private set; } = null;
+        public LoginUserInfoData? NowUserInfo { get; private set; } = null;
         private event Action? OnUserInfoUpdate = null;
-        private UserManager() {
+        private UserInfoAPI() {
             // TODO 支持登录记忆
             // * TryToUpdateUserLoginInfo();
         }
@@ -20,13 +20,13 @@ namespace Core.BilibiliApi.User {
         /// </summary>
         /// <param name="action"></param>
         /// <returns>布尔值，表示是否成功</returns>
-        public bool AddUserInfoUpdateListener(Action action) {
+        public bool AddMyInfoUpdateListener(Action action) {
             try {
                 OnUserInfoUpdate += action;
                 CoreManager.logger.Info(string.Format("增加用户信息更新订阅，函数：{0}", nameof(action)));
                 return true;
             } catch (Exception e) {
-                CoreManager.logger.Error(nameof(AddUserInfoUpdateListener), e);
+                CoreManager.logger.Error(nameof(AddMyInfoUpdateListener), e);
                 return false;
             }
         }
@@ -35,13 +35,13 @@ namespace Core.BilibiliApi.User {
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
-        public bool RemoveUserInfoUpdateListener(Action action) {
+        public bool RemoveMyInfoUpdateListener(Action action) {
             try {
                 OnUserInfoUpdate -= action;
                 CoreManager.logger.Info(string.Format("取消用户信息更新订阅，函数{0}", nameof(action)));
                 return true;
             } catch (Exception e) {
-                CoreManager.logger.Error(nameof(RemoveUserInfoUpdateListener), e);
+                CoreManager.logger.Error(nameof(RemoveMyInfoUpdateListener), e);
                 return false;
             }
         }
@@ -49,7 +49,7 @@ namespace Core.BilibiliApi.User {
         /// * 使用QRCode登录回应数据更新用户信息
         /// </summary>
         /// <param name="response"></param>
-        public async Task UpdateUserLoginInfoAsync(QRCodeLoginResponse response) {
+        public async Task UpdateMyInfoAsync(QRCodeLoginResponse response) {
             IsLogin = true;
             CoreManager.cookieMgr.UpdateRefreshTokenData(
                 response.Data.RefreshToken,
@@ -57,8 +57,8 @@ namespace Core.BilibiliApi.User {
             CoreManager.cookieMgr.UpdateDataToFile();
             // * 建个线程去做网络请求，更新用户数据
             await Task.Run(async () => {
-                var webResponse = await GetBilibiliUserInfoAsync();
-                if (LoadUserInfo(webResponse)) {
+                var webResponse = await GetMyInfoAsync();
+                if (LoadMyInfo(webResponse)) {
                     OnUserInfoUpdate?.Invoke();
                 }
             });
@@ -66,11 +66,11 @@ namespace Core.BilibiliApi.User {
         /// <summary>
         /// * 由外部调用，用于在尝试使用已有的Cookie文件进行用户信息的获取。
         /// </summary>
-        public void TryToUpdateUserLoginInfo(Action? onSuccessCallback = null, Action? onFailureCallback = null) {
+        public void TryToUpdateMyInfo(Action? onSuccessCallback = null, Action? onFailureCallback = null) {
             new Task (async () => {
-                var webResponse = await GetBilibiliUserInfoAsync();
+                var webResponse = await GetMyInfoAsync();
                 if (!string.IsNullOrEmpty(webResponse)) {
-                    if (LoadUserInfo(webResponse)) {
+                    if (LoadMyInfo(webResponse)) {
                         onSuccessCallback?.Invoke();
                         OnUserInfoUpdate?.Invoke();
                         return;
@@ -83,13 +83,13 @@ namespace Core.BilibiliApi.User {
         /// * 异步，获取用户信息
         /// </summary>
         /// <returns>返回请求json文本结果</returns>
-        private async Task<string> GetBilibiliUserInfoAsync() {
+        private async Task<string> GetMyInfoAsync() {
             string url = @"https://api.bilibili.com/x/web-interface/nav";
             string methodName = "get";
 
             var result = await Web.WebClient.Request(url, methodName);
             if (result.Item1 == false) {
-                CoreManager.logger.Info(nameof(GetBilibiliUserInfoAsync), result.Item2);
+                CoreManager.logger.Info(nameof(GetMyInfoAsync), result.Item2);
             } else {
                 return result.Item2;
             }
@@ -100,12 +100,12 @@ namespace Core.BilibiliApi.User {
         /// </summary>
         /// <param name="response"></param>
         /// <returns>是否成功装填</returns>
-        private bool LoadUserInfo(string? response) {
+        private bool LoadMyInfo(string? response) {
             if (string.IsNullOrEmpty(response)) { return false; }
-            var userInfoResponse = JsonUtils.ParseJsonString<UserInfoResponse>(response);
+            var userInfoResponse = JsonUtils.ParseJsonString<LoginUserInfoResponse>(response);
             if(userInfoResponse != null) {
-                if (userInfoResponse.CheckIsValid()) {
-                    NowUserInfo = userInfoResponse.userInfo;
+                if (userInfoResponse.IsValid()) {
+                    NowUserInfo = userInfoResponse.Data;
                     CoreManager.logger.Info("用户信息装填成功。");
                     return true;
                 } else {

@@ -1,4 +1,6 @@
 using System.Text.Json.Serialization;
+using Core.PleInterface;
+using Core.Utils;
 /// <summary>
 /// * 登录结果返回 json 对象
 /// </summary>
@@ -13,19 +15,17 @@ namespace Core.BilibiliApi.Login.Model {
         // * 已扫描，未确认
         QRCODE_SCAN,
     }
-    public class QRCodeLoginResponse {
-        [JsonPropertyName("code")]
-        public int Code {get; set;}
-        [JsonPropertyName("message")]
-        public string Message {get; set;}
-        [JsonPropertyName("data")]
-        public LoginResponseData Data {get; set;}
-
+    public class QRCodeLoginResponse : BaseResponse<LoginResponseData> {
+        public override bool IsValid() {
+            return base.IsValid();
+        }
         public DateTime GetLoginTime() {
-            return new DateTime(Data.Timestamp);
+            if (Data == null) { return DateTimeUtils.GetDefaultDateTime(); }
+            else return new DateTime(Data.Timestamp);
         }
         public QRCODE_SCAN_STATUS GetQRCodeStatus() {
-            return Data.Code switch
+            if (Data == null) { return QRCODE_SCAN_STATUS.NOT_SCAN; }
+            return Data.Code switch 
             {
                 0 => QRCODE_SCAN_STATUS.SUCCESS,
                 86038 => QRCODE_SCAN_STATUS.QRCODE_EXPRIED,
@@ -45,14 +45,14 @@ namespace Core.BilibiliApi.Login.Model {
 
     public class LoginResponseData {
         [JsonPropertyName("url")]
-        public string Url {get; set;}
+        public string? Url { get; set; }
         [JsonPropertyName("refresh_token")]
-        public string RefreshToken {get; set;}
+        public string? RefreshToken { get; set; }
         [JsonPropertyName("timestamp")]
-        public long Timestamp {get; set;}
+        public long Timestamp { get; set; }
         [JsonPropertyName("code")]
-        public int Code {get; set;}
+        public int Code { get; set; }
         [JsonPropertyName("message")]
-        public string Message {get; set;}
+        public string? Message { get; set; }
     }
 }

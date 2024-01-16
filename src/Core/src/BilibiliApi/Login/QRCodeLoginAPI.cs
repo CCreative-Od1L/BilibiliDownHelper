@@ -5,7 +5,7 @@ using QRCoder;
 using Core.BilibiliApi.User;
 
 namespace Core.BilibiliApi.Login {
-    static public class QrCodeLogin {
+    static public class QrCodeLoginAPI {
         /// <summary>
         /// * 使用QR码登录 API
         /// </summary>
@@ -27,7 +27,7 @@ namespace Core.BilibiliApi.Login {
                 CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Failure.");
             } else {
                 callback?.Invoke(loginResult!);
-                await CoreManager.userMgr.UpdateUserLoginInfoAsync(loginResult);
+                await UserInfoAPI.INSTANCE.UpdateMyInfoAsync(loginResult);
                 CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Success.");
             }
         }

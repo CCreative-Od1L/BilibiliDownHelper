@@ -254,7 +254,10 @@ namespace Core.CookieFunc {
             }
             return new(refreshToken, refreshDateTime);
         }
-
+        /// <summary>
+        /// * 检测是否需要刷新Cookie
+        /// </summary>
+        /// <returns>元组 (bool, timestamp) </returns>
         public async Task<Tuple<bool, long>> CheckCookieRefresh() {
             cookieFileData.TryGetValue(CookieFileDataNames.Cookie, out var cookieData);
             cookieFileData.TryGetValue(CookieFileDataNames.RefreshToken, out var oldRefreshToken);
@@ -273,6 +276,11 @@ namespace Core.CookieFunc {
             if (checkCookieResponse == null) { return new(false, 0); }
             else { return new(checkCookieResponse.CheckIfRefresh(), checkCookieResponse.GetTimestamp()); }
         }
+        /// <summary>
+        /// * 生成 CorrespondPath
+        /// </summary>
+        /// <param name="timestamp"></param>
+        /// <returns>CorrespondPath 字符串</returns>
         public static string GenerateCorrespondPath(long timestamp) {
             string pemPublicKey = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDLgd2OAkcGVtoE3ThUREbio0EgUc/prcajMKXvkCKFCWhJYJcLkcM2DKKcSeFpD/j6Boy538YXnR6VhcuUJOhH2x71nzPjfdTcqMz7djHum0qSZA0AyCBDABUqCrfNgCiJ00Ra7GmRj+YCK1NJEuewlb40JNrRuoEUXpabUzGB8QIDAQAB";   
             var encrypted = CryptoUtils.AesPemPublicEncrypt(pemPublicKey, string.Format("refresh_{0}", timestamp));
@@ -288,6 +296,11 @@ namespace Core.CookieFunc {
             }
             return base16Encoder.ToString();
         }
+        /// <summary>
+        /// * 根据 CorrespondPath 获取 RefreshCSRF
+        /// </summary>
+        /// <param name="correspondPath"></param>
+        /// <returns>refresh_csrf 字符串</returns>
         public static async Task<string> GetRefreshCSRF(string correspondPath) {
             string url = string.Format(@"https://www.bilibili.com/correspond/1/{0}", correspondPath);
             var webResponse = await Web.WebClient.Request(url, "get");
@@ -299,6 +312,11 @@ namespace Core.CookieFunc {
                 return webResponse.Item2.Substring(labelStart, labelEnd - labelStart - "</div>".Length);
             }
         }
+        /// <summary>
+        /// * 刷新Cookie API
+        /// </summary>
+        /// <param name="timestamp">时间戳(从CheckCookieRefresh的返回值获得)</param>
+        /// <returns>执行结果</returns>
         public async Task<bool> RefreshCookie(long timestamp) {
             var correspondPath = GenerateCorrespondPath(timestamp);
             var refreshCSRF = await GetRefreshCSRF(correspondPath);

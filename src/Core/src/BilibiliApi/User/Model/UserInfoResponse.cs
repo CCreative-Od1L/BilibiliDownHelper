@@ -1,17 +1,10 @@
-using System.Text.Json.Serialization;
+using Core.BilibiliApi.User.Model;
+using Core.PleInterface;
 
-namespace Core.BilibiliApi.User;
+namespace Core.BilibiliApi.Login.Model;
 
-public class UserInfoResponse {
-    [JsonPropertyName("code")]
-    public int Code = -1;
-    [JsonPropertyName("message")]
-    public string? Message;
-    [JsonPropertyName("ttl")]
-    public int TTL;
-    [JsonPropertyName("data")]
-    public UserInfo? userInfo;
-    public bool CheckIsValid() {
-        return Code.Equals(0);
+public class UserInfoResponse :BaseResponse<UserInfoData> {
+    public override bool IsValid() {
+        return base.IsValid();
     }
 }
