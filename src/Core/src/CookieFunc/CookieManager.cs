@@ -353,7 +353,7 @@ namespace Core.CookieFunc {
             var refreshTokenConfirmResponse = await Web.WebClient.Request(
                 confirmUpdateRefreshTokenUrl,
                 "post",
-                new Dictionary<string, string>() {
+                new Dictionary<string, string> {
                     { "csrf", newRefreshToken },
                     { "refresh_token", GetRefreshTokenAndUpdateTime().Item1}
                 }

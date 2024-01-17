@@ -63,7 +63,7 @@ namespace Core.Utils {
         /// <param name="filePath">文件路径</param>
         /// <param name="content">内容</param>
         /// <param name="exceptionCallback">异常处理回调函数</param>
-        static public void AppendText(string filePath, string content, Action<Exception> exceptionCallback) {
+        static public void AppendText(string filePath, string content, Action<Exception>? exceptionCallback = null) {
             try {
                 CheckAndCreateFileDirectory(filePath);
                 using var systemWrite = File.AppendText(filePath);

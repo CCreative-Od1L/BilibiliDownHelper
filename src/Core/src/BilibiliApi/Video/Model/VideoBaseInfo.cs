@@ -30,7 +30,7 @@ public class VideoBaseInfoData {
         if (DescV2 == null) { return string.Empty; }
         StringBuilder descBuilder  = new();
         for(int i = 0; i < DescV2.Length; ++i) {
-            descBuilder.AppendLine(DescV2[i].ToString());
+            descBuilder.AppendLine(DescV2[i].GetDesc());
         }
         return descBuilder.ToString();
     }

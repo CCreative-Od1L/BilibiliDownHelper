@@ -5,7 +5,7 @@ using QRCoder;
 using Core.BilibiliApi.User;
 
 namespace Core.BilibiliApi.Login {
-    static public class QrCodeLoginAPI {
+    public static class QrCodeLoginAPI {
         /// <summary>
         /// * 使用QR码登录 API
         /// </summary>

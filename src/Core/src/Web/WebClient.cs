@@ -47,20 +47,18 @@ namespace Core.Web {
             if (retryTime <= 0) {
                 return new Tuple<bool, string>(false, "The request exceeded the retry limit.");
             }
+            StringBuilder urlBuilder = new(url);
 
             // * Append the parameters to the url.
             if (parameters != null && parameters.Count != 0) {
-                StringBuilder stringBuilder = new("?");
-                foreach (var param in parameters) {
-                    stringBuilder.AppendFormat("{0}={1}&", param.Key, param.Value);
-                }
-                stringBuilder.Length--;  // * Remove the last "&".
-                url += stringBuilder.ToString();
+                urlBuilder.Append('?');
+                string paramStr = await new FormUrlEncodedContent(parameters).ReadAsStringAsync();
+                urlBuilder.Append(paramStr);
             }
 
             try {
                 HttpRequestMessage requestMessage = new() {
-                    RequestUri = new(url),
+                    RequestUri = new(urlBuilder.ToString()),
                 };
                 // * Select the Http Method.
                 if (methodName.Equals("get", StringComparison.CurrentCultureIgnoreCase)) {
@@ -142,15 +140,15 @@ namespace Core.Web {
             } catch (WebException e) {
                 Console.WriteLine("RequestWeb()发生Web异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
+                return Request(urlBuilder.ToString(), methodName, null, referrer, retryTime - 1).Result;
             } catch (IOException e) {
                 Console.WriteLine("RequestWeb()发生IO异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
+                return Request(urlBuilder.ToString(), methodName, null, referrer, retryTime - 1).Result;
             } catch (Exception e) {
                 Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return Request(url, methodName, parameters, referrer, retryTime - 1).Result;
+                return Request(urlBuilder.ToString(), methodName, null, referrer, retryTime - 1).Result;
             }
         }
 
