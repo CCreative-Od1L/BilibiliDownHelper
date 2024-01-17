@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Core.PleInterface;
 
 namespace Core.BilibiliApi.Video.Model;
-public class VideoBaseInfo : BaseResponse<VideoBaseInfoData> {
+public class VideoBaseInfoResponse : BaseResponse<VideoBaseInfoData> {
     public override bool IsValid() {
         return base.IsValid();
     }

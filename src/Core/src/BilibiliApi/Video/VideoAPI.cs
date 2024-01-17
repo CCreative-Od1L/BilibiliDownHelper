@@ -3,7 +3,7 @@ using Core.Utils;
 
 namespace Core.BilibiliApi.Video;
 public static class VideoAPI {
-    public static async Task<(bool, VideoBaseInfo?)> GetVideoBaseInfoFromID(string avid, string bvid) {
+    public static async Task<(bool, VideoBaseInfoResponse?)> GetVideoBaseInfoFromID(string avid, string bvid) {
         if(string.IsNullOrEmpty(avid) && string.IsNullOrEmpty(bvid)) { return (false, null); }
 
         string VideoInfoRequestUrl = "https://api.bilibili.com/x/web-interface/view";
@@ -17,7 +17,7 @@ public static class VideoAPI {
         );
         if (!isSuccess) { return (false, null); }
         else {
-            return (true, JsonUtils.ParseJsonString<VideoBaseInfo>(content));
+            return (true, JsonUtils.ParseJsonString<VideoBaseInfoResponse>(content));
         } 
     }
 }
