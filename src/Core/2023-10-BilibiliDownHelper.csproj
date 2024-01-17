@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="QRCoder" Version="1.4.3" />
     <PackageReference Include="BouncyCastle" Version="1.8.9" />
+    <PackageReference Include="Xabe.FFmpeg" Version="5.2.6" />
   </ItemGroup>
 
 </Project>
