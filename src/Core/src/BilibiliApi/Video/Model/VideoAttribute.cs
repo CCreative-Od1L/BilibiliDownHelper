@@ -28,6 +28,11 @@ public enum VIDEO_FNVAL {
     _8K = 1024,         // * 是否需求8K
     AV1_ENCODE = 2048   // * 是否需求AV1编码
 }
+public enum VIDEO_CODE_CID  {
+    AVC = 7,
+    HEVC = 12,
+    AV1 = 13,
+}
 public enum AUDIO_QUALITY {
     _64K = 30216,
     _132K = 30232,
