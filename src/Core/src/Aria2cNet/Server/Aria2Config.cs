@@ -84,7 +84,7 @@ public class Aria2Config {
         }
     }
     public bool ContinueDownload { get; set; }          // * 断点续传
-    public List<string>? Headers { get; set; }
+    public List<string> Headers { get; set; } = [];
     public Aria2ConfigFileAllocation FileAllocation 
                                  { get; set; }          // * 文件预分配
     private readonly StringBuilder configBuilder;
@@ -118,15 +118,17 @@ public class Aria2Config {
             configBuilder.AppendFormat("--{0}={1} ", configName, configValue);
         }
     }
-    public override string ToString()
-    {
+    public void AddBilibiliReferer() {
+        Headers.Add(@"Referer: https://www.bilibili.com");
+        Headers.Add(@"Origin: https://www.bilibili.com");
+    }
+    public override string ToString() {
         configBuilder.Clear();
         // * header
-        if (Headers != null) {
-            for(int i = 0; i < Headers.Count; ++i) {
-                AppendConfig("header", $"\"{Headers[i]}\"");
-            }
+        for(int i = 0; i < Headers.Count; ++i) {
+            AppendConfig("header", $"\"{Headers[i]}\"");
         }
+        
         // * default config
         AppendConfig("enable-rpc");
         AppendConfig("rpc-listen-all", "true");

@@ -13,10 +13,9 @@ public class AriaError
     public int Code { get; set; }
 
     [JsonPropertyName("message")]
-    public string? Message { get; set; }
+    public string Message { get; set; } = "";
 
-    public override string ToString()
-    {
+    public override string ToString() {
         return JsonUtils.SerializeJsonObj(this);
     }
 }

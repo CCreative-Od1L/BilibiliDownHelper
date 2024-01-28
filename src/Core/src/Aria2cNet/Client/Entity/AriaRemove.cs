@@ -4,13 +4,13 @@ using Core.Utils;
 namespace Core.Aria2cNet.Client.Entity;
 public class AriaRemove {
     [JsonPropertyName("id")]
-    public string? Id { get; set; }
+    public string Id { get; set; } = "";
 
     [JsonPropertyName("jsonrpc")]
-    public string? Jsonrpc { get; set; }
+    public string Jsonrpc { get; set; } = "";
 
     [JsonPropertyName("result")]
-    public string? Result { get; set; }
+    public string Result { get; set; } = "";
 
     [JsonPropertyName("error")]
     public AriaError? Error { get; set; }

@@ -16,12 +16,12 @@ namespace Core.Aria2cNet.Client.Entity;
     }
     }
      */
-public class AriaGetGlobalStat {
+public class AriaGetGlobalStatus {
     [JsonPropertyName("id")]
-    public string? Id { get; set; }
+    public string Id { get; set; } = "";
 
     [JsonPropertyName("jsonrpc")]
-    public string? Jsonrpc { get; set; }
+    public string Jsonrpc { get; set; } = "";
 
     [JsonPropertyName("result")]
     public AriaGetGlobalStatResult? Result { get; set; }
@@ -35,22 +35,22 @@ public class AriaGetGlobalStat {
 }
 public class AriaGetGlobalStatResult {
     [JsonPropertyName("downloadSpeed")]
-    public string? DownloadSpeed { get; set; }
+    public string DownloadSpeed { get; set; } = "";
 
     [JsonPropertyName("numActive")]
-    public string? NumActive { get; set; }
+    public string NumActive { get; set; } = "";
 
     [JsonPropertyName("numStopped")]
-    public string? NumStopped { get; set; }
+    public string NumStopped { get; set; } = "";
 
     [JsonPropertyName("numStoppedTotal")]
-    public string? NumStoppedTotal { get; set; }
+    public string NumStoppedTotal { get; set; } = "";
 
     [JsonPropertyName("numWaiting")]
-    public string? NumWaiting { get; set; }
+    public string NumWaiting { get; set; } = "";
 
     [JsonPropertyName("uploadSpeed")]
-    public string? UploadSpeed { get; set; }
+    public string UploadSpeed { get; set; } = "";
 
     public override string ToString() {
         return JsonUtils.SerializeJsonObj(this);

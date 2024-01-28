@@ -763,7 +763,7 @@ public class ClientSingleton {
     /// The response is a struct and contains the following keys. Values are strings.
     /// </summary>
     /// <returns></returns>
-    public async Task<AriaGetGlobalStat?> GetGlobalStatAsync()
+    public async Task<AriaGetGlobalStatus?> GetGlobalStatAsync()
     {
         List<object> ariaParams =
         [
@@ -775,7 +775,7 @@ public class ClientSingleton {
             Method = "aria2.getGlobalStat",
             Params = ariaParams
         };
-        return await GetRpcResponseAsync<AriaGetGlobalStat>(ariaSend);
+        return await GetRpcResponseAsync<AriaGetGlobalStatus>(ariaSend);
     }
 
     /// <summary>
