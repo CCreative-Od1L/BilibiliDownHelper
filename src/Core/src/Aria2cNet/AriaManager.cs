@@ -2,6 +2,7 @@ using Core.Aria2cNet.Client;
 
 namespace Core.Aria2cNet;
 public class AriaManager {
+    public static AriaManager Instance { get; } = new();
     // gid对应项目的状态
     public delegate void TellStatusHandler(string gid, long totalLength, long completedLength, long speed);
     public event TellStatusHandler? TellStatus;
@@ -33,7 +34,7 @@ public class AriaManager {
     /// <param name="gid"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public async Task AsyncGetDownloadStatus(string gid, Action? action = null) {
+    public async Task AsyncGetDownloadStatus(string gid, AutoResetEvent stop, Action? action = null) {
         AutoResetEvent Pause = new(false);
         string filePath = string.Empty;
         while (true) {
@@ -49,6 +50,7 @@ public class AriaManager {
                         gid: gid,
                         msg: status.Error.Message
                     );
+                    stop.Set();
                     return;
                 }
             }
@@ -67,7 +69,7 @@ public class AriaManager {
                 action?.Invoke();
                 if (status.Result.Status == "complete") { break; }
                 // * 错误码不为 0
-                if (!status.Result.ErrorCode.Equals("0")) {
+                if (!string.IsNullOrEmpty(status.Result.ErrorCode) && !status.Result.ErrorCode.Equals("0")) {
                     CoreManager.logger.Error("AriaManager", status.Result.ErrorMessage);
                     var removeResult = await ClientSingleton.Instance.RemoveDownloadResultAsync(gid);
                     if (removeResult != null) {
@@ -80,6 +82,7 @@ public class AriaManager {
                         downloadPath: string.Empty,
                         status.Result.ErrorMessage
                     );
+                    stop.Set();
                     return;
                 }
             }
@@ -91,6 +94,7 @@ public class AriaManager {
             downloadPath: filePath,
             string.Empty
         );
+        stop.Set();
     }
     /// <summary>
     /// * 获取全局下载速度

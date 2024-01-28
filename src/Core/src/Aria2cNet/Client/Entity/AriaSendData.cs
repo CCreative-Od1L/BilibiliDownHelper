@@ -21,16 +21,16 @@ public class AriaSendData {
 }
 public class AriaSendOption {
     [JsonPropertyName("all-proxy")]
-    public string? HttpProxy { get; set; }
+    public string HttpProxy { get; set; } = string.Empty;
 
     [JsonPropertyName("out")]
-    public string? Out { get; set; }
+    public string Out { get; set; } = string.Empty;
 
     [JsonPropertyName("dir")]
-    public string? Dir { get; set; }
+    public string Dir { get; set; } = string.Empty;
 
     [JsonPropertyName("user-agent")]
-    public string? UserAgent { get; set; }
+    public string UserAgent { get; set; } = string.Empty;
 
     public override string ToString() {
         return JsonUtils.SerializeJsonObj(this);

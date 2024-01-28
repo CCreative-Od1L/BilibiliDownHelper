@@ -12,13 +12,13 @@ namespace Core.Aria2cNet.Client.Entity;
 */
 public class AriaAddUri {
     [JsonPropertyName("id")]
-    public string? Id { get; set; }
+    public string Id { get; set; } = string.Empty;
 
     [JsonPropertyName("jsonrpc")]
-    public string? Jsonrpc { get; set; }
+    public string Jsonrpc { get; set; } = string.Empty;
 
     [JsonPropertyName("result")]
-    public string? Result { get; set; }
+    public string Result { get; set; } = string.Empty;
     
     [JsonPropertyName("error")]
     public AriaError? Error { get; set; }
