@@ -16,7 +16,7 @@ namespace Core.Test {
             string methodName = "get";
 
             output.WriteLine("Web Request Start");
-            var result = await Web.WebClient.Request(url, methodName);
+            var result = await Web.WebClient.Request(url: url, methodName: methodName);
             if (result.Item1 == false) {
                 output.WriteLine(result.Item2);
             } else {

@@ -85,12 +85,13 @@ namespace Core.Logger {
         
         [GeneratedRegex("(?<=\\()(\\d+)(?=\\))")]
         private partial Regex LogNoRegex();
+
         /// <summary>
         /// 返回构造出来的日志文件名称，格式:yyyyMMdd([pattern]).log
         /// </summary>
         /// <param name="pattern"></param>
         /// <returns></returns> <summary>
-        string ConstructLogFileName(string pattern) {
+        static string ConstructLogFileName(string pattern) {
             StringBuilder stringBuilder = new();
             stringBuilder.AppendFormat("{0}({1}).log", DateTime.Now.ToString("yyyyMMdd"), pattern);
             return stringBuilder.ToString();

@@ -18,7 +18,7 @@ public class VideoStreamData {
     [JsonPropertyName("accept_quality")]        // * 支持的清晰度代号列表
     public int[] AcceptQuality { get; set; } = [];
     [JsonPropertyName("video_codecid")]
-    public int VideoCodeCid { get; set; }
+    public long VideoCodeCid { get; set; }
     [JsonPropertyName("durl")]              // * MP4 存在此字段
     public string[] Durl { get; set; } = [];
     [JsonPropertyName("dash")]              // * DASH 存在此字段
@@ -28,5 +28,30 @@ public class VideoStreamData {
     }
     public VIDEO_CODE_CID GetVideoCodeCid() {
         return (VIDEO_CODE_CID)VideoCodeCid;
+    }
+    /// <summary>
+    /// 处理获取视频下载链接(DASH)
+    /// </summary>
+    /// <returns></returns>
+    public (List<List<string>>, List<VIDEO_QUALITY>) GetDashVideoDownloadLink() {
+        if (DashOrMp4() != 1) { return ([],[]); }
+        return Dash!.GetVideoDownloadLink();
+    }
+    /// <summary>
+    /// 处理获取音频下载链接(DASH)
+    /// </summary>
+    /// <returns></returns>
+    public  (List<List<string>>, List<AUDIO_QUALITY>)GetDashAudioDownloadLink() {
+        if (DashOrMp4() != 1) { return ([],[]); }
+        return Dash!.GetAudioDownloadLink();
+    }
+    /// <summary>
+    /// * 1 : Dash
+    /// * 2 : MP4
+    /// * 0 : none 
+    /// </summary>
+    /// <returns></returns>
+    public int DashOrMp4() {
+        return (Dash == null) ? ((Durl.Length == 0)? 2 : 0) : 1;
     }
 }

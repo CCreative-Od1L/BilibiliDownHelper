@@ -13,7 +13,7 @@ public static class WbiAPI {
         12, 38, 41, 13, 37, 48, 7, 16, 24, 55, 40, 61, 26, 17, 0, 1, 60, 51, 30, 4, 22, 25, 54, 21, 56, 59, 6, 63,
         57, 62, 11, 36, 20, 34, 44, 52
     ];
-
+    
     //对 imgKey 和 subKey 进行字符顺序打乱编码
     private static string GetMixinKey(string orig) {
         return MixinKeyEncTab.Aggregate("", (s, i) => s + orig[i])[..32];
@@ -39,7 +39,7 @@ public static class WbiAPI {
         string query = new FormUrlEncodedContent(parameters).ReadAsStringAsync().Result;
         //计算 w_rid
         byte[] hashBytes = MD5.HashData(Encoding.UTF8.GetBytes(query + mixinKey));
-        string wbiSign = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+        string wbiSign = Convert.ToHexString(hashBytes).ToLower();
         parameters["w_rid"] = wbiSign;
 
         return parameters;
@@ -48,7 +48,7 @@ public static class WbiAPI {
     // 获取最新的 img_key 和 sub_key
     private static async Task<(string, string)> GetWbiKeys() {
         string WbiRequestUrl = "https://api.bilibili.com/x/web-interface/nav";
-        var ( _, content) = await Web.WebClient.Request(WbiRequestUrl, "get");
+        var ( _, content) = await Web.WebClient.Request(url: WbiRequestUrl, methodName: "get");
 
         JsonNode response = JsonNode.Parse(content)!;
 

@@ -87,7 +87,7 @@ namespace Core.BilibiliApi.User {
             string url = @"https://api.bilibili.com/x/web-interface/nav";
             string methodName = "get";
 
-            var result = await Web.WebClient.Request(url, methodName);
+            var result = await Web.WebClient.Request(url: url, methodName: methodName);
             if (result.Item1 == false) {
                 CoreManager.logger.Info(nameof(GetMyInfoAsync), result.Item2);
             } else {

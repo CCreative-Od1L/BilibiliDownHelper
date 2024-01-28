@@ -19,8 +19,8 @@ public enum VIDEO_QUALITY {
 }
 public enum VIDEO_FNVAL {
     FLV = 0,            // * 已弃用
-    MP4 = 1,
-    DASH = 16,
+    MP4 = 1,            // * 与 DASH 互斥
+    DASH = 16,          // * 与 MP4 互斥
     HDR = 64,           // * 是否需要HDR视频
     _4K = 128,          // * 是否需求   4K
     DOLBY_AUDIO = 256,  // * 是否需要杜比音频

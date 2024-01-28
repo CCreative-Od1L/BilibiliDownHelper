@@ -5,6 +5,7 @@ using System.IO.Compression;
 using Core.Utils;
 using Microsoft.VisualBasic;
 using Core.CookieFunc;
+using Core.BilibiliApi.User;
 namespace Core.Web {
 
     // * internal
@@ -40,6 +41,7 @@ namespace Core.Web {
         public static async Task<Tuple<bool, string>> Request(
             string url,
             string methodName,
+            bool useWbi = false,
             Dictionary<string, string>? parameters = null,
             string? referrer = null,
             int retryTime = 3
@@ -52,7 +54,12 @@ namespace Core.Web {
             // * Append the parameters to the url.
             if (parameters != null && parameters.Count != 0) {
                 urlBuilder.Append('?');
-                string paramStr = await new FormUrlEncodedContent(parameters).ReadAsStringAsync();
+                string paramStr;
+                if (useWbi) {
+                    paramStr = await WbiAPI.GetAppendWbiUrl(parameters);
+                } else {
+                    paramStr = await new FormUrlEncodedContent(parameters).ReadAsStringAsync();
+                }
                 urlBuilder.Append(paramStr);
             }
 
@@ -140,15 +147,15 @@ namespace Core.Web {
             } catch (WebException e) {
                 Console.WriteLine("RequestWeb()发生Web异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return Request(urlBuilder.ToString(), methodName, null, referrer, retryTime - 1).Result;
+                return Request(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
             } catch (IOException e) {
                 Console.WriteLine("RequestWeb()发生IO异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return Request(urlBuilder.ToString(), methodName, null, referrer, retryTime - 1).Result;
+                return Request(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
             } catch (Exception e) {
                 Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return Request(urlBuilder.ToString(), methodName, null, referrer, retryTime - 1).Result;
+                return Request(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
             }
         }
 

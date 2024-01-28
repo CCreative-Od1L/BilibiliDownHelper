@@ -29,4 +29,13 @@ public class VideoAndAudioObj {
     public SegmentBaseObj? SegmentBase2 { get; set; } = null;
     [JsonPropertyName("codecid")]       // * 码流编码标识代码
     public int CodeCid { get; set; }
+    public string GetBaseUrl() {
+        return BaseUrl1 ?? BaseUrl2;
+    }
+    public List<string> GetBackupUrl() {
+        return (BackupUrl1.Length != 0) ? [..BackupUrl1] : [..BackupUrl2];
+    }
+    public string GetFrameRate() {
+        return FrameRate1 ?? FrameRate2;
+    }
 }

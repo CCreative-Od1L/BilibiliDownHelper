@@ -10,22 +10,21 @@ public class VideoBaseInfoResponse : BaseResponse<VideoBaseInfoData> {
 }
 public class VideoBaseInfoData {
     [JsonPropertyName("bvid")] 
-    public string? Bvid { get; set; }
+    public string Bvid { get; set; } = "";
     [JsonPropertyName("aid")]
     public long Avid { get; set; }
     [JsonPropertyName("videos")]
     public int Videos { get; set; }
     [JsonPropertyName("pic")]
-    public string? CoverUrl { get; set; } 
+    public string CoverUrl { get; set; } = "";
     [JsonPropertyName("title")]
-    public string? Title { get; set; }
+    public string Title { get; set; } = "";
     [JsonPropertyName("desc_v2")]   // * 新版视频简介
-    public VideoDesc[]? DescV2 { get; set; }
+    public VideoDesc[] DescV2 { get; set; } = [];
     [JsonPropertyName("owner")]
-    public VideoOwner? Owner { get; set; }
+    public VideoOwner Owner { get; set; } = new();
     [JsonPropertyName("pages")]
-    public VideoPagesItem[]? Pages { get; set; }
-
+    public VideoPagesItem[] Pages { get; set; } = [];
     public string GetVideoDesc() {
         if (DescV2 == null) { return string.Empty; }
         StringBuilder descBuilder  = new();
@@ -33,5 +32,12 @@ public class VideoBaseInfoData {
             descBuilder.AppendLine(DescV2[i].GetDesc());
         }
         return descBuilder.ToString();
+    }
+    public List<long> GetPagesCid() {
+        List<long> li = [];
+        for(int i = 0; i < Pages.Length; i++) {
+            li.Add(Pages[i].Cid);
+        }
+        return li;
     }
 }

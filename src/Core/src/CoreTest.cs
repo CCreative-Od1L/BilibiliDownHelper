@@ -9,7 +9,7 @@ namespace Core {
             string methodName = "get";
 
             Console.WriteLine("Web Request Start");
-            var result = await Web.WebClient.Request(url, methodName);
+            var result = await Web.WebClient.Request(url: url, methodName: methodName);
             if (result.Item1 == false) {
                 Console.WriteLine(result.Item2);
             } else {

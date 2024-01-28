@@ -51,7 +51,7 @@ namespace Core.Test {
             AutoResetEvent Pause = new(false);
             Task checkQRCodeScanResult = new(async obj => {
                 while(true) {
-                    var result = await WebClient.Request(url, "get", parameters);
+                    var result = await WebClient.Request(url: url, methodName: "get", parameters: parameters);
                     if (result.Item1) {
                         var response = JsonUtils.ParseJsonString<QRCodeLoginResponse>(result.Item2);
                         if (response == null) {

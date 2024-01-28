@@ -268,7 +268,7 @@ namespace Core.CookieFunc {
             
             CheckCookieResponse? checkCookieResponse = null;
             string url = "https://passport.bilibili.com/x/passport-login/web/cookie/info";
-            var result = await Web.WebClient.Request(url, "get");
+            var result = await Web.WebClient.Request(url: url, methodName: "get");
             if (result.Item1 != false) {
                 checkCookieResponse = JsonUtils.ParseJsonString<CheckCookieResponse>(result.Item2);
             }
@@ -303,7 +303,7 @@ namespace Core.CookieFunc {
         /// <returns>refresh_csrf 字符串</returns>
         public static async Task<string> GetRefreshCSRF(string correspondPath) {
             string url = string.Format(@"https://www.bilibili.com/correspond/1/{0}", correspondPath);
-            var webResponse = await Web.WebClient.Request(url, "get");
+            var webResponse = await Web.WebClient.Request(url: url, methodName: "get");
             if (webResponse.Item1 == false) {
                 return string.Empty;
             } else {
@@ -331,9 +331,9 @@ namespace Core.CookieFunc {
 
             string refreshCookieUrl = @"https://passport.bilibili.com/x/passport-login/web/cookie/refresh";
             var refreshCookieResponse = await Web.WebClient.Request(
-                refreshCookieUrl,
-                "post",
-                new () {
+                url: refreshCookieUrl,
+                methodName: "post",
+                parameters: new() {
                     { "csrf",  csrfVal },
                     { "refresh_csrf", refreshCSRF},
                     { "source", "main_web" },
@@ -351,9 +351,9 @@ namespace Core.CookieFunc {
 
             string confirmUpdateRefreshTokenUrl = @"https://passport.bilibili.com/x/passport-login/web/confirm/refresh";
             var refreshTokenConfirmResponse = await Web.WebClient.Request(
-                confirmUpdateRefreshTokenUrl,
-                "post",
-                new Dictionary<string, string> {
+                url: confirmUpdateRefreshTokenUrl,
+                methodName: "post",
+                parameters: new() {
                     { "csrf", newRefreshToken },
                     { "refresh_token", GetRefreshTokenAndUpdateTime().Item1}
                 }
