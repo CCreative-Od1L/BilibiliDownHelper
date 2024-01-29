@@ -95,10 +95,10 @@ public class Aria2Config {
         MaxConnectionPerServer = 3;
         Split = 5;
         MinSplitSize = 20;
-        MaxOverallDownloadLimit = 2048;
-        MaxDownloadLimit = 1024;
-        MaxOverallUploadLimit = 1024;
-        MaxUploadLimit = 256;
+        MaxOverallDownloadLimit = 2048000;
+        MaxDownloadLimit = 1024000;
+        MaxOverallUploadLimit = 1024000;
+        MaxUploadLimit = 256000;
         ContinueDownload = true;
 
         LogLevel = Aria2ConfigLogLevel.NOT_SET;
@@ -121,6 +121,7 @@ public class Aria2Config {
     public void AddBilibiliReferer() {
         Headers.Add(@"Referer: https://www.bilibili.com");
         Headers.Add(@"Origin: https://www.bilibili.com");
+        Headers.Add(@"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0");
     }
     public override string ToString() {
         configBuilder.Clear();

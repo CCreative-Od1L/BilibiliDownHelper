@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO.Compression;
+using System.Text.RegularExpressions;
 using Core;
 using Core.Aria2cNet;
 using Core.Aria2cNet.Client;
@@ -10,7 +11,7 @@ using Core.Utils;
 using Xunit.Abstractions;
 
 namespace Core.Test {
-    public class DownloadHandleTest(ITestOutputHelper testOutputHelper)
+    public partial class DownloadHandleTest(ITestOutputHelper testOutputHelper)
     {
         readonly ITestOutputHelper output = testOutputHelper;
         readonly string downloadLogPath = Path.Combine(CoreManager.directoryMgr.fileDirectory.Cache, "download_test.txt");
@@ -45,6 +46,9 @@ namespace Core.Test {
             }
         }
 
+        [GeneratedRegex(@"(?<=/)[^/?#]+(?=[^/]*$)gm")]
+        private partial Regex UrlFileNameRegex();
+
         public async void BaseDownloadTest(AutoResetEvent done) {
             var option = new Aria2Config();
             option.AddBilibiliReferer();
@@ -66,11 +70,11 @@ namespace Core.Test {
             );
             Assert.True(openServerResult);
 
-            string downloadFileName = "download_test.dat";
+            
+            string downloadUrl = @"https://upos-sz-mirror08c.bilivideo.com/upgcxcode/36/54/1418545436/1418545436-1-100113.m4s?e=ig8euxZM2rNcNbdlhoNvNC8BqJIzNbfqXBvEqxTEto8BTrNvN0GvT90W5JZMkX_YN0MvXg8gNEV4NC8xNEV4N03eN0B5tZlqNxTEto8BTrNvNeZVuJ10Kj_g2UB02J0mN0B5tZlqNCNEto8BTrNvNC7MTX502C8f2jmMQJ6mqF2fka1mqx6gqj0eN0B599M=&uipk=5&nbs=1&deadline=1706533948&gen=playurlv2&os=08cbv&oi=3071518783&trid=ddb4e9c4093649e6b72dde4711021b20u&mid=1763210270&platform=pc&upsig=f28bbaba4267b539010f64baaf4bb04d&uparams=e,uipk,nbs,deadline,gen,os,oi,trid,mid,platform&bvc=vod&nettype=0&orderid=0,3&buvid=&build=0&f=u_0_0&agrr=0&bw=111681&logo=80000000";
+            string downloadFileName = UrlFileNameRegex().Match(downloadUrl).Value;
             var downTask = await ClientSingleton.Instance.AddUriAsync(
-                [
-                    "https://i2.hdslb.com/bfs/face/399f5b1fc45eb24c4b812a081e5441ffce5af3b8.jpg"
-                ],
+                [downloadUrl],
                 new AriaSendOption() {  
                     Dir = CoreManager.directoryMgr.fileDirectory.Cache,
                     Out = downloadFileName,
@@ -92,6 +96,14 @@ namespace Core.Test {
             Assert.True(closeResult);
 
             done.Set();
+        }
+
+        [Fact]
+        public void GetFileNameFromUrl() {
+            string pattern = @"(?<=\/)[^\/\?#]+(?=[^\/]*$)";
+            string val = "https://i2.hdslb.com/bfs/face/399f5b1fc45eb24c4b812a081e5441ffce5af3b8.jpg";
+            var matchResult = Regex.Match(val, pattern);
+            Assert.NotEmpty(matchResult.Value);
         }
     }
 }
