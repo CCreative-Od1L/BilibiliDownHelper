@@ -3,10 +3,41 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BvDownkr"
+        xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+        xmlns:vms="clr-namespace:BvDownkr.src.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="BvDownKr" Height="720" Width="1280">
     <Grid>
-
+        <Grid.Resources>
+            <vms:MainWindowVM x:Key="vm" />
+        </Grid.Resources>
+        <Grid.DataContext>
+            <Binding Source="{StaticResource vm}" />
+        </Grid.DataContext>
+        <Grid Height="35" VerticalAlignment="Top" HorizontalAlignment="Center" Width="1280">
+            <Grid Height="35" Width="180" VerticalAlignment="Top" HorizontalAlignment="Right">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <!--最小化按钮-->
+                <Rectangle Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"></Rectangle>
+                <!--缩放-->
+                <Rectangle Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"></Rectangle>
+                <!--关闭-->
+                <Button Grid.Column="2" 
+                        Background="{x:Null}" BorderBrush="{x:Null}" Foreground="{x:Null}"
+                        Height="30" Width="30"
+                        Command="{Binding CloseProgram}">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="10" />
+                        </Style>
+                    </Button.Resources>
+                    <svgc:SvgViewbox MaxHeight="15" Width="15" Source="src/Resources/close_btn.svg" />
+                </Button>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

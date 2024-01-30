@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using BvDownkr.src.Utils;
+using BvDownkr.src.ViewModels;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -16,8 +18,9 @@ namespace BvDownkr;
 /// </summary>
 public partial class MainWindow : Window
 {
-    public MainWindow()
-    {
+    public MainWindow() {
         InitializeComponent();
+
+        DataContext = new MainWindowVM();
     }
 }

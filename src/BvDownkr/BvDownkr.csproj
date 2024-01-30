@@ -1,17 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <None Remove="src\Resources\close_btn.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Core\2023-10-BilibiliDownHelper.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="src\Services\" />
-    <Folder Include="src\Views\" />
-    <Folder Include="src\ViewModels\" />
-    <Folder Include="src\Utils\" />
     <Folder Include="src\Models\" />
-    <Folder Include="src\Resources\" />
     <Folder Include="src\Languages\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpVectors" Version="1.8.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="src\Resources\close_btn.svg" />
   </ItemGroup>
 
   <PropertyGroup>
