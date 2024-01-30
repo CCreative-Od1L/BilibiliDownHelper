@@ -763,7 +763,7 @@ public class ClientSingleton {
     /// The response is a struct and contains the following keys. Values are strings.
     /// </summary>
     /// <returns></returns>
-    public async Task<AriaGetGlobalStatus?> GetGlobalStatAsync()
+    public async Task<AriaGetGlobalStatus?> GetGlobalStatusAsync()
     {
         List<object> ariaParams =
         [

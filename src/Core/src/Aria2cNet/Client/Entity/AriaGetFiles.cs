@@ -8,7 +8,7 @@ public class AriaGetFiles {
     [JsonPropertyName("jsonrpc")]
     public string? Jsonrpc { get; set; }
     [JsonPropertyName("result")]
-    public List<AriaUri>? Result { get; set; }
+    public List<AriaGetFilesResult>? Result { get; set; }
     [JsonPropertyName("error")]
     public AriaError? Error { get; set; }
     public override string ToString() {

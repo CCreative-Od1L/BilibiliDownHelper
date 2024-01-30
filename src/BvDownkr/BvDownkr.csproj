@@ -4,6 +4,16 @@
     <ProjectReference Include="..\Core\2023-10-BilibiliDownHelper.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="src\Services\" />
+    <Folder Include="src\Views\" />
+    <Folder Include="src\ViewModels\" />
+    <Folder Include="src\Utils\" />
+    <Folder Include="src\Models\" />
+    <Folder Include="src\Resources\" />
+    <Folder Include="src\Languages\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>

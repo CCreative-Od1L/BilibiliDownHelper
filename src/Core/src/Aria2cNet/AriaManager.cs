@@ -103,7 +103,7 @@ public class AriaManager {
     public async void GetGlobalStatus() {
         AutoResetEvent Pause = new(false);
         while (true) {
-            var globalStatus = await ClientSingleton.Instance.GetGlobalStatAsync();
+            var globalStatus = await ClientSingleton.Instance.GetGlobalStatusAsync();
             if (globalStatus == null || globalStatus.Result == null) { continue; }
 
             long globalSpeed = long.Parse(globalStatus.Result.DownloadSpeed);
