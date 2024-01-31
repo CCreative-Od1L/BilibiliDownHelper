@@ -2,12 +2,18 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:vms="clr-namespace:BvDownkr.src.ViewModels"
       xmlns:local="clr-namespace:BvDownkr.src.Views"
       mc:Ignorable="d" 
       d:DesignHeight="720" d:DesignWidth="1280"
       Title="SearchPage">
-
+    <Page.Resources>
+        <vms:SearchPageVM x:Key="vm" />
+    </Page.Resources>
+    <Page.DataContext>
+        <Binding Source="{StaticResource vm}" />
+    </Page.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition MaxHeight="100" />
@@ -36,7 +42,9 @@
                 </TextBox>
                 <Button Grid.Column="1" Margin="10, 5" VerticalAlignment="Center" HorizontalAlignment="Stretch" 
                         Height="40"
-                        Background="#f1f1f1" >
+                        Background="#f1f1f1" 
+                        Command="{Binding OpenWindowTest}"
+                        CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="10" />
