@@ -25,18 +25,20 @@
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type TextBox}">
-                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True">
+                            <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" SnapsToDevicePixels="True">
                                 <ScrollViewer x:Name="PART_ContentHost" Margin="10, 0" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
                             </Border>
                             <ControlTemplate.Triggers>
-                                <Trigger Property="IsEnabled" Value="false">
+                                <Trigger Property="IsEnabled" Value="False">
                                     <Setter Property="Opacity" TargetName="border" Value="0.56"/>
                                 </Trigger>
-                                <Trigger Property="IsMouseOver" Value="true">
-                                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.MouseOver.Border}"/>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" TargetName="border" Value="#e3e3e3" />
                                 </Trigger>
-                                <Trigger Property="IsKeyboardFocused" Value="true">
-                                    <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource TextBox.Focus.Border}"/>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter Property="Background" TargetName="border" Value="{x:Null}" />
+                                    <Setter Property="BorderBrush" TargetName="border" Value="#f1f1f1"/>
+                                    <Setter Property="BorderThickness" TargetName="border" Value="2" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -65,7 +67,7 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="Border" Property="Background" Value="#f0f0f0" />
+                                    <Setter TargetName="Border" Property="Background" Value="#e3e3e3" />
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
