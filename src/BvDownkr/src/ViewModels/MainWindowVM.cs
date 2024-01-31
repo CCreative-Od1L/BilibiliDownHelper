@@ -12,8 +12,8 @@ namespace BvDownkr.src.ViewModels
     public class MainWindowVM {
         public static ICommand CloseProgram {
             get {
-                return new ReplyCommand(
-                    () => {
+                return new ReplyCommand<object>(
+                    (_) => {
                         Application.Current.Shutdown();
                     }, true);            
             }

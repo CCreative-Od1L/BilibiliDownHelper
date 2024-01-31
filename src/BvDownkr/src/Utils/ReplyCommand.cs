@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace BvDownkr.src.Utils
 {
-    class ReplyCommand(Action action, bool canExecute = false) : ICommand {
+    class ReplyCommand<T>(Action<T?> action, bool canExecute = false) : ICommand {
         public event EventHandler? CanExecuteChanged {
             add {
                 CommandManager.RequerySuggested += value;
@@ -17,7 +17,7 @@ namespace BvDownkr.src.Utils
             }
         }
         readonly bool _canExecute = canExecute;
-        readonly Action _execute = action;
+        readonly Action<T?> _execute = action;
 
         public bool CanExecute(object? parameter) {
             return _canExecute;
@@ -25,7 +25,7 @@ namespace BvDownkr.src.Utils
 
         public void Execute(object? parameter) {
             if (_canExecute) {
-                _execute?.Invoke();
+                _execute?.Invoke((T?)parameter);
             }
         }
     }
