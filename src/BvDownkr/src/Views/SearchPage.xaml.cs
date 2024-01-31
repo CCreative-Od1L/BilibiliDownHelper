@@ -17,8 +17,8 @@ namespace BvDownkr.src.Views {
     /// <summary>
     /// SeachPage.xaml 的交互逻辑
     /// </summary>
-    public partial class SeachPage : Page {
-        public SeachPage() {
+    public partial class SearchPage : Page {
+        public SearchPage() {
             InitializeComponent();
         }
     }

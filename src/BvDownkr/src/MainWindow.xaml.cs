@@ -1,5 +1,6 @@
 ﻿using BvDownkr.src.Utils;
 using BvDownkr.src.ViewModels;
+using BvDownkr.src.Views;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,7 +21,15 @@ public partial class MainWindow : Window
 {
     public MainWindow() {
         InitializeComponent();
-
+        // * Load DataContext
         DataContext = new MainWindowVM();
+        // * Init UI
+        InitUI();
+    }
+
+    public void InitUI() {
+        // * Default Load(Search Page)
+        SearchPage searchPage = new();
+        Area2.Navigate(searchPage);
     }
 }

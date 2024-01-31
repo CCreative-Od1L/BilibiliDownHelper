@@ -2,12 +2,12 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="src\Views\SeachPage.xaml.cs">
+    <Compile Update="src\Views\SearchPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="src\Views\SeachPage.xaml">
+    <Page Update="src\Views\SearchPage.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
