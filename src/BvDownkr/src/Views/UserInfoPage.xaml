@@ -9,6 +9,6 @@
       Title="UserInfo">
 
     <Grid>
-        
+        <Rectangle Width="100" Height="100" Fill="AliceBlue"/>
     </Grid>
 </Page>
