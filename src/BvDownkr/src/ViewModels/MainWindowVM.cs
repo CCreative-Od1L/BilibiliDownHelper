@@ -14,9 +14,11 @@ using System.Windows.Shapes;
 namespace BvDownkr.src.ViewModels
 {
     public class MainWindowVM {
-        public MainWindowModel? _model;
+        public MainWindowModel _model;
         public Frame? currentOpenFrame = null;
-        public MainWindowVM() {}
+        public MainWindowVM() {
+            _model = new MainWindowModel();
+        }
         public MainWindowVM(MainWindowModel model) {
             _model = model;
         }
@@ -30,14 +32,24 @@ namespace BvDownkr.src.ViewModels
                 if (currentOpenFrame != null && mask != null) {
                     currentOpenFrame.Visibility = Visibility.Hidden;
                     mask.Visibility = Visibility.Hidden;
+
+                    currentOpenFrame = null;
                 }
             }, true);
         public ICommand OpenUserInfoFrame => new ReplyCommand<object>(
             (_) => {
-                currentOpenFrame = _model!.UserInfoPanel;
+                currentOpenFrame = _model.UserInfoPanel;
 
                 _model.UserInfoPanel!.Navigate(new UserInfoPage());
                 _model.UserInfoPanel!.Visibility = Visibility.Visible;
+                _model.Mask!.Visibility = Visibility.Visible;
+            }, true);
+        public ICommand OpenDownloadTaskFrame => new ReplyCommand<object>(
+            (_) => {
+                currentOpenFrame = _model.DownloadTaskPanel;
+
+                _model.DownloadTaskPanel!.Navigate(new DownloadTaskPage());
+                _model.DownloadTaskPanel!.Visibility = Visibility.Visible;
                 _model.Mask!.Visibility = Visibility.Visible;
             }, true);
     }

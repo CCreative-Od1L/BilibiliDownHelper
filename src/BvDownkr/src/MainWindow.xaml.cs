@@ -34,6 +34,7 @@ public partial class MainWindow : Window
         model.UserButton = UserButton;
         model.Mask = MainWindowMask;
         model.UserInfoPanel = UserInfoPanel;
+        model.DownloadTaskPanel = DownloadTaskPanel;
     }
     public void InitUI() {
         // * Default Load(Search Page)

@@ -88,9 +88,10 @@
                             </Button.Resources>
                         </Button>
                     </StackPanel>
-                    <StackPanel Name="DownloadButtons" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Name="DownloadButton" Width="50" Height="50" Margin="5"
-                                Background="#f1f1f1">
+                    <StackPanel Name="DownloadTaskButtons" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Name="DownloadTaskButton" Width="50" Height="50" Margin="5"
+                                Background="#f1f1f1"
+                                Command="{Binding OpenDownloadTaskFrame}">
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="25"/>
@@ -118,5 +119,7 @@
         </Rectangle>
         <Frame Name="UserInfoPanel" Grid.Row="1" Panel.ZIndex="2" Visibility="Hidden"
                HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Height="400"/>
+        <Frame Name="DownloadTaskPanel" Grid.Row="1" Panel.ZIndex="2" Visibility="Hidden"
+               HorizontalAlignment="Right" VerticalAlignment="Center" Width="500" Height="600"/>
     </Grid>
 </Window>

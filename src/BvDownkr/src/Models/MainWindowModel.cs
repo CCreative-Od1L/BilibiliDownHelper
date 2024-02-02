@@ -11,5 +11,6 @@ namespace BvDownkr.src.Models {
         public Button? UserButton { get; set; }
         public Rectangle? Mask { get; set; }
         public Frame? UserInfoPanel { get; set; }
+        public Frame? DownloadTaskPanel { get; set; }
     }
 }
