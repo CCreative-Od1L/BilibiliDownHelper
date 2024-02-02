@@ -1,4 +1,5 @@
-﻿using BvDownkr.src.Utils;
+﻿using BvDownkr.src.Models;
+using BvDownkr.src.Utils;
 using BvDownkr.src.ViewModels;
 using BvDownkr.src.Views;
 using System.Text;
@@ -21,15 +22,23 @@ public partial class MainWindow : Window
 {
     public MainWindow() {
         InitializeComponent();
+        var model = new MainWindowModel();
+        // * LoadModel
+        LoadModel(model);
         // * Load DataContext
-        DataContext = new MainWindowVM();
+        DataContext = new MainWindowVM(model);
         // * Init UI
         InitUI();
     }
-
+    public void LoadModel(MainWindowModel model) {
+        model.UserButton = UserButton;
+        model.Mask = MainWindowMask;
+        model.UserInfoPanel = UserInfoPanel;
+    }
     public void InitUI() {
         // * Default Load(Search Page)
         SearchPage searchPage = new();
+
         Area2.Navigate(searchPage);
     }
 }

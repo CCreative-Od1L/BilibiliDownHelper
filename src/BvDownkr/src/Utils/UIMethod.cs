@@ -8,6 +8,10 @@ using System.Windows.Input;
 
 namespace BvDownkr.src.Utils {
     internal class UIMethod {
+        public static double GetScreenScale() {
+            System.Drawing.Graphics graphics = System.Drawing.Graphics.FromHwnd(IntPtr.Zero);
+            return (graphics.DpiX * 1.041666667) / 100;
+        }
         public static Point GetMousePosition() {
             return Mouse.GetPosition(Application.Current.MainWindow);
         }

@@ -5,12 +5,18 @@
     <Compile Update="src\Views\SearchPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="src\Views\UserInfoPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="src\Views\UserWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="src\Views\SearchPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="src\Views\UserInfoPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="src\Views\UserWindow.xaml">

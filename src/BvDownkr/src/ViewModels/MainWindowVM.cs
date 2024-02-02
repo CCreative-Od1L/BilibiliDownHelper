@@ -1,4 +1,5 @@
-﻿using BvDownkr.src.Utils;
+﻿using BvDownkr.src.Models;
+using BvDownkr.src.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,12 @@ using System.Windows.Input;
 namespace BvDownkr.src.ViewModels
 {
     public class MainWindowVM {
+        public MainWindowModel? _model;
+        public MainWindowVM() {}
+        public MainWindowVM(MainWindowModel model) {
+            _model = model;
+        }
+
         public static ICommand CloseProgram {
             get {
                 return new ReplyCommand<object>(
