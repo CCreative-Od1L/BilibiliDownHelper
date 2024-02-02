@@ -15,7 +15,7 @@ namespace BvDownkr.src.ViewModels
 {
     public class MainWindowVM {
         public MainWindowModel _model;
-        public Frame? currentOpenFrame = null;
+        public Grid? currentOpenFrame = null;
         public MainWindowVM() {
             _model = new MainWindowModel();
         }
@@ -40,15 +40,15 @@ namespace BvDownkr.src.ViewModels
             (_) => {
                 currentOpenFrame = _model.UserInfoPanel;
 
-                _model.UserInfoPanel!.Navigate(new UserInfoPage());
+                _model.UserInfoContent!.Content = PageManager.UserInfoPage;
                 _model.UserInfoPanel!.Visibility = Visibility.Visible;
                 _model.Mask!.Visibility = Visibility.Visible;
             }, true);
         public ICommand OpenDownloadTaskFrame => new ReplyCommand<object>(
             (_) => {
                 currentOpenFrame = _model.DownloadTaskPanel;
-
-                _model.DownloadTaskPanel!.Navigate(new DownloadTaskPage());
+                
+                _model.DownloadTaskContent!.Content = PageManager.DownloadTaskPage;
                 _model.DownloadTaskPanel!.Visibility = Visibility.Visible;
                 _model.Mask!.Visibility = Visibility.Visible;
             }, true);

@@ -34,12 +34,12 @@ public partial class MainWindow : Window
         model.UserButton = UserButton;
         model.Mask = MainWindowMask;
         model.UserInfoPanel = UserInfoPanel;
+        model.UserInfoContent = UserInfoContent;
         model.DownloadTaskPanel = DownloadTaskPanel;
+        model.DownloadTaskContent = DownloadTaskContent;
     }
     public void InitUI() {
         // * Default Load(Search Page)
-        SearchPage searchPage = new();
-
-        Area2.Navigate(searchPage);
+        Area2.Content = PageManager.SearchPage;
     }
 }

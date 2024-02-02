@@ -10,7 +10,9 @@ namespace BvDownkr.src.Models {
     public class MainWindowModel {
         public Button? UserButton { get; set; }
         public Rectangle? Mask { get; set; }
-        public Frame? UserInfoPanel { get; set; }
-        public Frame? DownloadTaskPanel { get; set; }
+        public Grid? UserInfoPanel { get; set; }
+        public Frame? UserInfoContent { get; set; }
+        public Grid? DownloadTaskPanel { get; set; }
+        public Frame? DownloadTaskContent { get; set; }
     }
 }

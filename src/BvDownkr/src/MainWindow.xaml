@@ -117,9 +117,13 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </Rectangle>
-        <Frame Name="UserInfoPanel" Grid.Row="1" Panel.ZIndex="2" Visibility="Hidden"
-               HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Height="400"/>
-        <Frame Name="DownloadTaskPanel" Grid.Row="1" Panel.ZIndex="2" Visibility="Hidden"
-               HorizontalAlignment="Right" VerticalAlignment="Center" Width="500" Height="600"/>
+        <Grid Name="UserInfoPanel" Grid.Row="1" Panel.ZIndex="2" Visibility="Hidden"
+               HorizontalAlignment="Center" VerticalAlignment="Center" Width="400" Height="400">
+            <Frame Name="UserInfoContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        </Grid>
+        <Grid Name="DownloadTaskPanel" Grid.Row="1" Panel.ZIndex="2" Visibility="Hidden"
+               HorizontalAlignment="Right" VerticalAlignment="Center" Width="500" Height="600">
+            <Frame Name="DownloadTaskContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        </Grid>
     </Grid>
 </Window>
