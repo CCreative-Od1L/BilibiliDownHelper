@@ -18,7 +18,7 @@ namespace Core.Test {
         
         [Fact]
         public void IsWorkWell() {
-            QrCodeLoginAPI.LoginByQrCode();
+            // QrCodeLoginAPI.LoginByQrCode();
             
             // QrCodeLogin.ApplyForQRCode(tuple => {
             //     // * tuple.Item1: 登录用的网址

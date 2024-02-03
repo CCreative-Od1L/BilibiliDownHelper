@@ -1,14 +1,29 @@
 ﻿<Page x:Class="BvDownkr.src.Views.UserInfoPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:vms="clr-namespace:BvDownkr.src.ViewModels"
       xmlns:local="clr-namespace:BvDownkr.src.Views"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="UserInfo">
-
+    <Page.Resources>
+        <vms:UserInfoVM x:Key="vm"/>
+    </Page.Resources>
+    <Page.DataContext>
+        <Binding Source="{StaticResource vm}"/>
+    </Page.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OnPageLoaded}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
+        <Frame Name="QRCodeLoginFrame" Panel.ZIndex="1" 
+               Visibility="{Binding QRcodeLoginPageVisiable}" Content="{Binding QRcodeLoginPage}"
+               HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
         <Rectangle Width="100" Height="100" Fill="AliceBlue"/>
     </Grid>
 </Page>

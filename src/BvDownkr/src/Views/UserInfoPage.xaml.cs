@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using BvDownkr.src.Services;
+using BvDownkr.src.ViewModels;
 
 namespace BvDownkr.src.Views {
     /// <summary>
@@ -20,6 +22,12 @@ namespace BvDownkr.src.Views {
     public partial class UserInfoPage : Page {
         public UserInfoPage() {
             InitializeComponent();
+
+            InitUI();
+            DataContext = new UserInfoVM();
+        }
+        public void InitUI() {
+
         }
     }
 }

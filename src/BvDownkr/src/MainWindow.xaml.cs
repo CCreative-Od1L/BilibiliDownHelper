@@ -23,27 +23,18 @@ public partial class MainWindow : Window
 {
     public MainWindow() {
         InitializeComponent();
-        var model = new MainWindowModel();
-        // * LoadModel
-        LoadModel(model);
         // * Load DataContext
-        DataContext = new MainWindowVM(model);
+        DataContext = new MainWindowVM();
         // * Init UI
         InitUI();
         // * OpenServices
         OpenServices();
     }
-    public void LoadModel(MainWindowModel model) {
-        model.UserButton = UserButton;
-        model.Mask = MainWindowMask;
-        model.UserInfoPanel = UserInfoPanel;
-        model.UserInfoContent = UserInfoContent;
-        model.DownloadTaskPanel = DownloadTaskPanel;
-        model.DownloadTaskContent = DownloadTaskContent;
-    }
     public void InitUI() {
         // * Default Load(Search Page)
         Area2.Content = PageManager.SearchPage;
+        UserInfoContent.Content = PageManager.UserInfoPage;
+        DownloadTaskContent.Content = PageManager.DownloadTaskPage;
     }
     public static void OpenServices() {
         UserService.OpenService();

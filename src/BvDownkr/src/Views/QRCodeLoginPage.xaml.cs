@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BvDownkr.src.Models;
+using BvDownkr.src.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,6 +22,14 @@ namespace BvDownkr.src.Views {
     public partial class QRCodeLoginPage : Page {
         public QRCodeLoginPage() {
             InitializeComponent();
+            var model = new QRCodeLoginModel();
+            // * Load Model
+            LoadModel(model);
+            // * Load DataContext
+            DataContext = new QRCodeLoginVM(model);
+        }
+        public void LoadModel(QRCodeLoginModel model) {
+            model.QRcodeImage = qrcodeImage;
         }
     }
 }

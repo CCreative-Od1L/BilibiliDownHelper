@@ -10,7 +10,7 @@
       d:DesignHeight="720" d:DesignWidth="1280"
       Title="SearchPage">
     <Page.Resources>
-        <vms:SearchPageVM x:Key="vm" />
+        <vms:SearchPageVM x:Key="vm"/>
     </Page.Resources>
     <Page.DataContext>
         <Binding Source="{StaticResource vm}" />

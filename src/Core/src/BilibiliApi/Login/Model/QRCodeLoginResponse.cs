@@ -42,15 +42,15 @@ namespace Core.BilibiliApi.Login.Model {
 
     public class LoginResponseData {
         [JsonPropertyName("url")]
-        public string? Url { get; set; }
+        public string Url { get; set; } = string.Empty;
         [JsonPropertyName("refresh_token")]
-        public string? RefreshToken { get; set; }
+        public string RefreshToken { get; set; } = string.Empty;
         [JsonPropertyName("timestamp")]
         public long Timestamp { get; set; }
         [JsonPropertyName("code")]
         public int Code { get; set; }
         [JsonPropertyName("message")]
-        public string? Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public DateTime GetLoginTime() {
             return new DateTime(Timestamp);
         }
