@@ -75,10 +75,9 @@ namespace Core.Logger {
         public static bool CheckAndCreateLogDirectory() {
             if (string.IsNullOrEmpty(CoreManager.directoryMgr.GetLogDirectory())) {
                 CoreManager.directoryMgr.ResetToDefault("log");
-
-                if (!System.IO.Directory.Exists(CoreManager.directoryMgr.GetLogDirectory())) {
-                    System.IO.Directory.CreateDirectory(CoreManager.directoryMgr.GetLogDirectory());
-                } 
+            }
+            if (!System.IO.Directory.Exists(CoreManager.directoryMgr.GetLogDirectory())) {
+                System.IO.Directory.CreateDirectory(CoreManager.directoryMgr.GetLogDirectory());
             }
             return true;
         }
@@ -101,7 +100,7 @@ namespace Core.Logger {
             CheckAndCreateLogDirectory();
             string logFolderPath = CoreManager.directoryMgr.GetLogDirectory();
             string fileNamePattern = ConstructLogFileName("*");
-            List<string> filePaths = System.IO.Directory.GetFiles(
+            List<string> filePaths = Directory.GetFiles(
                 logFolderPath, 
                 fileNamePattern, 
                 SearchOption.TopDirectoryOnly)

@@ -1,5 +1,6 @@
-﻿using BvDownkr.src.Models;
-using BvDownkr.src.Utils;
+﻿using BvDownkr.src;
+using BvDownkr.src.Models;
+using BvDownkr.src.Services;
 using BvDownkr.src.ViewModels;
 using BvDownkr.src.Views;
 using System.Text;
@@ -29,6 +30,8 @@ public partial class MainWindow : Window
         DataContext = new MainWindowVM(model);
         // * Init UI
         InitUI();
+        // * OpenServices
+        OpenServices();
     }
     public void LoadModel(MainWindowModel model) {
         model.UserButton = UserButton;
@@ -41,5 +44,8 @@ public partial class MainWindow : Window
     public void InitUI() {
         // * Default Load(Search Page)
         Area2.Content = PageManager.SearchPage;
+    }
+    public static void OpenServices() {
+        UserService.OpenService();
     }
 }

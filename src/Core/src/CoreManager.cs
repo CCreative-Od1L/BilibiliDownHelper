@@ -16,7 +16,7 @@ namespace Core {
             logger = LogManager.INSTANCE;
             
             cookieMgr = CookieManager.INSTANCE;
-            ariaMgr = new();
+            ariaMgr = AriaManager.INSTANCE;
         }
     }
 }

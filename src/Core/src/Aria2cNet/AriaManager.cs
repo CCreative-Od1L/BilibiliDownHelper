@@ -2,7 +2,7 @@ using Core.Aria2cNet.Client;
 
 namespace Core.Aria2cNet;
 public class AriaManager {
-    public static AriaManager Instance { get; } = new();
+    public static AriaManager INSTANCE { get; } = new();
     // gid对应项目的状态
     public delegate void TellStatusHandler(string gid, long totalLength, long completedLength, long speed);
     public event TellStatusHandler? TellStatus;

@@ -5,6 +5,9 @@
     <Compile Update="src\Views\DownloadTaskPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="src\Views\QRCodeLoginPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="src\Views\SearchPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -17,6 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="src\Views\DownloadTaskPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="src\Views\QRCodeLoginPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="src\Views\SearchPage.xaml">

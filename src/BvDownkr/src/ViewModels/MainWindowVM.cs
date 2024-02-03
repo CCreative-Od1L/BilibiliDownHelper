@@ -1,4 +1,5 @@
 ﻿using BvDownkr.src.Models;
+using BvDownkr.src.Services;
 using BvDownkr.src.Utils;
 using BvDownkr.src.Views;
 using System;
@@ -40,7 +41,12 @@ namespace BvDownkr.src.ViewModels
             (_) => {
                 currentOpenFrame = _model.UserInfoPanel;
 
-                _model.UserInfoContent!.Content = PageManager.UserInfoPage;
+                if(UserService.Instance.IsLoggedIn) {
+                    _model.UserInfoContent!.Content = PageManager.UserInfoPage;
+                } else {
+                    _model.UserInfoContent!.Content = PageManager.QRCodeLoginPage;
+                }
+
                 _model.UserInfoPanel!.Visibility = Visibility.Visible;
                 _model.Mask!.Visibility = Visibility.Visible;
             }, true);

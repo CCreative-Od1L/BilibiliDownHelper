@@ -55,7 +55,7 @@ namespace Core.Test {
 
             AutoResetEvent downloadStop = new(false);
 
-            AriaManager.Instance.DownloadFinish += 
+            AriaManager.INSTANCE.DownloadFinish += 
             (string gid, bool isSuccess, string downloadPath, string? msg = null) => {
                 FileUtils.AppendText(
                     downloadLogPath,
@@ -86,7 +86,7 @@ namespace Core.Test {
                 Assert.NotEmpty(gid);
 
                 _ = Task.Run(() => {
-                    _ = AriaManager.Instance.AsyncGetDownloadStatus(gid, downloadStop);
+                    _ = AriaManager.INSTANCE.AsyncGetDownloadStatus(gid, downloadStop);
                 });
             }
 

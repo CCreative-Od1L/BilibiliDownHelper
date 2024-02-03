@@ -9,14 +9,13 @@ namespace Core.BilibiliApi.Login {
         /// <summary>
         /// * 使用QR码登录 API
         /// </summary>
-        /// <param name="callback">成功获取登录信息回调</param>
-        static public async void LoginByQrCode(Action<QRCodeLoginResponse>? callback = null) {
+        static public async void LoginByQrCode(Action<byte[]>? qrcodeLoadCallback) {
             AutoResetEvent getResult = new(false);
             QRCodeLoginResponse loginResult = new();
 
             ApplyForQRCode(tuple => {
                 // * tuple.Item1: 登录用的网址
-                ShowQrCode(tuple.Item1);
+                ShowQrCode(tuple.Item1, qrcodeLoadCallback);
                 // * tuple.Item2: 登录的密钥
                 TryToLogin(tuple.Item2, getResult, (QRCodeLoginResponse response) => {
                     loginResult = response;
@@ -26,8 +25,7 @@ namespace Core.BilibiliApi.Login {
             if (loginResult == null || loginResult.GetQRCodeStatus() != QRCODE_SCAN_STATUS.SUCCESS) {
                 CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Failure.");
             } else {
-                callback?.Invoke(loginResult!);
-                await UserInfoAPI.INSTANCE.UpdateMyInfoAsync(loginResult);
+                await UserInfoAPI.INSTANCE.UpdateMyInfoAsync(loginResult.Data!);
                 CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Success.");
             }
         }
@@ -42,8 +40,8 @@ namespace Core.BilibiliApi.Login {
                 methodName: "get");
             if (isSuccess) {
                 var parseRes = JsonUtils.ParseJsonString<ApplyQRCodeData>(content);
-                if (parseRes != null) {
-                    callback?.Invoke(new Tuple<string, string>(parseRes.Data.Url, parseRes.Data.QRCodeKey));
+                if (parseRes != null && parseRes.Data != null && parseRes.Data.IsValid()) {
+                    callback?.Invoke(new(parseRes.Data.Url, parseRes.Data.QRCodeKey));
                     return;
                 } else {
                     CoreManager.logger.Error(nameof(JsonUtils.ParseJsonString), "Json Parse Failure");
@@ -57,16 +55,17 @@ namespace Core.BilibiliApi.Login {
         /// * 展示QR码
         /// </summary>
         /// <param name="url"></param>
-        static void ShowQrCode(string url) {
-            // * 暂时用的，后续会用窗体展示二维码
-            string filePath = AppDomain.CurrentDomain.BaseDirectory + @"AppData\QRCode\";
-            string fileName = "img.png";
-            if (!Directory.Exists(filePath)) {
-                Directory.CreateDirectory(filePath);
-            }
-            File.WriteAllBytes(
-                filePath + fileName, 
-                PngByteQRCodeHelper.GetQRCode(url, QRCodeGenerator.ECCLevel.Q, 5));
+        static void ShowQrCode(string url, Action<byte[]>? loadCallback) {
+            // * debug用，后续会用窗体展示二维码
+            //string filePath = AppDomain.CurrentDomain.BaseDirectory + @"AppData\QRCode\";
+            //string fileName = "img.png";
+            //if (!Directory.Exists(filePath)) {
+            //    Directory.CreateDirectory(filePath);
+            //}
+            //File.WriteAllBytes(
+            //    filePath + fileName, 
+            //    PngByteQRCodeHelper.GetQRCode(url, QRCodeGenerator.ECCLevel.Q, 5));
+            loadCallback?.Invoke(PngByteQRCodeHelper.GetQRCode(url, QRCodeGenerator.ECCLevel.Q, 5));
         }
         /// <summary>
         /// * 尝试登录

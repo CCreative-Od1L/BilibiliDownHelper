@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Core.PleInterface;
 using Core.Utils;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 /// <summary>
 /// * 登录结果返回 json 对象
 /// </summary>
@@ -18,10 +19,6 @@ namespace Core.BilibiliApi.Login.Model {
     public class QRCodeLoginResponse : BaseResponse<LoginResponseData> {
         public override bool IsValid() {
             return base.IsValid();
-        }
-        public DateTime GetLoginTime() {
-            if (Data == null) { return DateTimeUtils.GetDefaultDateTime(); }
-            else return new DateTime(Data.Timestamp);
         }
         public QRCODE_SCAN_STATUS GetQRCodeStatus() {
             if (Data == null) { return QRCODE_SCAN_STATUS.NOT_SCAN; }
@@ -54,5 +51,8 @@ namespace Core.BilibiliApi.Login.Model {
         public int Code { get; set; }
         [JsonPropertyName("message")]
         public string? Message { get; set; }
+        public DateTime GetLoginTime() {
+            return new DateTime(Timestamp);
+        }
     }
 }

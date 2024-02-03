@@ -13,8 +13,12 @@ namespace Core.BilibiliApi.Login.Model {
 
     public class QRCodeData {
         [JsonPropertyName("url")]
-        public string? Url { get; set; }
+        public string Url { get; set; } = string.Empty;
         [JsonPropertyName("qrcode_key")]
-        public string? QRCodeKey { get; set; }
+        public string QRCodeKey { get; set; } = string.Empty;
+
+        public bool IsValid() {
+            return !string.IsNullOrEmpty(Url) && !string.IsNullOrEmpty(QRCodeKey);
+        }
     }
 }
