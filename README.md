@@ -24,6 +24,10 @@ Build: .Net 8.0.100
   - 开始BilibiliApi的开工
 - 2023-11-26
   - 扫码登录基本完成
+- 2024-02-03
+  - 内核v1已经完成且通过了测试
+  - 前端设计和接入施工中...
+  - 1.5w行了，小里程碑
 
 ### 参考: 
 - https://github.com/leiurayer/downkyi
