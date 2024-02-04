@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BvDownkr.src.Utils
+namespace BvDownkr.src.Implement
 {
     public class NotificationObject : INotifyPropertyChanged {
         public event PropertyChangedEventHandler? PropertyChanged;

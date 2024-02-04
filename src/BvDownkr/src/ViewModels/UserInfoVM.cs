@@ -11,6 +11,7 @@ using BvDownkr.src.Models;
 using BvDownkr.src.Views;
 using System.Windows.Input;
 using BvDownkr.src.Services;
+using BvDownkr.src.Implement;
 
 namespace BvDownkr.src.ViewModels {
     public class UserInfoVM : NotificationObject {

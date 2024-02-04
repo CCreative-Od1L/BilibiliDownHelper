@@ -1,6 +1,7 @@
 ﻿<Page x:Class="BvDownkr.src.Views.QRCodeLoginPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vms="clr-namespace:BvDownkr.src.ViewModels"
@@ -14,6 +15,11 @@
     <Page.DataContext>
         <Binding Source="{StaticResource vm}"/>
     </Page.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OnPageLoaded}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid Width="400" Height="400">
         <Border BorderThickness="2" CornerRadius="10">
             <Rectangle Name="Panel" Width="395" Height="395" Fill="White" 
@@ -30,7 +36,10 @@
                        FontSize="16">
                 使用移动设备打开Bilibili客户端扫一扫
             </TextBlock>
-            <Image Name="qrcodeImage" Grid.Row="1" Height="250" Width="250"></Image>
+            <Image Name="qrcodeImage" Grid.Row="1" Height="250" Width="250"
+                   Source="{Binding QRCodeImageSource}"></Image>
+            <Rectangle Name="qrcodeMask" Visibility="{Binding QRCodeMaskVisiable}"
+                Grid.Row="1" Width="250" Height="250" Fill="#4CFFFFFF"></Rectangle>
         </Grid>
         
     </Grid>

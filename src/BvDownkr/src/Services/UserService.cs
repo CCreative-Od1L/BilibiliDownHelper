@@ -1,5 +1,7 @@
-﻿using Core.BilibiliApi.Login;
+﻿using BvDownkr.src.Views;
+using Core.BilibiliApi.Login;
 using Core.BilibiliApi.User;
+using Core.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,7 @@ namespace BvDownkr.src.Services
         public static UserService Instance { get; private set; } = new();
         public bool IsLoggedIn { get; private set; } = false;
         public LoginUserInfoData? CurrentUserInfo { get; private set; } = null;
+
         public UserService() {
             UserInfoAPI.INSTANCE.AddMyInfoUpdateListener(UserInfoUpateAction);
         }
@@ -24,6 +27,7 @@ namespace BvDownkr.src.Services
         public void UserInfoUpateAction(LoginUserInfoData data) {
             IsLoggedIn = true;
             CurrentUserInfo = data;
+            // * TODO 更新UI
         }
         public static void LoginByQRCode(Action<byte[]> loadAction) {
             QrCodeLoginAPI.LoginByQrCode(loadAction);

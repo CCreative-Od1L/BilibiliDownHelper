@@ -22,14 +22,8 @@ namespace BvDownkr.src.Views {
     public partial class QRCodeLoginPage : Page {
         public QRCodeLoginPage() {
             InitializeComponent();
-            var model = new QRCodeLoginModel();
-            // * Load Model
-            LoadModel(model);
             // * Load DataContext
-            DataContext = new QRCodeLoginVM(model);
-        }
-        public void LoadModel(QRCodeLoginModel model) {
-            model.QRcodeImage = qrcodeImage;
+            DataContext = new QRCodeLoginVM();
         }
     }
 }

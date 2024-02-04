@@ -76,8 +76,8 @@ namespace Core.Logger {
             if (string.IsNullOrEmpty(CoreManager.directoryMgr.GetLogDirectory())) {
                 CoreManager.directoryMgr.ResetToDefault("log");
             }
-            if (!System.IO.Directory.Exists(CoreManager.directoryMgr.GetLogDirectory())) {
-                System.IO.Directory.CreateDirectory(CoreManager.directoryMgr.GetLogDirectory());
+            if (!Directory.Exists(CoreManager.directoryMgr.GetLogDirectory())) {
+                Directory.CreateDirectory(CoreManager.directoryMgr.GetLogDirectory());
             }
             return true;
         }

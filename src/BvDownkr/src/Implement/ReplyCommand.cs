@@ -5,8 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace BvDownkr.src.Utils
-{
+namespace BvDownkr.src.Implement {
     class ReplyCommand<T>(Action<T?> action, bool canExecute = false) : ICommand {
         public event EventHandler? CanExecuteChanged {
             add {
