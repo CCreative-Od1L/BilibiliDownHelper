@@ -25,7 +25,7 @@
             <Rectangle Name="Panel" Width="395" Height="395" Fill="White" 
                        RadiusX="10" RadiusY="10"/>
         </Border>
-        
+
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*"/>
@@ -34,13 +34,32 @@
             </Grid.RowDefinitions>
             <TextBlock Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
                        FontSize="16">
-                使用移动设备打开Bilibili客户端扫一扫
+                <Run Text="{Binding QRcodeRemindText}"/>
             </TextBlock>
-            <Image Name="qrcodeImage" Grid.Row="1" Height="250" Width="250"
-                   Source="{Binding QRCodeImageSource}"></Image>
-            <Rectangle Name="qrcodeMask" Visibility="{Binding QRCodeMaskVisiable}"
-                Grid.Row="1" Width="250" Height="250" Fill="#4CFFFFFF"></Rectangle>
+            <Border x:Name="qrcodePanel" Grid.Row="1" Height="250" Width="250" 
+                    BorderThickness="2" CornerRadius="10" BorderBrush="#f1f1f1" Padding="10">
+                <Image Name="qrcodeImage" 
+                   Source="{Binding QRCodeImageSource}" >
+                    <Image.Effect>
+                        <BlurEffect Radius="{Binding QRcodeBlurEffectRadius}"/>
+                    </Image.Effect>
+                </Image>
+            </Border>
+            <Border Name="ScanReminder" Grid.Row="1" Visibility="{Binding QRcodeScanedUIVisiable}"
+                    BorderThickness="2" CornerRadius="10" BorderBrush="BlueViolet"
+                    Width="100" Height="100">
+                <Rectangle></Rectangle>
+            </Border>
+            <Button Name="RefreshButton" Grid.Row="1" Visibility="{Binding QRcodeRefreshUIVisiable}"
+                    Width="100" Height="100"
+                    Background="Azure">
+                <Button.Resources>
+                    <Style TargetType="Border">
+                        <Setter Property="CornerRadius" Value="10"/>
+                    </Style>
+                </Button.Resources>
+            </Button>
         </Grid>
-        
+
     </Grid>
 </Page>

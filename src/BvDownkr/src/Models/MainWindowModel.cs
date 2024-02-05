@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace BvDownkr.src.Models {
@@ -12,5 +13,6 @@ namespace BvDownkr.src.Models {
         public Visibility IsMaskVisible { get; set; } = Visibility.Hidden;
         public Visibility IsUserInfoPanelVisible { get; set; } = Visibility.Hidden;
         public Visibility IsDownloadTaskPanelVisible { get; set; } = Visibility.Hidden;
+        public Brush? TopBarButtonBackground { get; set; } = null;
     }
 }

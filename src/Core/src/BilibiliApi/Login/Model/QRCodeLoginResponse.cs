@@ -30,6 +30,9 @@ namespace Core.BilibiliApi.Login.Model {
                 _ => QRCODE_SCAN_STATUS.NOT_SCAN,
             };
         }
+        public bool GetHasScaned() {
+            return GetQRCodeStatus() == QRCODE_SCAN_STATUS.QRCODE_SCAN;
+        }
         public bool GetShouldWait() {
             if (GetQRCodeStatus() == QRCODE_SCAN_STATUS.SUCCESS 
             || GetQRCodeStatus() == QRCODE_SCAN_STATUS.QRCODE_EXPRIED) {

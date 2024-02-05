@@ -11,11 +11,14 @@ namespace Core.BilibiliApi.Login {
         /// <summary>
         /// * 使用QR码登录 API
         /// </summary>
-        static public async void LoginByQrCode(Action<byte[]>? qrcodeLoadCallback) {
+        static public async void LoginByQrCode(
+            Action<byte[]>? qrcodeLoadCallback,
+            Action? qrcodeScanCallback) {
             var (url, qrCodeKey) = await ApplyForQRCode();
             ShowQrCode(url, qrcodeLoadCallback);
             TryToLogin(
                 qrCodeKey,
+                qrcodeScanCallback,
                 (QRCodeLoginResponse loginResult) => {
                     if (loginResult == null || loginResult.GetQRCodeStatus() != QRCODE_SCAN_STATUS.SUCCESS) {
                         CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Failure.");
@@ -62,7 +65,8 @@ namespace Core.BilibiliApi.Login {
         /// <param name="loginResult"></param>
         static void TryToLogin(
             string secreteKey,
-            Action<QRCodeLoginResponse>? callback
+            Action? qrcodeScanCallback,
+            Action<QRCodeLoginResponse>? resultCallback
         ) {
             string url = @"https://passport.bilibili.com/x/passport-login/web/qrcode/poll";
             Dictionary<string, string> parameters = new(){
@@ -84,9 +88,12 @@ namespace Core.BilibiliApi.Login {
                             continue;
                         }
                         if (response.GetShouldWait()) {
+                            if(response.GetHasScaned()) {
+                                qrcodeScanCallback?.Invoke();
+                            }
                             Pause.WaitOne(500, true);
                         } else {
-                            callback?.Invoke(response);
+                            resultCallback?.Invoke(response);
                             break;
                         }
                         

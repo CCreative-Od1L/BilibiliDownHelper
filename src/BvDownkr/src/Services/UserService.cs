@@ -14,6 +14,7 @@ namespace BvDownkr.src.Services
         public static UserService Instance { get; private set; } = new();
         public bool IsLoggedIn { get; private set; } = false;
         public LoginUserInfoData? CurrentUserInfo { get; private set; } = null;
+        private event Action? OnUpdateUI;
 
         public UserService() {
             UserInfoAPI.INSTANCE.AddMyInfoUpdateListener(UserInfoUpateAction);
@@ -23,14 +24,19 @@ namespace BvDownkr.src.Services
                 await UserInfoAPI.INSTANCE.TryToUpdateMyInfoAsync();
             });
         }
+        public void AddUpdateUIAction(Action action) { OnUpdateUI += action; }
+        public void RemoveUpdateUIAction(Action action) { OnUpdateUI -= action; }
         // TODO 注销操作忘做了
         public void UserInfoUpateAction(LoginUserInfoData data) {
             IsLoggedIn = true;
             CurrentUserInfo = data;
             // * TODO 更新UI
+            OnUpdateUI?.Invoke();
         }
-        public static void LoginByQRCode(Action<byte[]> loadAction) {
-            QrCodeLoginAPI.LoginByQrCode(loadAction);
+        public static void LoginByQRCode(
+            Action<byte[]> loadAction,
+            Action? qrcodeScanCallback) {
+            QrCodeLoginAPI.LoginByQrCode(loadAction, qrcodeScanCallback);
         }
     }
 }

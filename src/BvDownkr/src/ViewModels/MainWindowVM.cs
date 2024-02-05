@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace BvDownkr.src.ViewModels
@@ -43,8 +44,21 @@ namespace BvDownkr.src.ViewModels
                 RaisePropertyChanged(nameof(DownloadTaskPanelVisible));
             }
         }
-
-
+        public Brush? TopBarButtonBackground {
+            get => _model.TopBarButtonBackground;
+            set {
+                _model.TopBarButtonBackground = value;
+                RaisePropertyChanged(nameof(TopBarButtonBackground));
+            }
+        }
+        public ICommand OnMouseEnterTopBarButton => new ReplyCommand<object>(
+            (_) => {
+                TopBarButtonBackground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#e3e3e3"));
+            }, true);
+        public ICommand OnMouseLeaveTopBarButton => new ReplyCommand<object>(
+            (_) => {
+                TopBarButtonBackground = null;
+            }, true);
         public static ICommand CloseProgram => new ReplyCommand<object>(
             (_) => {
                 Application.Current.Shutdown();
