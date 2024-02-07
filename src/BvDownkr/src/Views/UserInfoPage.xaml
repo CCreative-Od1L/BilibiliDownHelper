@@ -7,7 +7,7 @@
       xmlns:vms="clr-namespace:BvDownkr.src.ViewModels"
       xmlns:local="clr-namespace:BvDownkr.src.Views"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="500" d:DesignWidth="500"
       Title="UserInfo">
     <Page.Resources>
         <vms:UserInfoVM x:Key="vm"/>
@@ -20,10 +20,62 @@
             <i:InvokeCommandAction Command="{Binding OnPageLoaded}"/>
         </i:EventTrigger>
     </i:Interaction.Triggers>
-    <Grid>
+    <Grid Width="400" Height="400">
         <Frame Name="QRCodeLoginFrame" Panel.ZIndex="1" 
                Visibility="{Binding QRcodeLoginPageVisiable}" Content="{Binding QRcodeLoginPage}"
                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <Rectangle Width="100" Height="100" Fill="AliceBlue"/>
+        <Border BorderThickness="2" CornerRadius="10">
+            <Rectangle Name="Panel" Width="395" Height="395" Fill="White" 
+               RadiusX="10" RadiusY="10"/>
+        </Border>
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="2*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Margin="0, 0, 0, 5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="4*"/>
+                    <ColumnDefinition Width="5*"/>
+                </Grid.ColumnDefinitions>
+                <Image Name="UserAvatar" Width="100" Height="100">
+                    <Image.Clip>
+                        <EllipseGeometry RadiusX="50" RadiusY="50"/>
+                    </Image.Clip>
+                </Image>
+                <StackPanel Grid.Column="1" Orientation="Vertical" 
+                            HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <TextBlock FontSize="14"
+                        VerticalAlignment="Center" HorizontalAlignment="Left">
+                        <Run>UID:114514</Run>
+                    </TextBlock>
+                    <TextBlock FontSize="24"
+                               VerticalAlignment="Center" HorizontalAlignment="Left">
+                        <Run>野兽先辈</Run>
+                    </TextBlock>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        <Image Width="44" Height="22"/>
+                        <Separator Width="5" Opacity="0"/>
+                        <Image Width="22" Height="22"/>
+                        <Separator Width="5" Opacity="0"/>
+                        <Image Width="22" Height="22"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0, 5">
+                <TextBlock FontSize="24">
+                    <Run>这是第一条提醒</Run>
+                </TextBlock>
+                <TextBlock FontSize="24">
+                    <Run>这是第二条提醒</Run>
+                </TextBlock>
+            </StackPanel>
+            <StackPanel Grid.Row="2" Orientation="Vertical" Margin="0, 5, 0, 0">
+                <TextBlock FontSize="20">
+                    <Run>这是第一条提醒</Run>
+                </TextBlock>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>

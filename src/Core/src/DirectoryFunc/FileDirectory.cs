@@ -3,13 +3,15 @@ namespace Core.DirectoryFunc {
         public string Root { get; private set; }
         public string ThirdParty { get; private set; }
         public string Cache { get; private set; }
+        public string Download { get; set; }
         public string? Log { get; set; }
         public string? Cookie { get; set; }
         public string? Crypto { get; set; }
-        public string? UserInfo {get; set; } 
+        public string? UserInfo { get; set; }
         public FileDirectory() {
             Root = AppDomain.CurrentDomain.BaseDirectory + @"AppData\";
             ThirdParty = AppDomain.CurrentDomain.BaseDirectory + @"ThirdParty\";
+            Download = AppDomain.CurrentDomain.BaseDirectory + @"Download\";
             Cache = Root + @"Cache\";
         }
         public void UpdateData(FileDirectory fileDirectory) {
@@ -21,6 +23,7 @@ namespace Core.DirectoryFunc {
         public void TryToResetDefault(){
             if (string.IsNullOrEmpty(Root)) { Root = AppDomain.CurrentDomain.BaseDirectory + @"AppData\"; }
             if (string.IsNullOrEmpty(ThirdParty)) { ThirdParty = AppDomain.CurrentDomain.BaseDirectory + @"ThirdParty\"; }
+            if (string.IsNullOrEmpty(Download)) { Download = AppDomain.CurrentDomain.BaseDirectory + @"Download\"; }
             if (string.IsNullOrEmpty(Cache)) { Cache = Root + @"Cache\"; }
 
             if (string.IsNullOrEmpty(Log)) { Log = Root + @"Logs\"; }

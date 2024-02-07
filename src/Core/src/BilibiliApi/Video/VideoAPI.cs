@@ -14,7 +14,7 @@ public static class VideoAPI {
         if(string.IsNullOrEmpty(avid) && string.IsNullOrEmpty(bvid)) { return (false, null); }
 
         string videoInfoRequestUrl = "https://api.bilibili.com/x/web-interface/view";
-        var (isSuccess, content) = await Web.WebClient.Request(
+        var (isSuccess, content) = await Web.WebClient.RequestJson(
             url: videoInfoRequestUrl,
             methodName: "get",
             parameters: new Dictionary<string, string> {
@@ -47,7 +47,7 @@ public static class VideoAPI {
         // * new Url
         //string videoStreamRequestUrl = "https://api.bilibili.com/x/player/wbi/playurl";
         string videoStreamRequestUrl = "https://api.bilibili.com/x/player/playurl";
-        var (isSuccess, content) = await Web.WebClient.Request(
+        var (isSuccess, content) = await Web.WebClient.RequestJson(
             url: videoStreamRequestUrl,
             methodName: "get",
             //useWbi: true,

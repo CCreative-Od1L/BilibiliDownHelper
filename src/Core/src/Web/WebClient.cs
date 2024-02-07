@@ -38,7 +38,7 @@ namespace Core.Web {
                 requestMessage.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue(encoding));
             }
         }
-        public static async Task<Tuple<bool, string>> Request(
+        public static async Task<Tuple<bool, string>> RequestJson(
             string url,
             string methodName,
             bool useWbi = false,
@@ -147,15 +147,15 @@ namespace Core.Web {
             } catch (WebException e) {
                 Console.WriteLine("RequestWeb()发生Web异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return Request(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
+                return RequestJson(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
             } catch (IOException e) {
                 Console.WriteLine("RequestWeb()发生IO异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return Request(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
+                return RequestJson(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
             } catch (Exception e) {
                 Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return Request(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
+                return RequestJson(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
             }
         }
 

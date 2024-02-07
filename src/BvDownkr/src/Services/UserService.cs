@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 namespace BvDownkr.src.Services
 {
     class UserService {
-        public static UserService Instance { get; private set; } = new();
+        public static UserService INSTANCE { get; private set; } = new();
         public bool IsLoggedIn { get; private set; } = false;
         public LoginUserInfoData? CurrentUserInfo { get; private set; } = null;
-        private event Action? OnUpdateUI;
+        private event Action? OnUpdateUserInfoUI;
 
         public UserService() {
             UserInfoAPI.INSTANCE.AddMyInfoUpdateListener(UserInfoUpateAction);
@@ -24,14 +24,14 @@ namespace BvDownkr.src.Services
                 await UserInfoAPI.INSTANCE.TryToUpdateMyInfoAsync();
             });
         }
-        public void AddUpdateUIAction(Action action) { OnUpdateUI += action; }
-        public void RemoveUpdateUIAction(Action action) { OnUpdateUI -= action; }
+        public void AddUpdateUserInfoUIAction(Action action) { OnUpdateUserInfoUI += action; }
+        public void RemoveUpdateUserInfoUIAction(Action action) { OnUpdateUserInfoUI -= action; }
         // TODO 注销操作忘做了
         public void UserInfoUpateAction(LoginUserInfoData data) {
             IsLoggedIn = true;
             CurrentUserInfo = data;
             // * TODO 更新UI
-            OnUpdateUI?.Invoke();
+            OnUpdateUserInfoUI?.Invoke();
         }
         public static void LoginByQRCode(
             Action<byte[]> loadAction,

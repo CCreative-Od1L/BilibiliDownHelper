@@ -7,7 +7,7 @@ string url = "https://api.bilibili.com/x/web-interface/popular/precious";
 string methodName = "get";
 
 Console.WriteLine("Web Request Start");
-var result = await Core.Web.WebClient.Request(url, methodName);
+var result = await Core.Web.WebClient.RequestJson(url, methodName);
 if (result.Item1 == false) {
     Console.WriteLine(result.Item2);
 } else {

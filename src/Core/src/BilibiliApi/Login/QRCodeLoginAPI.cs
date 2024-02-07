@@ -34,7 +34,7 @@ namespace Core.BilibiliApi.Login {
         /// <param name="callback">成功获取二维码信息回调</param>
         static async public Task<(string, string)> ApplyForQRCode() {
             string url = @"https://passport.bilibili.com/x/passport-login/web/qrcode/generate";
-            var (isSuccess, content) = await WebClient.Request(
+            var (isSuccess, content) = await WebClient.RequestJson(
                 url: url,
                 methodName: "get");
             if (isSuccess) {
@@ -77,7 +77,7 @@ namespace Core.BilibiliApi.Login {
             Task checkQRCodeScanResult = new(async obj => {
                 var startTime = long.Parse(DateTimeUtils.GetCurrentTimestampSecond());
                 while(true) {
-                    var (isSuccess, content) = await WebClient.Request(
+                    var (isSuccess, content) = await WebClient.RequestJson(
                         url: url,
                         methodName: "get",
                         parameters: parameters);

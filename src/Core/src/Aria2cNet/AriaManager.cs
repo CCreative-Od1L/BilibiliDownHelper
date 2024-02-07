@@ -34,67 +34,67 @@ public class AriaManager {
     /// <param name="gid"></param>
     /// <param name="action"></param>
     /// <returns></returns>
-    public async Task AsyncGetDownloadStatus(string gid, AutoResetEvent stop, Action? action = null) {
-        AutoResetEvent Pause = new(false);
-        string filePath = string.Empty;
-        while (true) {
-            var status = await ClientSingleton.Instance.TellStatus(gid);
-            if (status == null) { continue; }
+    public void GetDownloadStatus(string gid, Action? action = null) {
+        Task downLoadTask = new(async obj => {
+            AutoResetEvent Pause = new(false);
+            string filePath = string.Empty;
+            while (true) {
+                var status = await ClientSingleton.Instance.TellStatus(gid);
+                if (status == null) { continue; }
 
-            // * 返回结果为空且有错误信息
-            if (status.Result == null && status.Error != null) {
-                if (status.Error.Message.Contains("is not found")) {
-                    OnDownloadFinish(
-                        isSuccess: false,
-                        downloadPath: string.Empty,
-                        gid: gid,
-                        msg: status.Error.Message
-                    );
-                    stop.Set();
-                    return;
-                }
-            }
-
-            if (status.Result != null) {
-                if (status.Result.Files.Count >= 1) {
-                    filePath = status.Result.Files[0].Path;
+                // * 返回结果为空且有错误信息
+                if (status.Result == null && status.Error != null) {
+                    if (status.Error.Message.Contains("is not found")) {
+                        OnDownloadFinish(
+                            isSuccess: false,
+                            downloadPath: string.Empty,
+                            gid: gid,
+                            msg: status.Error.Message
+                        );
+                        return;
+                    }
                 }
 
-                long totalLength = long.Parse(status.Result.TotalLength);
-                long completedLength = long.Parse(status.Result.CompletedLength);
-                long speed = long.Parse(status.Result.DownloadSpeed);
-                // * 进度通知
-                OnTellStatus(gid, totalLength, completedLength, speed);
-                
-                action?.Invoke();
-                if (status.Result.Status == "complete") { break; }
-                // * 错误码不为 0
-                if (!string.IsNullOrEmpty(status.Result.ErrorCode) && !status.Result.ErrorCode.Equals("0")) {
-                    CoreManager.logger.Error("AriaManager", status.Result.ErrorMessage);
-                    var removeResult = await ClientSingleton.Instance.RemoveDownloadResultAsync(gid);
-                    if (removeResult != null) {
-                        CoreManager.logger.Debug("AriaManager", removeResult.Result);
+                if (status.Result != null) {
+                    if (status.Result.Files.Count >= 1) {
+                        filePath = status.Result.Files[0].Path;
                     }
 
-                    OnDownloadFinish(
-                        gid: gid,
-                        isSuccess: false,
-                        downloadPath: string.Empty,
-                        status.Result.ErrorMessage
-                    );
-                    stop.Set();
-                    return;
+                    long totalLength = long.Parse(status.Result.TotalLength);
+                    long completedLength = long.Parse(status.Result.CompletedLength);
+                    long speed = long.Parse(status.Result.DownloadSpeed);
+                    // * 进度通知
+                    OnTellStatus(gid, totalLength, completedLength, speed);
+
+                    action?.Invoke();
+                    if (status.Result.Status == "complete") { break; }
+                    // * 错误码不为 0
+                    if (!string.IsNullOrEmpty(status.Result.ErrorCode) && !status.Result.ErrorCode.Equals("0")) {
+                        CoreManager.logger.Error("AriaManager", status.Result.ErrorMessage);
+                        var removeResult = await ClientSingleton.Instance.RemoveDownloadResultAsync(gid);
+                        if (removeResult != null) {
+                            CoreManager.logger.Debug("AriaManager", removeResult.Result);
+                        }
+
+                        OnDownloadFinish(
+                            gid: gid,
+                            isSuccess: false,
+                            downloadPath: string.Empty,
+                            status.Result.ErrorMessage
+                        );
+                        return;
+                    }
                 }
+                Pause.WaitOne(500, true);
             }
-            Pause.WaitOne(500, true);
-        }
-        OnDownloadFinish(
-            gid: gid,
-            isSuccess: true,
-            downloadPath: filePath,
-            string.Empty
-        );
-        stop.Set();
+            OnDownloadFinish(
+                gid: gid,
+                isSuccess: true,
+                downloadPath: filePath,
+                string.Empty
+            );
+        }, null, TaskCreationOptions.PreferFairness);
+        downLoadTask.Start();
     }
     /// <summary>
     /// * 获取全局下载速度

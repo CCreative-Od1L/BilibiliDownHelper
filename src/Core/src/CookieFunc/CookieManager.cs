@@ -268,7 +268,7 @@ namespace Core.CookieFunc {
             
             CheckCookieResponse? checkCookieResponse = null;
             string url = "https://passport.bilibili.com/x/passport-login/web/cookie/info";
-            var result = await Web.WebClient.Request(url: url, methodName: "get");
+            var result = await Web.WebClient.RequestJson(url: url, methodName: "get");
             if (result.Item1 != false) {
                 checkCookieResponse = JsonUtils.ParseJsonString<CheckCookieResponse>(result.Item2);
             }
@@ -303,7 +303,7 @@ namespace Core.CookieFunc {
         /// <returns>refresh_csrf 字符串</returns>
         public static async Task<string> GetRefreshCSRF(string correspondPath) {
             string url = string.Format(@"https://www.bilibili.com/correspond/1/{0}", correspondPath);
-            var webResponse = await Web.WebClient.Request(url: url, methodName: "get");
+            var webResponse = await Web.WebClient.RequestJson(url: url, methodName: "get");
             if (webResponse.Item1 == false) {
                 return string.Empty;
             } else {
@@ -330,7 +330,7 @@ namespace Core.CookieFunc {
             }
 
             string refreshCookieUrl = @"https://passport.bilibili.com/x/passport-login/web/cookie/refresh";
-            var refreshCookieResponse = await Web.WebClient.Request(
+            var refreshCookieResponse = await Web.WebClient.RequestJson(
                 url: refreshCookieUrl,
                 methodName: "post",
                 parameters: new() {
@@ -350,7 +350,7 @@ namespace Core.CookieFunc {
             }
 
             string confirmUpdateRefreshTokenUrl = @"https://passport.bilibili.com/x/passport-login/web/confirm/refresh";
-            var refreshTokenConfirmResponse = await Web.WebClient.Request(
+            var refreshTokenConfirmResponse = await Web.WebClient.RequestJson(
                 url: confirmUpdateRefreshTokenUrl,
                 methodName: "post",
                 parameters: new() {

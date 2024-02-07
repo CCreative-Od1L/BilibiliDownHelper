@@ -48,7 +48,7 @@ public static class WbiAPI {
     // 获取最新的 img_key 和 sub_key
     private static async Task<(string, string)> GetWbiKeys() {
         string WbiRequestUrl = "https://api.bilibili.com/x/web-interface/nav";
-        var ( _, content) = await Web.WebClient.Request(url: WbiRequestUrl, methodName: "get");
+        var ( _, content) = await Web.WebClient.RequestJson(url: WbiRequestUrl, methodName: "get");
 
         JsonNode response = JsonNode.Parse(content)!;
 
