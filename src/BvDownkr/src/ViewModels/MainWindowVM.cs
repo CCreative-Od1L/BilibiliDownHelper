@@ -15,8 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-namespace BvDownkr.src.ViewModels
-{
+namespace BvDownkr.src.ViewModels {
     public class MainWindowVM : NotificationObject {
         private readonly MainWindowModel _model;
         public string currentOpenFrameName = string.Empty;
@@ -60,7 +59,9 @@ namespace BvDownkr.src.ViewModels
                 TopBarButtonBackground = null;
             }, true);
         public static ICommand CloseProgram => new ReplyCommand<object>(
-            (_) => {
+            async (_) => {
+                // TODO 打开Loading UI，禁止用户操作
+                await DownloadService.INSTANCE.CloseServer();
                 Application.Current.Shutdown();
             }, true);
         public ICommand CloseFrame => new ReplyCommand<Rectangle>(

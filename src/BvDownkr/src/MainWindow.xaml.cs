@@ -38,5 +38,9 @@ public partial class MainWindow : Window
     }
     public static void OpenServices() {
         UserService.OpenService();
+        Task openServerTask = new(async () => {
+            await DownloadService.INSTANCE.OpenServerAsync();
+        });
+        openServerTask.Start();
     }
 }

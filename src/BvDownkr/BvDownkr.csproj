@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <None Remove="src\Resources\close_btn.svg" />
+    <None Remove="src\Resources\refresh_btn.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,7 @@
 
   <ItemGroup>
     <Resource Include="src\Resources\close_btn.svg" />
+    <Resource Include="src\Resources\refresh_btn.svg" />
   </ItemGroup>
 
   <PropertyGroup>

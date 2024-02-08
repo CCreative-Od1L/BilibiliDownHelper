@@ -5,6 +5,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:vms="clr-namespace:BvDownkr.src.ViewModels"
+      xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
       xmlns:local="clr-namespace:BvDownkr.src.Views"
       mc:Ignorable="d" 
       d:DesignHeight="500" d:DesignWidth="500"
@@ -52,12 +53,14 @@
             </Border>
             <Button Name="RefreshButton" Grid.Row="1" Visibility="{Binding QRcodeRefreshUIVisiable}"
                     Width="100" Height="100"
-                    Background="Azure">
+                    Background="White"
+                    Command="{Binding RefreshQRcode}">
                 <Button.Resources>
                     <Style TargetType="Border">
                         <Setter Property="CornerRadius" Value="10"/>
                     </Style>
                 </Button.Resources>
+                <svgc:SvgViewbox MaxHeight="60" Width="60" Source="src/Resources/refresh_btn.svg" />
             </Button>
         </Grid>
 

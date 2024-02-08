@@ -19,11 +19,7 @@ namespace BvDownkr.src.Services {
         public static DownloadService INSTANCE { get; private set; } = new();
         private bool IsServerStart = false;
         private readonly string DfRecord = "WB4wQYP2.dat";
-        private DownloadService() {
-            // * 尝试开启Aria2服务器
-            _ = StartServerAsync();
-        }
-        public async Task StartServerAsync() {
+        public async Task OpenServerAsync() {
             if (IsServerStart) return;
             else {
                 var option = new Aria2Config();

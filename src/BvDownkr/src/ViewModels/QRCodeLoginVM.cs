@@ -1,32 +1,29 @@
-﻿using BvDownkr.src.Models;
-using BvDownkr.src.Services;
-using BvDownkr.src.Utils;
-using BvDownkr.src.Implement;
+﻿using BvDownkr.src.Implement;
+using BvDownkr.src.Models;
 using Core;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.IO;
-using System.Drawing;
 using System.Windows.Interop;
-using System.Windows.Media.Effects;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
+using System.Windows;
+using BvDownkr.src.Services;
 
 namespace BvDownkr.src.ViewModels {
-    public class QRCodeLoginVM : NotificationObject {
+    internal class QRCodeLoginVM : NotificationObject {
         private readonly QRCodeLoginModel _model;
         private KrTimer? _qrcodeRefreshReminder = null;
         public QRCodeLoginVM() {
             _model = new();
         }
         private void OpenKrTimer() {
-            _qrcodeRefreshReminder ??= new(RemindQRcodeRefresh, 10, false);
+            _qrcodeRefreshReminder ??= new(RemindQRcodeRefresh, 60, false);
             _qrcodeRefreshReminder.Reset();
         }
         private void RemindQRcodeRefresh() {
@@ -110,19 +107,27 @@ namespace BvDownkr.src.ViewModels {
                 RaisePropertyChanged(nameof(QRcodeRemindText));
             }
         }
+        public void RefreshQRcodeAction() {
+            // * 打开时间记录
+            OpenKrTimer();
+            // * UI更新
+            QRcodeBlurEffectRadius = 0;
+            CloseScanedUI();
+            CloseRefreshUI();
+            // * 服务请求
+            UserService.LoginByQRCode(
+                loadAction: LoadQRcodeAction,
+                qrcodeScanCallback: ShowScanedUI);
+        }
+        public ICommand RefreshQRcode => new ReplyCommand<object>(
+            (_) => {
+                RefreshQRcodeAction();
+            }, true);
         public ICommand OnPageLoaded => new ReplyCommand<object>(
             (_) => {
                 // * Text Load
                 QRcodeRemindText = "打开bilibili客户端扫一扫";
-                // * 打开时间记录
-                OpenKrTimer();
-                QRcodeBlurEffectRadius = 0;
-                CloseScanedUI();
-                CloseRefreshUI();
-
-                UserService.LoginByQRCode(
-                    loadAction: LoadQRcodeAction,
-                    qrcodeScanCallback: ShowScanedUI);
+                RefreshQRcodeAction();
             }, true);
     }
 }
