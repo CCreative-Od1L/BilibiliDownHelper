@@ -13,8 +13,10 @@ using Core.Aria2cNet;
 using Core.Utils;
 using System.IO;
 using Core.FileFunc;
+using BvDownkr.src.Entries;
 
-namespace BvDownkr.src.Services {
+namespace BvDownkr.src.Services
+{
     public class DownloadService {
         public static DownloadService INSTANCE { get; private set; } = new();
         private bool IsServerStart = false;
@@ -94,7 +96,7 @@ namespace BvDownkr.src.Services {
         /// * 暂定由 DownloadTaskVM定时调用
         /// </summary>
         /// <param name="records"></param>
-        public void WriteDfRecord(Dictionary<string, DfRecordData> records) {
+        public void WriteDfRecord(Dictionary<string, DfRecordEntry> records) {
             List<DataForm> buf = [];
             foreach (var record in records) {
                 buf.Add(new(
@@ -107,15 +109,15 @@ namespace BvDownkr.src.Services {
             }, null, TaskCreationOptions.PreferFairness);
             writeTask.Start();
         }
-        public Dictionary<string, DfRecordData> ReadDfRecord() {
-            Dictionary<string, DfRecordData> buf = [];
+        public Dictionary<string, DfRecordEntry> ReadDfRecord() {
+            Dictionary<string, DfRecordEntry> buf = [];
             var result = FileUtils.ReadFile(Path.Combine(
                     CoreManager.directoryMgr.fileDirectory.Download,
                     DfRecord
                 ));
             foreach(var record in result) {
                 var data = record.Value;
-                var dataContent = JsonUtils.ParseJsonString<DfRecordData>(data.Content);
+                var dataContent = JsonUtils.ParseJsonString<DfRecordEntry>(data.Content);
                 if (dataContent != null) {
                     buf.Add(data.Name, dataContent);
                 }

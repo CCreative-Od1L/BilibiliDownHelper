@@ -23,7 +23,7 @@ namespace BvDownkr.src.Views {
         public QRCodeLoginPage() {
             InitializeComponent();
             // * Load DataContext
-            DataContext = new QRCodeLoginVM();
+            // DataContext = new QRCodeLoginVM();
         }
     }
 }

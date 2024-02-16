@@ -7,7 +7,7 @@ namespace Core.BilibiliApi.User {
         [JsonPropertyName("email_verified")]
         public int EmailVerified { get; set; }  // * 是否验证了邮箱
         [JsonPropertyName("face")]
-        public string? Face { get; set; }       // * 头像Url
+        public string Face { get; set; } = string.Empty;       // * 头像Url
         [JsonPropertyName("level_info")]
         public LevelInfoSuc? LevelInfo { get; set; }    // * 等级信息
         public class LevelInfoSuc {
@@ -21,7 +21,7 @@ namespace Core.BilibiliApi.User {
         [JsonPropertyName("mid")]
         public long Mid { get; set; }       // * uid
         [JsonPropertyName("uname")]
-        public string? Uname { get; set; }  // * 用户名称
+        public string Uname { get; set; } = string.Empty;  // * 用户名称
         [JsonPropertyName("vipStatus")]
         public int VipStatus { get; set; }  // * VIP状态
         [JsonPropertyName("is_senior_member")] 
@@ -31,6 +31,9 @@ namespace Core.BilibiliApi.User {
                 return LevelInfo.CurrentLevel;
             }
             return -1;
+        }
+        public bool IsSenior() {
+            return IsSeniorMember != 0;
         }
         public bool IsVIP() {
             return VipStatus != 0;

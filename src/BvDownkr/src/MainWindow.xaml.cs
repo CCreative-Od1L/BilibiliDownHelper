@@ -1,8 +1,11 @@
 ﻿using BvDownkr.src;
 using BvDownkr.src.Models;
 using BvDownkr.src.Services;
+using BvDownkr.src.Utils;
 using BvDownkr.src.ViewModels;
 using BvDownkr.src.Views;
+using Core;
+using Core.BilibiliApi.User;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,11 +27,13 @@ public partial class MainWindow : Window
     public MainWindow() {
         InitializeComponent();
         // * Load DataContext
-        DataContext = new MainWindowVM();
+        // DataContext = new MainWindowVM();
         // * Init UI
         InitUI();
         // * OpenServices
         OpenServices();
+        // * Init Core
+        InitCore();
     }
     public void InitUI() {
         // * Default Load(Search Page)
@@ -37,10 +42,12 @@ public partial class MainWindow : Window
         DownloadTaskContent.Content = PageManager.DownloadTaskPage;
     }
     public static void OpenServices() {
-        UserService.OpenService();
         Task openServerTask = new(async () => {
             await DownloadService.INSTANCE.OpenServerAsync();
         });
         openServerTask.Start();
+    }
+    public static void InitCore() {
+        CoreManager.logger.Info("Core Start");
     }
 }

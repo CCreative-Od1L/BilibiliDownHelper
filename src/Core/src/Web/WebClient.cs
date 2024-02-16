@@ -7,7 +7,6 @@ using Microsoft.VisualBasic;
 using Core.CookieFunc;
 using Core.BilibiliApi.User;
 namespace Core.Web {
-
     // * internal
     public static class WebClient {
         public static ENCODE_TYPE CheckEncodingType(string contentEncoding) {
@@ -38,7 +37,126 @@ namespace Core.Web {
                 requestMessage.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue(encoding));
             }
         }
-        public static async Task<Tuple<bool, string>> RequestJson(
+        public static async Task<(bool, byte[])> RequestData(
+            string url,
+            string? referrer = null,
+            int retryTime = 3
+        ) {
+            if (retryTime <= 0) {
+                return (false, []);
+            }
+            try {
+                HttpRequestMessage requestMessage = new() {
+                    RequestUri = new(url),
+                };
+                // * Init the Header.
+                BatchAddHeaderAcceptLanguage(requestMessage, [
+                    new("zh-CN", 1.0),
+                    new("zh", 0.9),
+                    new("en-US", 0.8),
+                    new("en", 0.7),
+                ]);
+                BatchAddHeaderAcceptEncoding(requestMessage, [
+                    "gzip",
+                    "deflate",
+                    "br"
+                ]);
+
+                if (referrer != null) {
+                    requestMessage.Headers.Referrer = new Uri(referrer);
+                }
+                byte[] dataResult = [];
+                HttpClient httpClient = HttpClientFactory.GetHttpClient();
+                try {
+                    TryToAddCookie(requestMessage);
+                } catch (Exception e) {
+                    CoreManager.logger.Error(e);
+                }
+                using HttpResponseMessage response = await httpClient.SendAsync(requestMessage);
+                response.EnsureSuccessStatusCode();
+                string? contentEncoding = response.Content.Headers.ContentEncoding.ToString();
+
+                try {
+                    StringBuilder stringBuilder = new();
+                    var cookies = response.Headers.GetValues("set-cookie");
+                    foreach (var cookie in cookies) {
+                        stringBuilder.AppendLine(cookie);
+                    }
+                    CoreManager.cookieMgr.UpdateCookies(stringBuilder.ToString());
+                    CoreManager.cookieMgr.TryToUpdateCookies();
+                } catch (Exception) { }
+
+                if (contentEncoding != null) {
+                    switch (CheckEncodingType(contentEncoding)) {
+                        case ENCODE_TYPE.GZIP:
+                            using (GZipStream stream = new(response.Content.ReadAsStream(), CompressionMode.Decompress)) {
+                                using MemoryStream ms = new();
+                                byte[] buf = new byte[1024];
+                                int currentPointer = 0;
+                                while ((currentPointer = stream.Read(buf, 0, buf.Length)) != 0) {
+                                    ms.Write(buf, 0, currentPointer);
+                                }
+                                dataResult = ms.ToArray();
+                                Console.WriteLine("GZIP Decompress complete.");
+                            }
+                            break;
+                        case ENCODE_TYPE.DEFLATE:
+                            using (DeflateStream stream = new(response.Content.ReadAsStream(), CompressionMode.Decompress)) {
+                                using MemoryStream ms = new();
+                                byte[] buf = new byte[1024];
+                                int currentPointer = 0;
+                                while ((currentPointer = stream.Read(buf, 0, buf.Length)) != 0) {
+                                    ms.Write(buf, 0, currentPointer);
+                                }
+                                dataResult = ms.ToArray();
+                                Console.WriteLine("DEFLATE Decompress complete.");
+                            }
+                            break;
+                        case ENCODE_TYPE.BR:
+                            using (BrotliStream stream = new(response.Content.ReadAsStream(), CompressionMode.Decompress)) {
+                                using MemoryStream ms = new();
+                                byte[] buf = new byte[1024];
+                                int currentPointer = 0;
+                                while ((currentPointer = stream.Read(buf, 0, buf.Length)) != 0) {
+                                    ms.Write(buf, 0, currentPointer);
+                                }
+                                dataResult = ms.ToArray();
+                                Console.WriteLine("BR Decompress complete");
+                            }
+                            break;
+                        default:
+                            using (Stream stream = response.Content.ReadAsStream()) {
+                                using MemoryStream ms = new();
+                                byte[] buf = new byte[1024];
+                                int currentPointer = 0;
+                                while ((currentPointer = stream.Read(buf, 0, buf.Length)) != 0) {
+                                    ms.Write(buf, 0, currentPointer);
+                                }
+                                ms.Seek(0, SeekOrigin.Begin);
+                                dataResult = ms.ToArray();
+                                Console.WriteLine("Normal Read complete");
+                            }
+                            break;
+                    }
+                    return (true, dataResult);
+                } else {
+                    return (false, []);
+                }
+            } catch (WebException e) {
+                Console.WriteLine("RequestWeb()发生Web异常: {0}", e);
+                CoreManager.logger.Error(e);
+                return RequestData(url, referrer, retryTime - 1).Result;
+            } catch (IOException e) {
+                Console.WriteLine("RequestWeb()发生IO异常: {0}", e);
+                CoreManager.logger.Error(e);
+                return RequestData(url, referrer, retryTime - 1).Result;
+            } catch (Exception e) {
+                Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
+                CoreManager.logger.Error(e);
+                return RequestData(url, referrer, retryTime - 1).Result;
+            }
+        }
+        public static async Task<(bool, string)> RequestJson(
             string url,
             string methodName,
             bool useWbi = false,
@@ -47,7 +165,7 @@ namespace Core.Web {
             int retryTime = 3
         ) {
             if (retryTime <= 0) {
-                return new Tuple<bool, string>(false, "The request exceeded the retry limit.");
+                return (false, "The request exceeded the retry limit.");
             }
             StringBuilder urlBuilder = new(url);
 
@@ -140,9 +258,9 @@ namespace Core.Web {
                             }
                             break;
                     }
-                    return new Tuple<bool, string>(true, jsonResult);
+                    return (true, jsonResult);
                 } else {
-                    return new Tuple<bool, string>(false, "An error occurred in the transmission response.");
+                    return (false, "An error occurred in the transmission response.");
                 }
             } catch (WebException e) {
                 Console.WriteLine("RequestWeb()发生Web异常: {0}", e);

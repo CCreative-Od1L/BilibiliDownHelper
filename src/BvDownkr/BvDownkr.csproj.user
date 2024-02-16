@@ -34,5 +34,8 @@
     <Page Update="src\Views\UserWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="Themes\ImageButton.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

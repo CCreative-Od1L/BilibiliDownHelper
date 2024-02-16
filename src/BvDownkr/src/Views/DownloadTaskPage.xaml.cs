@@ -18,10 +18,8 @@ namespace BvDownkr.src.Views
     /// <summary>
     /// DownloadTask.xaml 的交互逻辑
     /// </summary>
-    public partial class DownloadTaskPage : Page
-    {
-        public DownloadTaskPage()
-        {
+    public partial class DownloadTaskPage : Page {
+        public DownloadTaskPage() {
             InitializeComponent();
         }
     }

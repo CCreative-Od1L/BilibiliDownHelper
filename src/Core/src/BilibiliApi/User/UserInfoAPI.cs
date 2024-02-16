@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Core.BilibiliApi.Login.Model;
 using Core.Utils;
+using Core.Web;
 
 namespace Core.BilibiliApi.User {
     /// <summary>
@@ -8,13 +9,13 @@ namespace Core.BilibiliApi.User {
     /// </summary>
     public class UserInfoAPI {
         public static UserInfoAPI INSTANCE { get; } = new();
-        private event Action<LoginUserInfoData>? OnUserInfoUpdate = null;
+        private event Action<LoginUserInfoData, byte[]>? OnUserInfoUpdate = null;
         /// <summary>
         /// * 添加用户信息更新事件
         /// </summary>
         /// <param name="action"></param>
         /// <returns>布尔值，表示是否成功</returns>
-        public bool AddMyInfoUpdateListener(Action<LoginUserInfoData> action) {
+        public bool AddMyInfoUpdateListener(Action<LoginUserInfoData, byte[]> action) {
             try {
                 OnUserInfoUpdate += action;
                 CoreManager.logger.Info(string.Format("增加用户信息更新订阅，函数：{0}", nameof(action)));
@@ -29,7 +30,7 @@ namespace Core.BilibiliApi.User {
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
-        public bool RemoveMyInfoUpdateListener(Action<LoginUserInfoData> action) {
+        public bool RemoveMyInfoUpdateListener(Action<LoginUserInfoData, byte[]> action) {
             try {
                 OnUserInfoUpdate -= action;
                 CoreManager.logger.Info(string.Format("取消用户信息更新订阅，函数{0}", nameof(action)));
@@ -43,7 +44,7 @@ namespace Core.BilibiliApi.User {
         /// * 使用QRCode登录回应数据更新用户信息
         /// </summary>
         /// <param name="response"></param>
-        public async Task UpdateMyInfoAsync(LoginResponseData data) {
+        public async void UpdateMyInfoAsync(LoginResponseData data) {
             CoreManager.cookieMgr.UpdateRefreshTokenData(
                 data.RefreshToken,
                 Convert.ToString(data.Timestamp));
@@ -52,19 +53,26 @@ namespace Core.BilibiliApi.User {
             var webResponse = await GetMyInfoAsync();
             var loadResult = LoadMyInfo(webResponse);
             if (loadResult != null) {
-                OnUserInfoUpdate?.Invoke(loadResult);
+                // * 请求头像数据
+                var (isSuccess, rawData) = await WebClient.RequestData(loadResult.Face);
+                if (isSuccess) {
+                    OnUserInfoUpdate?.Invoke(loadResult, rawData);
+                }
             }
         }
         /// <summary>
         /// * 由外部调用，用于在尝试使用已有的Cookie文件进行用户信息的获取。
         /// </summary>
-        public async Task TryToUpdateMyInfoAsync(Action? onSuccessCallback = null, Action? onFailureCallback = null) {
+        public async void TryToUpdateMyInfoAsync(Action? onSuccessCallback = null, Action? onFailureCallback = null) {
             var webResponse = await GetMyInfoAsync();
             if (!string.IsNullOrEmpty(webResponse)) {
                 var loadResult = LoadMyInfo(webResponse);
                 if (loadResult != null) {
-                    onSuccessCallback?.Invoke();
-                    OnUserInfoUpdate?.Invoke(loadResult);
+                    var (isSuccess, rawData) = await WebClient.RequestData(loadResult.Face);
+                    if (isSuccess) {
+                        onSuccessCallback?.Invoke();
+                        OnUserInfoUpdate?.Invoke(loadResult, rawData);
+                    }
                     return;
                 }
             }

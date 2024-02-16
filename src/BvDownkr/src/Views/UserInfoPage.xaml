@@ -39,20 +39,21 @@
                     <ColumnDefinition Width="4*"/>
                     <ColumnDefinition Width="5*"/>
                 </Grid.ColumnDefinitions>
-                <Image Name="UserAvatar" Width="100" Height="100">
+                <Image Name="UserAvatar" Source="{Binding UserAvatar}" Width="100" Height="100">
                     <Image.Clip>
-                        <EllipseGeometry RadiusX="50" RadiusY="50"/>
+                        <EllipseGeometry RadiusX="50" RadiusY="50" Center="50, 50"/>
                     </Image.Clip>
                 </Image>
                 <StackPanel Grid.Column="1" Orientation="Vertical" 
                             HorizontalAlignment="Left" VerticalAlignment="Center">
                     <TextBlock FontSize="14"
                         VerticalAlignment="Center" HorizontalAlignment="Left">
-                        <Run>UID:114514</Run>
+                        <Run>UID:</Run>
+                        <Run Text="{Binding UId}"></Run>
                     </TextBlock>
                     <TextBlock FontSize="24"
                                VerticalAlignment="Center" HorizontalAlignment="Left">
-                        <Run>野兽先辈</Run>
+                        <Run Text="{Binding UserName}"></Run>
                     </TextBlock>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                         <Image Width="44" Height="22"/>

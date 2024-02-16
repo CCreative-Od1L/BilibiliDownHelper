@@ -23,7 +23,7 @@ namespace Core.BilibiliApi.Login {
                     if (loginResult == null || loginResult.GetQRCodeStatus() != QRCODE_SCAN_STATUS.SUCCESS) {
                         CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Failure.");
                     } else {
-                        _ = UserInfoAPI.INSTANCE.UpdateMyInfoAsync(loginResult.Data!);
+                        UserInfoAPI.INSTANCE.UpdateMyInfoAsync(loginResult.Data!);
                         CoreManager.logger.Info(nameof(LoginByQrCode), "Login by QR Code Success.");
                     }
                 });

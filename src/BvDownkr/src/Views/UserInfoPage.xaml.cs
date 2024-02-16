@@ -13,7 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using BvDownkr.src.Services;
+using BvDownkr.src.Utils;
 using BvDownkr.src.ViewModels;
+using Core.BilibiliApi.User;
 
 namespace BvDownkr.src.Views {
     /// <summary>
@@ -24,10 +26,14 @@ namespace BvDownkr.src.Views {
             InitializeComponent();
 
             InitUI();
-            DataContext = new UserInfoVM();
         }
         public void InitUI() {
 
+        }
+        public void UpdateUserAvatar(byte[] rawAvatarData) {
+            Dispatcher.Invoke(() => {
+                UserAvatar.Source = UIMethod.GetBitmapSource(rawAvatarData);
+            });
         }
     }
 }

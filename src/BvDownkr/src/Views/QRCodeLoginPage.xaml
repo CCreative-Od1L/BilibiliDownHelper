@@ -50,6 +50,7 @@
                     BorderThickness="2" CornerRadius="10" BorderBrush="BlueViolet"
                     Width="100" Height="100">
                 <Rectangle></Rectangle>
+                <!--TODO 添加背板-->
             </Border>
             <Button Name="RefreshButton" Grid.Row="1" Visibility="{Binding QRcodeRefreshUIVisiable}"
                     Width="100" Height="100"

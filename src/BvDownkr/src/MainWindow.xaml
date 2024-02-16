@@ -7,6 +7,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
         xmlns:vms="clr-namespace:BvDownkr.src.ViewModels"
+        xmlns:theme="clr-namespace:BvDownkr.src.Theme"
         mc:Ignorable="d"
         Title="BvDownKr" Height="720" Width="1280" ResizeMode="CanResizeWithGrip">
     <WindowChrome.WindowChrome>
@@ -86,9 +87,14 @@
                         </Button>
                     </StackPanel>
                     <StackPanel Name="UserButtons" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Name="UserButton" Width="50" Height="50" Margin="5"
-                                Background="#f1f1f1"
-                                Command="{Binding OpenUserInfoFrame}">
+                        <Button
+                            x:Name="UserButton"
+                            Width="50" Height="50" Margin="5"
+                            Background="#f1f1f1"
+                            Command="{Binding OpenUserInfoFrame}">
+                            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                <Image Name="UserAvatar" Source="{Binding UserAvatar}"></Image>
+                            </Grid>
                             <Button.Resources>
                                 <Style TargetType="Border">
                                     <Setter Property="CornerRadius" Value="25"/>

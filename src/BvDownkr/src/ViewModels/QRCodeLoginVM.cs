@@ -1,5 +1,6 @@
 ﻿using BvDownkr.src.Implement;
 using BvDownkr.src.Models;
+using BvDownkr.src.Utils;
 using Core;
 using System;
 using System.Collections.Generic;
@@ -60,17 +61,7 @@ namespace BvDownkr.src.ViewModels {
         /// </summary>
         /// <param name="rawData"></param>
         private void LoadQRcodeAction(byte[] rawData) {
-            Bitmap? bitmap = null;
-            using (MemoryStream ms = new(rawData)) {
-                bitmap = (Bitmap)Image.FromStream(ms);
-            }
-
-            IntPtr hBitmap = bitmap.GetHbitmap();
-            QRCodeImageSource = Imaging.CreateBitmapSourceFromHBitmap(
-                hBitmap,
-                IntPtr.Zero,
-                Int32Rect.Empty,
-                BitmapSizeOptions.FromEmptyOptions());
+            QRCodeImageSource = UIMethod.GetBitmapSource(rawData);
         }
         public ImageSource? QRCodeImageSource {
             get => _model.QRcodeImageSource;

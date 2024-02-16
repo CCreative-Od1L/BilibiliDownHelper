@@ -3,6 +3,8 @@ using BvDownkr.src.Models;
 using BvDownkr.src.Services;
 using BvDownkr.src.Utils;
 using BvDownkr.src.Views;
+using Core;
+using Core.BilibiliApi.User;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,13 +16,19 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace BvDownkr.src.ViewModels {
     public class MainWindowVM : NotificationObject {
         private readonly MainWindowModel _model;
+        private readonly MainWindow _window;
         public string currentOpenFrameName = string.Empty;
         public MainWindowVM() {
             _model = new();
+            _window = (MainWindow)Application.Current.MainWindow;
+            UserService.INSTANCE.AddUpdateUserInfoUIAction(
+                action: UpdateUserAvatar,
+                nameof(MainWindowVM));
         }
         public Visibility MaskVisible {
             get => _model.IsMaskVisible;
@@ -48,6 +56,13 @@ namespace BvDownkr.src.ViewModels {
             set {
                 _model.TopBarButtonBackground = value;
                 RaisePropertyChanged(nameof(TopBarButtonBackground));
+            }
+        }
+        public ImageSource? UserAvatar {
+            get => _model.UserAvatar;
+            set {
+                _model.UserAvatar = value;
+                RaisePropertyChanged(nameof(UserAvatar));
             }
         }
         public ICommand OnMouseEnterTopBarButton => new ReplyCommand<object>(
@@ -94,5 +109,10 @@ namespace BvDownkr.src.ViewModels {
                 DownloadTaskPanelVisible = Visibility.Visible;
                 MaskVisible = Visibility.Visible;
             }, true);
+        private void UpdateUserAvatar(LoginUserInfoData data, byte[] rawAvatarData) {
+            _window.Dispatcher.Invoke(() => {
+                UserAvatar = UIMethod.GetBitmapSource(rawAvatarData);
+            });
+        }
     }
 }
