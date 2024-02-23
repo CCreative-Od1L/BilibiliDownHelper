@@ -96,6 +96,7 @@ namespace Core.Web {
                                 while ((currentPointer = stream.Read(buf, 0, buf.Length)) != 0) {
                                     ms.Write(buf, 0, currentPointer);
                                 }
+                                ms.Seek(0, SeekOrigin.Begin);
                                 dataResult = ms.ToArray();
                                 Console.WriteLine("GZIP Decompress complete.");
                             }
@@ -108,6 +109,7 @@ namespace Core.Web {
                                 while ((currentPointer = stream.Read(buf, 0, buf.Length)) != 0) {
                                     ms.Write(buf, 0, currentPointer);
                                 }
+                                ms.Seek(0, SeekOrigin.Begin);
                                 dataResult = ms.ToArray();
                                 Console.WriteLine("DEFLATE Decompress complete.");
                             }
@@ -120,6 +122,7 @@ namespace Core.Web {
                                 while ((currentPointer = stream.Read(buf, 0, buf.Length)) != 0) {
                                     ms.Write(buf, 0, currentPointer);
                                 }
+                                ms.Seek(0, SeekOrigin.Begin);
                                 dataResult = ms.ToArray();
                                 Console.WriteLine("BR Decompress complete");
                             }

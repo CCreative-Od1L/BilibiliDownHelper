@@ -8,20 +8,21 @@
         xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
         xmlns:vms="clr-namespace:BvDownkr.src.ViewModels"
         xmlns:theme="clr-namespace:BvDownkr.src.Theme"
+        d:DataContext="{d:DesignInstance Type=vms:MainWindowVM}"
         mc:Ignorable="d"
         Title="BvDownKr" Height="720" Width="1280" ResizeMode="CanResizeWithGrip">
     <WindowChrome.WindowChrome>
         <WindowChrome CornerRadius="2" GlassFrameThickness="10" CaptionHeight="50" UseAeroCaptionButtons="False"/>
     </WindowChrome.WindowChrome>
     <Window.Resources>
-        <vms:MainWindowVM x:Key="vm" />
+        <vms:MainWindowVM x:Key="vm"/>
     </Window.Resources>
     <Window.DataContext>
-        <Binding Source="{StaticResource vm}" />
+        <Binding Source="{StaticResource vm}"/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50" />
+            <RowDefinition Height="50"/>
             <RowDefinition />
         </Grid.RowDefinitions>
         <Grid Name="topBar" Grid.Row="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
@@ -54,7 +55,7 @@
                             <Setter Property="CornerRadius" Value="10" />
                         </Style>
                     </Button.Resources>
-                    <svgc:SvgViewbox MaxHeight="15" Width="15" Source="src/Resources/close_btn.svg" />
+                    <svgc:SvgViewbox MaxHeight="15" Width="15" UriSource="src/Resources/close_btn.svg" />
                 </Button>
             </Grid>
             
@@ -93,7 +94,11 @@
                             Background="#f1f1f1"
                             Command="{Binding OpenUserInfoFrame}">
                             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                <Image Name="UserAvatar" Source="{Binding UserAvatar}"></Image>
+                                <Image Name="UserAvatar" Source="{Binding UserAvatar}">
+                                    <Image.Clip>
+                                        <EllipseGeometry RadiusX="25" RadiusY="25" Center="25, 25"/>
+                                    </Image.Clip>
+                                </Image>
                             </Grid>
                             <Button.Resources>
                                 <Style TargetType="Border">

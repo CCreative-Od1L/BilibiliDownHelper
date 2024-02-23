@@ -24,16 +24,10 @@ namespace BvDownkr.src.Views {
     public partial class UserInfoPage : Page {
         public UserInfoPage() {
             InitializeComponent();
-
             InitUI();
         }
         public void InitUI() {
 
-        }
-        public void UpdateUserAvatar(byte[] rawAvatarData) {
-            Dispatcher.Invoke(() => {
-                UserAvatar.Source = UIMethod.GetBitmapSource(rawAvatarData);
-            });
         }
     }
 }

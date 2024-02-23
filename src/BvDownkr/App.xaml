@@ -54,7 +54,7 @@
                     </MultiTrigger>
                 </Style.Triggers>
             </Style>
-            
+
             <Style TargetType="Button">
                 <Setter Property="OverridesDefaultStyle" Value="True" />
                 <Setter Property="Cursor" Value="Hand" />
@@ -67,7 +67,7 @@
                             </Border>
                             <ControlTemplate.Triggers>
                                 <Trigger Property="IsMouseOver" Value="True">
-                                    
+
                                 </Trigger>
                             </ControlTemplate.Triggers>
                         </ControlTemplate>
@@ -78,6 +78,7 @@
             <Style TargetType="Frame">
                 <Setter Property="NavigationUIVisibility" Value="Hidden"/>
             </Style>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>

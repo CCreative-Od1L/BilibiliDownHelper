@@ -24,10 +24,7 @@
         <Frame Name="QRCodeLoginFrame" Panel.ZIndex="1" 
                Visibility="{Binding QRcodeLoginPageVisiable}" Content="{Binding QRcodeLoginPage}"
                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-        <Border BorderThickness="2" CornerRadius="10">
-            <Rectangle Name="Panel" Width="395" Height="395" Fill="White" 
-               RadiusX="10" RadiusY="10"/>
-        </Border>
+        <Border BorderThickness="2" CornerRadius="10" Background="White" />
         <Grid Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*"/>

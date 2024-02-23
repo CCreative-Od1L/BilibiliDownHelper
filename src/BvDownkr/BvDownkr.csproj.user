@@ -34,7 +34,13 @@
     <Page Update="src\Views\UserWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="Themes\ImageButton.xaml">
+    <Page Update="src\Theme\CProgressBar.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="Themes\Generic.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="src\Theme\ImageButton.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

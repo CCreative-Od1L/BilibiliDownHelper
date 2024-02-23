@@ -2,13 +2,91 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:BvDownkr.src.Views"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:vms="clr-namespace:BvDownkr.src.ViewModels"
+      xmlns:theme="clr-namespace:BvDownkr.src.Theme"
+      xmlns:local="clr-namespace:BvDownkr.src.Views" d:DataContext="{d:DesignInstance Type=vms:DownloadTaskVM}"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="600" d:DesignWidth="500"
       Title="DownloadTask">
-
+    <Page.Resources>
+        <vms:DownloadTaskVM x:Key="vm"/>
+    </Page.Resources>
+    <Page.DataContext>
+        <Binding Source="{StaticResource vm}"/>
+    </Page.DataContext>
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding OnPageLoaded}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <Grid>
-        <Rectangle Width="100" Height="100" Fill="Aqua"/>
+        <Border BorderThickness="2" Background="White" CornerRadius="10,0,0,10">
+            <Grid Margin="30">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="80"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                <Grid Name="TopBar" Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" FontSize="36"
+                               HorizontalAlignment="Left" VerticalAlignment="Center">
+                        <Run>下载列表</Run>
+                    </TextBlock>
+                </Grid>
+                <Grid Grid.Row="1" Margin="0, 10, 0, 0">
+                    <ListBox Name="DownloadTaskList" VirtualizingPanel.VirtualizationMode="Recycling"
+                             HorizontalContentAlignment="Stretch" BorderThickness="0" BorderBrush="{x:Null}"
+                             ItemsSource="{Binding DownloadTasks}"
+                             d:ItemsSource="{d:SampleData ItemCount=3}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="100"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Orientation="Vertical" Margin="5">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Grid.Column="0">
+                                                <Run Text="{Binding FileName}"/>
+                                            </TextBlock>
+                                            <TextBlock Grid.Column="1" VerticalAlignment="Bottom" TextAlignment="Right" FontSize="10">
+                                                <Run Text="{Binding TaskRunMessage}"/>
+                                            </TextBlock>
+                                        </Grid>
+                                        
+                                        <Grid>
+                                            <theme:CProgressBar 
+                                                x:Name="ProgressBar"
+                                                CpbCornerRadius="5"
+                                                CpbForeground="Aqua"
+                                                Margin="0, 5" Height="10" Value="{Binding TaskValue}"/>
+                                        </Grid>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal"
+                                                HorizontalAlignment="Right" VerticalAlignment="Center">
+                                        <Button Name="SPauseButton"
+                                                Width="30" Height="30" Margin="0, 0, 5, 0" Background="#f1f1f1"
+                                                Command="{Binding SPButtonCommand}"/>
+                                        <Button Name="CancelButton"
+                                                Width="30" Height="30" Background="#f1f1f1"
+                                                Command="{Binding CancelButtonCommand}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

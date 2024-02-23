@@ -1,0 +1,8 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:BvDownkr.src.Theme">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/BvDownkr;component/src/Theme/CProgressBar.xaml"/>
+        <ResourceDictionary Source="/BvDownkr;component/src/Theme/ImageButton.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>
