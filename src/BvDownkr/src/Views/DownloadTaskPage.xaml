@@ -69,7 +69,7 @@
                                                 x:Name="ProgressBar"
                                                 CpbCornerRadius="5"
                                                 CpbForeground="Aqua"
-                                                Margin="0, 5" Height="10" Value="{Binding TaskValue}"/>
+                                                Margin="0, 5" Height="10" Value="{Binding TaskValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
                                         </Grid>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal"

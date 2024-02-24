@@ -29,6 +29,9 @@ namespace BvDownkr.src.Entries
             }, true);
         public ICommand CancelButtonCommand => new ReplyCommand<object>(
             (_) => {
+                PageManager.DownloadTaskPage.Dispatcher.Invoke(() => {
+                    TaskValue = new Random().Next(100);
+                });
                 CoreManager.logger.Info(TaskValue.ToString());
             }, true);
     }

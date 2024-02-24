@@ -1,6 +1,7 @@
 ﻿using BvDownkr.src.Entries;
 using BvDownkr.src.Implement;
 using BvDownkr.src.Models;
+using BvDownkr.src.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,8 +13,12 @@ namespace BvDownkr.src.ViewModels
 {
     public class DownloadTaskVM : NotificationObject {
         private readonly DownloadTaskModel _model;
+        private readonly Dictionary<string, DownloadTaskEntry> _taskGidDictionary;
         public DownloadTaskVM() {
             _model = new();
+            _taskGidDictionary = [];
+
+            DownloadService.AddTellStatusAction(OnUpdateTaskProgress);
         }
         public List<DownloadTaskEntry> DownloadTasks {
             get => _model.TasksEntries;
@@ -30,5 +35,14 @@ namespace BvDownkr.src.ViewModels
                         FileName = "《艾尔登法环 黄金树幽影》首支宣传视频"
                     });
             }, true);
+        private void OnUpdateTaskProgress(string gid, long totalLength, long completedLength, long speed) {
+            var isFound = _taskGidDictionary.TryGetValue(gid, out var goatTask);
+            if (isFound) {
+                var progressValue = (totalLength / completedLength) * 100;
+                PageManager.DownloadTaskPage.Dispatcher.Invoke(() => {
+                    goatTask!.TaskValue = progressValue;
+                });
+            }
+        }
     }
 }

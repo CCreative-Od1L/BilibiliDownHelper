@@ -109,6 +109,11 @@ namespace BvDownkr.src.Services
             }, null, TaskCreationOptions.PreferFairness);
             writeTask.Start();
         }
+        /// <summary>
+        /// * 读取DfRecord
+        /// * 用于加载程序上一次未完成的下载任务队列
+        /// </summary>
+        /// <returns></returns>
         public Dictionary<string, DfRecordEntry> ReadDfRecord() {
             Dictionary<string, DfRecordEntry> buf = [];
             var result = FileUtils.ReadFile(Path.Combine(
