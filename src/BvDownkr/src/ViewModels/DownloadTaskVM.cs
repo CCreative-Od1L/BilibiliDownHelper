@@ -18,7 +18,8 @@ namespace BvDownkr.src.ViewModels
             _model = new();
             _taskGidDictionary = [];
 
-            DownloadService.AddTellStatusAction(OnUpdateTaskProgress);
+            DownloadService.AddTellStatusAction(UpdateTaskProgress);
+            DownloadService.INSTANCE.AddCreateDTaskAction(AddTaskItem);
         }
         public List<DownloadTaskEntry> DownloadTasks {
             get => _model.TasksEntries;
@@ -35,7 +36,7 @@ namespace BvDownkr.src.ViewModels
                         FileName = "《艾尔登法环 黄金树幽影》首支宣传视频"
                     });
             }, true);
-        private void OnUpdateTaskProgress(string gid, long totalLength, long completedLength, long speed) {
+        private void UpdateTaskProgress(string gid, long totalLength, long completedLength, long speed) {
             var isFound = _taskGidDictionary.TryGetValue(gid, out var goatTask);
             if (isFound) {
                 var progressValue = (totalLength / completedLength) * 100;
@@ -43,6 +44,14 @@ namespace BvDownkr.src.ViewModels
                     goatTask!.TaskValue = progressValue;
                 });
             }
+        }
+        private void AddTaskItem(string gid, string fileName) {
+            var task = new DownloadTaskEntry {
+                Gid = gid,
+                FileName = fileName
+            };
+            DownloadTasks.Add(task);
+            _taskGidDictionary.TryAdd(gid, task);
         }
     }
 }

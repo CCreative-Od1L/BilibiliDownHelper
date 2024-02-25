@@ -41,6 +41,8 @@ namespace BvDownkr.src.Services
                 IsServerStart = false;
             }
         }
+        public delegate void CreateDTaskHandler(string gid, string fileName);
+        private event CreateDTaskHandler? OnCreateDTask;
         public static void AddTellStatusAction(TellStatusHandler tellStatusAction) {
             CoreManager.ariaMgr.TellStatus += tellStatusAction;
         }
@@ -58,6 +60,12 @@ namespace BvDownkr.src.Services
         }
         public static void RemoveGlobalStatusAction(GetGlobalStatusHandler getGlobalStatusAction) {
             CoreManager.ariaMgr.GlobalStatus -= getGlobalStatusAction;
+        }
+        public void AddCreateDTaskAction(CreateDTaskHandler createDTaskAction) {
+            OnCreateDTask += createDTaskAction;
+        }
+        public void RemoveCreateDTaskAction(CreateDTaskHandler createTaskAction) {
+            OnCreateDTask -= createTaskAction;
         }
         /// <summary>
         /// * 下载url的文件
@@ -86,6 +94,7 @@ namespace BvDownkr.src.Services
             );
             if (downTask != null) {
                 string gid = downTask.Result;
+                OnCreateDTask?.Invoke(gid, fileName);
                 AriaManager.INSTANCE.GetDownloadStatus(gid);
                 return gid;
             }
