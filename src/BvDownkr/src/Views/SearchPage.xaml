@@ -5,7 +5,8 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:vms="clr-namespace:BvDownkr.src.ViewModels"
-      xmlns:local="clr-namespace:BvDownkr.src.Views"
+      xmlns:local="clr-namespace:BvDownkr.src.Views" 
+      d:DataContext="{d:DesignInstance Type=vms:SearchPageVM}"
       mc:Ignorable="d" 
       d:DesignHeight="720" d:DesignWidth="1280"
       Title="SearchPage">
@@ -34,7 +35,7 @@
                 <TextBox Style="{StaticResource SingleLineTextBox}" Grid.Column="0" 
                          VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="10, 5" 
                          Height="40" TextBlock.FontSize="16" 
-                         Background="#f1f1f1">
+                         Background="#f1f1f1" Text="{Binding TextContent}">
                     <TextBox.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="10" />
@@ -45,8 +46,7 @@
                     Grid.Column="1" Margin="10, 5" VerticalAlignment="Center" HorizontalAlignment="Stretch" 
                     Height="40"
                     Background="#f1f1f1" 
-                    Command="{Binding OpenWindowTest}"
-                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=Self}}">
+                    Command="{Binding TryToSearch}">
                     <Button.Resources>
                         <Style TargetType="Border">
                             <Setter Property="CornerRadius" Value="10" />
