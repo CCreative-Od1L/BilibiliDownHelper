@@ -54,7 +54,9 @@ namespace Core.BilibiliApi.User {
             var loadResult = LoadMyInfo(webResponse);
             if (loadResult != null) {
                 // * 请求头像数据
-                var (isSuccess, rawData) = await WebClient.RequestData(loadResult.Face);
+                var (isSuccess, rawData) = await WebClient.RequestData(
+                    url: loadResult.Face,
+                    referrer: "https://www.bilibili.com");
                 if (isSuccess) {
                     OnUserInfoUpdate?.Invoke(loadResult, rawData);
                 }
@@ -65,10 +67,13 @@ namespace Core.BilibiliApi.User {
         /// </summary>
         public async void TryToUpdateMyInfoAsync(Action? onSuccessCallback = null, Action? onFailureCallback = null) {
             var webResponse = await GetMyInfoAsync();
+
             if (!string.IsNullOrEmpty(webResponse)) {
                 var loadResult = LoadMyInfo(webResponse);
                 if (loadResult != null) {
-                    var (isSuccess, rawData) = await WebClient.RequestData(loadResult.Face);
+                    var (isSuccess, rawData) = await WebClient.RequestData(
+                        url:loadResult.Face, 
+                        referrer:"https://www.bilibili.com");
                     if (isSuccess) {
                         onSuccessCallback?.Invoke();
                         OnUserInfoUpdate?.Invoke(loadResult, rawData);

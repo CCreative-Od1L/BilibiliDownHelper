@@ -26,9 +26,13 @@ namespace BvDownkr.src.ViewModels {
         public MainWindowVM() {
             _model = new();
             _window = (MainWindow)Application.Current.MainWindow;
+
             UserService.INSTANCE.AddUpdateUserInfoUIAction(
                 action: UpdateUserAvatar,
                 nameof(MainWindowVM));
+            VideoService.INSTANCE.AddBeforeGetVBInfoAction(() => {
+                Area1Visible = Visibility.Visible;
+            });
         }
         public Visibility MaskVisible {
             get => _model.IsMaskVisible;

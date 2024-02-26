@@ -31,7 +31,7 @@ namespace BvDownkr.src.ViewModels {
         public ICommand TryToSearch => new ReplyCommand<object>(
             (_) => {
                 CoreManager.logger.Info(TextContent);
-                // VideoService.INSTANCE.ParseUserInput(TextContent);
+                VideoService.INSTANCE.ParseUserInput(TextContent);
             },
             true);
             

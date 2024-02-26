@@ -67,8 +67,8 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*" />
                     <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="130" />
                 </Grid.ColumnDefinitions>
                 <Frame Name="Area1" Grid.Column="0" Visibility="{Binding Area1Visible}"/>
                 <Grid Grid.Column="1" HorizontalAlignment="Right">

@@ -164,7 +164,7 @@ namespace Core.Web {
             string methodName,
             bool useWbi = false,
             Dictionary<string, string>? parameters = null,
-            string? referrer = null,
+            string referrer = "https://www.bilibili.com/",
             int retryTime = 3
         ) {
             if (retryTime <= 0) {

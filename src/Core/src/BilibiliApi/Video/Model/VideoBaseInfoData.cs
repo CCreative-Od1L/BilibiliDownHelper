@@ -9,21 +9,21 @@ public class VideoBaseInfoResponse : BaseResponse<VideoBaseInfoData> {
     }
 }
 public class VideoBaseInfoData {
-    [JsonPropertyName("bvid")] 
+    [JsonPropertyName("bvid")]              // * BV
     public string Bvid { get; set; } = "";
-    [JsonPropertyName("aid")]
+    [JsonPropertyName("aid")]               // * AV
     public long Avid { get; set; }
-    [JsonPropertyName("videos")]
+    [JsonPropertyName("videos")]            // * 分P总数
     public int Videos { get; set; }
-    [JsonPropertyName("pic")]
+    [JsonPropertyName("pic")]               // * 封面图URL
     public string CoverUrl { get; set; } = "";
-    [JsonPropertyName("title")]
+    [JsonPropertyName("title")]             // * 标题
     public string Title { get; set; } = "";
-    [JsonPropertyName("desc_v2")]   // * 新版视频简介
+    [JsonPropertyName("desc_v2")]           // * 新版视频简介
     public VideoDesc[] DescV2 { get; set; } = [];
-    [JsonPropertyName("owner")]
+    [JsonPropertyName("owner")]             // * 发布者信息
     public VideoOwner Owner { get; set; } = new();
-    [JsonPropertyName("pages")]
+    [JsonPropertyName("pages")]             // * 分P cids
     public VideoPagesItem[] Pages { get; set; } = [];
     public string GetVideoDesc() {
         if (DescV2 == null) { return string.Empty; }
