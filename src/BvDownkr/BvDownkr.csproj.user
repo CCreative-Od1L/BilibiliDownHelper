@@ -14,6 +14,12 @@
     <Compile Update="src\Views\UserInfoPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="src\Views\VideoDescPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="src\Views\VideoDownPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="src\Views\DownloadTaskPage.xaml">
@@ -29,6 +35,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="src\Theme\CProgressBar.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="src\Views\VideoDescPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="src\Views\VideoDownPage.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="Themes\Generic.xaml">

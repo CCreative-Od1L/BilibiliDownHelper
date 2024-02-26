@@ -51,6 +51,13 @@ namespace BvDownkr.src.ViewModels {
                 RaisePropertyChanged(nameof(DownloadTaskPanelVisible));
             }
         }
+        public Visibility Area1Visible {
+            get => _model.IsArea1Visible;
+            set {
+                _model.IsArea1Visible = value;
+                RaisePropertyChanged(nameof(Area1Visible));
+            }
+        }
         public Brush? TopBarButtonBackground {
             get => _model.TopBarButtonBackground;
             set {

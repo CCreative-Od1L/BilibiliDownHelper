@@ -87,7 +87,7 @@ namespace BvDownkr.src.ViewModels {
         public ICommand OnPageLoaded => new ReplyCommand<object>(
             (_) => {
                 if (!UserService.INSTANCE.IsLoggedIn) {
-                    QRcodeLoginPage = new QRCodeLoginPage();
+                    QRcodeLoginPage = PageManager.QRCodeLoginPage;
                     QRcodeLoginPageVisiable = Visibility.Visible;
                 }
             }, true);

@@ -17,7 +17,7 @@ using System.Windows.Input;
 
 namespace BvDownkr.src.ViewModels {
     public class SearchPageVM : NotificationObject {
-        private SearchPageModel _model;
+        private readonly SearchPageModel _model;
         public SearchPageVM() {
             _model = new();
         }

@@ -12,6 +12,10 @@ namespace BvDownkr.src.Services {
     public class VideoService {
         public static VideoService INSTANCE { get; private set; } = new();
         #region About Events
+        private event Action? BeforeGetVideoBaseInfo;
+        public void AddBeforeGetVBInfoAction(Action action) { BeforeGetVideoBaseInfo += action; }
+        public void RemoveBeforeGetVBInfoAction(Action action) { BeforeGetVideoBaseInfo -= action; }
+
         public delegate void AfterGetVideoBaseInfoHandler(VideoBaseInfoData videoBaseInfoData);
         private event AfterGetVideoBaseInfoHandler? AfterGetVideoBaseInfo;
         public void AddAfterGetVBInfoAction(AfterGetVideoBaseInfoHandler action) { AfterGetVideoBaseInfo += action; }
@@ -33,6 +37,7 @@ namespace BvDownkr.src.Services {
                 CoreManager.logger.Error(new("用户输入解析失败"));
                 return;
             }
+            BeforeGetVideoBaseInfo?.Invoke();
             // * 新建线程获取信息
             Task task = new(async () => {
                 var (isGetDataSuccess, content) = await VideoAPI.GetVideoBaseInfoFromID(avid, bvid);
