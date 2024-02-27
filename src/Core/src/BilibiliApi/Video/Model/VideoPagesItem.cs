@@ -7,7 +7,7 @@ public class VideoPagesItem {
     [JsonPropertyName("page")]      // * 分P序号
     public int Page { get; set; }
     [JsonPropertyName("part")]      // * 分P标题
-    public string? Part { get; set; }
+    public string Part { get; set; } = string.Empty;
     [JsonPropertyName("duration")]
-    public int Duration { get; set; }
+    public int Duration { get; set; }   // * 持续时间
 }
