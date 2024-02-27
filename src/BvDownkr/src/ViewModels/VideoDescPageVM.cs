@@ -54,6 +54,15 @@ namespace BvDownkr.src.ViewModels {
                 RaisePropertyChanged(nameof(Owner));
             }
         }
+        public void CleanUI() {
+            Title = string.Empty;
+            Desc = string.Empty;
+            Owner = string.Empty;
+            PageManager.VideoDescPage.Dispatcher.Invoke(() => {
+                VideoCover = null;
+                OwnerAvatar = null;
+            });
+        }
         private void UpateUIAction(VideoBaseInfoData videoBaseInfoData) {
             Title = videoBaseInfoData.Title;
             Desc = videoBaseInfoData.GetVideoDesc();

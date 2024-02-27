@@ -38,7 +38,6 @@ public partial class MainWindow : Window
     public void InitUI() {
         // * Default Load(Search Page)
         Area1.Content = PageManager.VideoDescPage;
-        Area2.Content = PageManager.SearchPage;
         UserInfoContent.Content = PageManager.UserInfoPage;
         DownloadTaskContent.Content = PageManager.DownloadTaskPage;
     }

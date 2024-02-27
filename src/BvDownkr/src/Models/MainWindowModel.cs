@@ -13,8 +13,9 @@ namespace BvDownkr.src.Models {
         public Visibility IsMaskVisible { get; set; } = Visibility.Hidden;
         public Visibility IsUserInfoPanelVisible { get; set; } = Visibility.Hidden;
         public Visibility IsDownloadTaskPanelVisible { get; set; } = Visibility.Hidden;
-        public Visibility IsArea1Visible {  get; set; } = Visibility.Hidden;
+        public Visibility IsArea1Visible { get; set; } = Visibility.Hidden;
         public Brush? TopBarButtonBackground { get; set; } = null;
         public ImageSource? UserAvatar { get; set; }
+        public Page? Area2Page { get; set; }
     }
 }

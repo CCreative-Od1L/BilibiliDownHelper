@@ -7,7 +7,7 @@
       xmlns:local="clr-namespace:BvDownkr.src.Views"
       d:DataContext="{d:DesignInstance Type=vms:VideoDescPageVM}"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450" 
       Title="VideoDescPage">
     <Page.Resources>
         <vms:VideoDescPageVM x:Key="vm"/>
@@ -15,7 +15,7 @@
     <Page.DataContext>
         <Binding Source="{StaticResource vm}"/>
     </Page.DataContext>
-    <Grid Margin="20" Height="175">
+    <Grid Margin="20" Height="175" HorizontalAlignment="Stretch">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="240"/>
             <ColumnDefinition Width="1*"/>
@@ -30,8 +30,8 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="350"/>
                     <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="125"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Vertical" Grid.Column="0" VerticalAlignment="Center">
                     <TextBlock  VerticalAlignment="Center" FontSize="28">
@@ -48,7 +48,7 @@
                             <EllipseGeometry RadiusX="25" RadiusY="25" Center="25, 25"/>
                         </Image.Clip>
                     </Image>
-                    <TextBlock VerticalAlignment="Center" Padding="10, 0, 0, 0" FontSize="10">
+                    <TextBlock VerticalAlignment="Center" Padding="10, 0, 0, 0" FontSize="14">
                         <Run Name="OwnerName" Text="{Binding Owner}"/>
                     </TextBlock>
                 </StackPanel>

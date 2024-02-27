@@ -32,6 +32,7 @@ namespace BvDownkr.src.ViewModels {
                 nameof(MainWindowVM));
             VideoService.INSTANCE.AddBeforeGetVBInfoAction(() => {
                 Area1Visible = Visibility.Visible;
+                Area2Page = PageManager.VideoDownPage;
             });
         }
         public Visibility MaskVisible {
@@ -74,6 +75,13 @@ namespace BvDownkr.src.ViewModels {
             set {
                 _model.UserAvatar = value;
                 RaisePropertyChanged(nameof(UserAvatar));
+            }
+        }
+        public Page? Area2Page {
+            get => _model.Area2Page;
+            set {
+                _model.Area2Page = value;
+                RaisePropertyChanged(nameof(Area2Page));
             }
         }
         public ICommand OnMouseEnterTopBarButton => new ReplyCommand<object>(
@@ -119,6 +127,19 @@ namespace BvDownkr.src.ViewModels {
 
                 DownloadTaskPanelVisible = Visibility.Visible;
                 MaskVisible = Visibility.Visible;
+            }, true);
+        public ICommand OnWindowLoaded => new ReplyCommand<object>(
+            (_) => {
+                Area2Page = PageManager.SearchPage;
+            }, true);
+        public ICommand ReturnSearchPage => new ReplyCommand<object>(
+            (_) => {
+                Area2Page = PageManager.SearchPage;
+                Area1Visible = Visibility.Hidden;
+
+                if (PageManager.VideoDescPage.DataContext is VideoDescPageVM vm) {
+                    vm.CleanUI();
+                }
             }, true);
         private void UpdateUserAvatar(LoginUserInfoData data, byte[] rawAvatarData) {
             _window.Dispatcher.Invoke(() => {
