@@ -40,10 +40,10 @@ public class VideoBaseInfoData {
         }
         return li;
     }
-    public List<(int, string, int)> GetPagesInfo() {
-        List<(int, string, int)> li = [];
+    public List<(long, int, string, int)> GetPagesInfo() {
+        List<(long, int, string, int)> li = [];
         for(int i = 0; i < Pages.Length; ++i) {
-            li.Add((Pages[i].Page, Pages[i].Part, Pages[i].Duration));
+            li.Add((Pages[i].Cid, Pages[i].Page, Pages[i].Part, Pages[i].Duration));
         }
         return li;
     }

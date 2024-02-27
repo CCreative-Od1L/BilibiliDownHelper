@@ -137,8 +137,11 @@ namespace BvDownkr.src.ViewModels {
                 Area2Page = PageManager.SearchPage;
                 Area1Visible = Visibility.Hidden;
 
-                if (PageManager.VideoDescPage.DataContext is VideoDescPageVM vm) {
-                    vm.CleanUI();
+                if (PageManager.VideoDescPage.DataContext is VideoDescPageVM vdescVM) {
+                    vdescVM.CleanUI();
+                }
+                if (PageManager.VideoDownPage.DataContext is VideoDownPageVM vdownVM) {
+                    vdownVM.CleanUI();
                 }
             }, true);
         private void UpdateUserAvatar(LoginUserInfoData data, byte[] rawAvatarData) {

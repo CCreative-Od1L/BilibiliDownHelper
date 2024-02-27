@@ -32,12 +32,12 @@
                             <TextBlock FontSize="14" Padding="10, 0">
                                 <Run Text="{Binding Duration}"/>
                             </TextBlock>
-                            <ComboBox Name="VideoQnSelector" Padding="40, 0" Margin="10, 0"
-                                      ItemsSource="{Binding VideoQnDic}"
-                                      SelectedItem="{Binding VideoQnSelected}"></ComboBox>
-                            <ComboBox Name="AudioQnSelector" Padding="40 ,0" Margin="10, 0"
-                                      ItemsSource="{Binding AudioQnDic}"
-                                      SelectedItem="{Binding AudioQnSelected}"></ComboBox>
+                            <ComboBox Name="VideoQnSelector" Padding="20, 0" Margin="10, 0"
+                                      ItemsSource="{Binding VideoQnList}"
+                                      SelectedIndex="{Binding VideoQnSelected}"></ComboBox>
+                            <ComboBox Name="AudioQnSelector" Padding="20 ,0" Margin="10, 0"
+                                      ItemsSource="{Binding AudioQnList}"
+                                      SelectedIndex="{Binding AudioQnSelected}"></ComboBox>
                             <Button Name="DownloadBtn" 
                                     Width="40" Height="20" Background="AliceBlue" Margin="10, 0"
                                     Command="{Binding StartDownload}">

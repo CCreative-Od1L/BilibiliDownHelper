@@ -1,4 +1,5 @@
 ﻿using BvDownkr.src.Implement;
+using Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,19 +13,20 @@ namespace BvDownkr.src.Entries
         public string No { get; set; } = string.Empty;
         public string PageName { get; set; } = string.Empty;
         public string Duration { get; set; } = string.Empty;
-        public Dictionary<int, string> VideoQnDic { get; set; } = [];
-        public Dictionary<int, string> AudioQnDic { get; set; } = [];
-
-        private string _videoQnSelected = string.Empty;
-        public string VideoQnSelected {
+        public List<string> VideoQnList { get; set; } = [];
+        public List<string> AudioQnList { get; set; } = [];
+        public List<List<string>> VideoDownLinks { get; set; } = [];
+        public List<List<string>> AudioDownLinks { get; set; } = [];
+        private int _videoQnSelected;
+        public int VideoQnSelected {
             get => _videoQnSelected;
             set {
                 _videoQnSelected = value;
                 RaisePropertyChanged(nameof(VideoQnSelected));
             }
         }
-        private string _audioQnSelected = string.Empty;
-        public string AudioQnSelected {
+        private int _audioQnSelected;
+        public int AudioQnSelected {
             get => _audioQnSelected;
             set {
                 _audioQnSelected = value;
@@ -33,7 +35,7 @@ namespace BvDownkr.src.Entries
         }
         public ICommand StartDownload => new ReplyCommand<object>(
             (_) => {
-
+                CoreManager.logger.Debug(string.Format("VideoSelect: {0}, AudioSelect: {1}", VideoQnSelected, AudioQnSelected));
             }, true);
     }
 }
