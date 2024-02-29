@@ -6,11 +6,13 @@ using Core.FFmpegFunc;
 using Core.Utils;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BvDownkr.src.ViewModels
 {
@@ -25,7 +27,7 @@ namespace BvDownkr.src.ViewModels
             DownloadService.INSTANCE.AddCreateDTaskAction(AddTaskItem);
             DownloadService.AddDownloadFinishAction(OnDownloadFinish);
         }
-        public List<BilibiliDownloadTaskEntry> DownloadTasks {
+        public ObservableCollection<BilibiliDownloadTaskEntry> DownloadTasks {
             get => _model.TasksEntries;
             set {
                 _model.TasksEntries = value;
@@ -95,16 +97,18 @@ namespace BvDownkr.src.ViewModels
                 SaveFileDirPath = fileDir,
                 FileName = fileName
             };
-            DownloadTasks.Add(task);
-            RaisePropertyChanged(nameof(DownloadTasks));
-
-            _taskGidDictionary.TryAdd(Vgid, task);
-            _taskGidDictionary.TryAdd(Agid, task);
+            PageManager.DownloadTaskPage.Dispatcher.Invoke(() => {
+                DownloadTasks.Add(task);
+                _taskGidDictionary.TryAdd(Vgid, task);
+                _taskGidDictionary.TryAdd(Agid, task);
+            });
         }
         public void CleanTask(BilibiliDownloadTaskEntry entry) {
-            _taskGidDictionary.Remove(entry.VGid);
-            _taskGidDictionary.Remove(entry.AGid);
-            DownloadTasks.Remove(entry);
+            PageManager.DownloadTaskPage.Dispatcher.Invoke(() => {
+                _taskGidDictionary.Remove(entry.VGid);
+                _taskGidDictionary.Remove(entry.AGid);
+                DownloadTasks.Remove(entry);
+            });
         }
     }
 }
