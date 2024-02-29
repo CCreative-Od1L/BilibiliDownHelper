@@ -8,6 +8,6 @@ using System.Threading.Tasks;
 namespace BvDownkr.src.Models
 {
     public class DownloadTaskModel {
-        public List<DownloadTaskEntry> TasksEntries { get; set; } = [];
+        public List<BilibiliDownloadTaskEntry> TasksEntries { get; set; } = [];
     }
 }

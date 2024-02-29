@@ -148,15 +148,15 @@ namespace Core.Web {
             } catch (WebException e) {
                 Console.WriteLine("RequestWeb()发生Web异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return RequestData(url, referrer, retryTime - 1).Result;
+                return await RequestData(url, referrer, retryTime - 1);
             } catch (IOException e) {
                 Console.WriteLine("RequestWeb()发生IO异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return RequestData(url, referrer, retryTime - 1).Result;
+                return await RequestData(url, referrer, retryTime - 1);
             } catch (Exception e) {
                 Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return RequestData(url, referrer, retryTime - 1).Result;
+                return await RequestData(url, referrer, retryTime - 1);
             }
         }
         public static async Task<(bool, string)> RequestJson(
@@ -268,15 +268,15 @@ namespace Core.Web {
             } catch (WebException e) {
                 Console.WriteLine("RequestWeb()发生Web异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return RequestJson(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
+                return await RequestJson(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1);
             } catch (IOException e) {
                 Console.WriteLine("RequestWeb()发生IO异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return RequestJson(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
+                return await RequestJson(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1);
             } catch (Exception e) {
                 Console.WriteLine("RequestWeb()发生其他异常: {0}", e);
                 CoreManager.logger.Error(e);
-                return RequestJson(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1).Result;
+                return await RequestJson(urlBuilder.ToString(), methodName, useWbi, null, referrer, retryTime - 1);
             }
         }
 

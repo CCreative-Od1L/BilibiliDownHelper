@@ -64,13 +64,23 @@
                                             </TextBlock>
                                         </Grid>
                                         
-                                        <Grid>
+                                        <StackPanel>
                                             <theme:CProgressBar 
-                                                x:Name="ProgressBar"
+                                                x:Name="VideoProgressBar"
+                                                CpbCornerRadius="5"
+                                                CpbForeground="Aqua"
+                                                Margin="0, 5" Height="10" Value="{Binding VideoDTaskValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                            <theme:CProgressBar 
+                                                x:Name="AudioProgressBar"
+                                                CpbCornerRadius="5"
+                                                CpbForeground="Aqua"
+                                                Margin="0, 5" Height="10" Value="{Binding AudioDTaskValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
+                                            <theme:CProgressBar 
+                                                x:Name="TaskProgressBar"
                                                 CpbCornerRadius="5"
                                                 CpbForeground="Aqua"
                                                 Margin="0, 5" Height="10" Value="{Binding TaskValue, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"/>
-                                        </Grid>
+                                        </StackPanel>
                                     </StackPanel>
                                     <StackPanel Grid.Column="1" Orientation="Horizontal"
                                                 HorizontalAlignment="Right" VerticalAlignment="Center">

@@ -16,6 +16,7 @@ namespace BvDownkr.src.Models {
             for(int i = 0; i < pages.Count; ++i) {
                 var (cid, no, title, duration) = pages[i];
                 VideoDownInfoEntry entry = new() {
+                    VideoTitle = vbInfo.Title,
                     No = no.ToString(),
                     PageName = title,
                     Duration = duration.ToString(),

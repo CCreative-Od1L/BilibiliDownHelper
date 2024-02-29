@@ -41,7 +41,7 @@ namespace BvDownkr.src.Services
                 IsServerStart = false;
             }
         }
-        public delegate void CreateDTaskHandler(string gid, string fileName);
+        public delegate void CreateDTaskHandler(string Vgid, string Agid, string fileDir, string fileName);
         private event CreateDTaskHandler? OnCreateDTask;
         public static void AddTellStatusAction(TellStatusHandler tellStatusAction) {
             CoreManager.ariaMgr.TellStatus += tellStatusAction;
@@ -94,7 +94,6 @@ namespace BvDownkr.src.Services
             );
             if (downTask != null) {
                 string gid = downTask.Result;
-                OnCreateDTask?.Invoke(gid, fileName);
                 AriaManager.INSTANCE.GetDownloadStatus(gid);
                 return gid;
             }
@@ -137,6 +136,23 @@ namespace BvDownkr.src.Services
                 }
             }
             return buf;
+        }
+        public void DownloadVideo(
+            List<string> videoLinks,
+            List<string> audioLinks,
+            string finalFileName,
+            string fileDir
+        ) {
+            Task downloadTaskThead = new(async () => {
+                var vGid = await DownloadSomethingAsync(videoLinks, fileDir);
+                var aGid = await DownloadSomethingAsync(audioLinks, fileDir);
+                OnCreateDTask?.Invoke(
+                    Vgid: vGid, 
+                    Agid: aGid,
+                    fileDir: fileDir,
+                    fileName: finalFileName);
+            });
+            downloadTaskThead.Start();
         }
     }
 }

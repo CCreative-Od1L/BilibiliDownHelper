@@ -1,6 +1,7 @@
 using System.Data.SqlTypes;
 using System.Text;
 using Core.FileFunc;
+using Microsoft.VisualBasic.FileIO;
 
 namespace Core.Utils {
     // ! 因为 FileUtils 会在CoreManager初始化完成前被调用，所以 logger 是可能为空的。
@@ -53,6 +54,18 @@ namespace Core.Utils {
             if (!File.Exists(filePath)) {
                 using var fs = File.Create(filePath);
                 CoreManager.logger?.Info(string.Format("创建文件 {0}", Path.GetFileName(filePath)));
+            }
+        }
+        static public void RenameFile(string filePath, string newName) {
+            StringBuilder titleBuilder = new(newName);
+            foreach(var invalidChar in Path.GetInvalidFileNameChars()) {
+                titleBuilder = titleBuilder.Replace(invalidChar.ToString(), string.Empty);
+            }
+            FileSystem.RenameFile(filePath, titleBuilder.ToString());
+        }
+        static public void RemoveFile(List<string> filePath) {
+            for(int i = 0; i < filePath.Count; i++) {
+                File.Delete(filePath[i]);
             }
         }
         #endregion

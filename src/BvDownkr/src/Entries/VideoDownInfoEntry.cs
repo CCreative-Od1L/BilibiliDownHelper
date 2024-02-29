@@ -1,4 +1,5 @@
 ﻿using BvDownkr.src.Implement;
+using BvDownkr.src.Services;
 using Core;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Windows.Input;
 namespace BvDownkr.src.Entries
 {
     public class VideoDownInfoEntry : NotificationObject {
+        public string VideoTitle { get; set; } = string.Empty;
         public string No { get; set; } = string.Empty;
         public string PageName { get; set; } = string.Empty;
         public string Duration { get; set; } = string.Empty;
@@ -33,9 +35,42 @@ namespace BvDownkr.src.Entries
                 RaisePropertyChanged(nameof(AudioQnSelected));
             }
         }
+        private string BuildFileName() {
+            StringBuilder stringBuilder = new();
+            stringBuilder.Append(VideoTitle);
+            stringBuilder.Append('_');
+            stringBuilder.Append(PageName);
+            stringBuilder.Append(".mp4");
+
+            return stringBuilder.ToString();
+        }
         public ICommand StartDownload => new ReplyCommand<object>(
             (_) => {
                 CoreManager.logger.Debug(string.Format("VideoSelect: {0}, AudioSelect: {1}", VideoQnSelected, AudioQnSelected));
+                
+                var videoSLinks = VideoDownLinks[VideoQnSelected];
+                var audioSLinks = AudioDownLinks[AudioQnSelected];
+                var finalFileName = BuildFileName();
+                // Configure open folder dialog box
+                Microsoft.Win32.OpenFolderDialog dialog = new() {
+                    Multiselect = false,
+                    Title = "选择保存的文件夹"
+                };
+
+                // Show open folder dialog box
+                bool? result = dialog.ShowDialog();
+
+                // Process open folder dialog box results
+                if (result == true) {
+                    // Get the selected folder
+                    string fullPathToFolder = dialog.FolderName;
+                    DownloadService.INSTANCE.DownloadVideo(
+                        videoLinks: videoSLinks,
+                        audioLinks: audioSLinks,
+                        finalFileName: finalFileName,
+                        fileDir: fullPathToFolder);
+                }
+
             }, true);
     }
 }

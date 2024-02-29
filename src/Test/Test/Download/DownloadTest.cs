@@ -86,7 +86,7 @@ namespace Core.Test {
                 Assert.NotEmpty(gid);
 
                 _ = Task.Run(() => {
-                    _ = AriaManager.INSTANCE.GetDownloadStatus(gid);
+                    AriaManager.INSTANCE.GetDownloadStatus(gid);
                 });
             }
 
