@@ -24,7 +24,7 @@ namespace Core.Web {
                 };
         }
         public static HttpClient GetHttpClient() {
-            return httpClient!;
+            return httpClient;
         }
     }
 }

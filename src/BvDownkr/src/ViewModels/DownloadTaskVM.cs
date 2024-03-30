@@ -47,7 +47,7 @@ namespace BvDownkr.src.ViewModels
             var isFound = _taskGidDictionary.TryGetValue(gid, out var goatTask);
             if (isFound) {
                 if (completedLength == 0) { return; }
-                var progressValue = (totalLength / completedLength) * 100;
+                var progressValue = ((double)completedLength / totalLength) * 100.0d;
                 if (gid.Equals(goatTask!.VGid)) {
                     PageManager.DownloadTaskPage.Dispatcher.Invoke(() => {
                         goatTask!.VideoDTaskValue = progressValue;

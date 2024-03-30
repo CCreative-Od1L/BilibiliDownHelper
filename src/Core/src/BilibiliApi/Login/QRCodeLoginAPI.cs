@@ -99,7 +99,7 @@ namespace Core.BilibiliApi.Login {
                         
                     }
                     // * 60秒超时-自动退出
-                    if(long.Parse(DateTimeUtils.GetCurrentTimestampSecond()) - startTime > 60) {
+                    if(long.Parse(DateTimeUtils.GetCurrentTimestampSecond()) - startTime > 120) {
                         CoreManager.logger.Info("QRcode登录超时,需刷新二维码");
                         break;
                     }

@@ -24,7 +24,7 @@ namespace BvDownkr.src.ViewModels {
             _model = new();
         }
         private void OpenKrTimer() {
-            _qrcodeRefreshReminder ??= new(RemindQRcodeRefresh, 60, false);
+            _qrcodeRefreshReminder ??= new(RemindQRcodeRefresh, 120, false);
             _qrcodeRefreshReminder.Reset();
         }
         private void RemindQRcodeRefresh() {
